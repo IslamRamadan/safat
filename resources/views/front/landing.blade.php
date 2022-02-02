@@ -76,7 +76,7 @@ bottom:2vh;
 content:"";
 width:1px;
 height:100%;
-background-color:#f7941d;
+background-color:#fff;
 position:absolute;
 top:-100%;
 }

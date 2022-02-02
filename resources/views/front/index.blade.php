@@ -370,9 +370,11 @@
                 <h1>@lang('site.new_arrival')</h1>
 
                 <p>@lang('site.discover_new') </p>
+                <a href="{{route('new')}}">
                 <button class="gq gr gs dg ck dh di cn gt c gu gv cq p cr gw gx gy">
                     <div class="text-center">@lang('site.new_in')</div>
                 </button>
+            </a>
             </div>
 
 
@@ -403,7 +405,7 @@
                                         </div> -->
                                         </div>
 
-                                        <div class="post-content text-center">
+                                        <div class="post-content text-dir">
 
                                             <h3><a href="{{ route('product', $p->id) }}" class="d-inline-block">
                                                     @if (Lang::locale() == 'ar')
@@ -504,7 +506,7 @@
                 @if ($p->appearance == 1)
 
                     <div class="col-6 col-md-6 col-lg-4">
-                        <div class=" product relative text-center mb-3">
+                        <div class=" product relative text-dir mb-3">
 
                             {{-- <div class="  heart ">
                     <a href="#" class="addToWishList text-white" data-product-id="{{$p->id}}">

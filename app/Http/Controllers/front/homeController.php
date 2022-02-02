@@ -84,6 +84,12 @@ class homeController extends Controller
         // dd($post);
         return view('front.post',compact('post'));
     }
+    public function new()
+    {
+        $new_arrivals=Product::select('id','title_en','title_ar','description_en','description_ar','new','price','img','appearance')->where('new',1)->get();
+        // dd($new_arrivals);
+        return view('front.new',compact('new_arrivals'));
+    }
 
     public function contactUs()
     {

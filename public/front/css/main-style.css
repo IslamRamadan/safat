@@ -367,7 +367,7 @@ h1 {
 }
 
  ::placeholder {
-    color: #fff!important;
+    color: rgb(158, 157, 157)!important;
 }
 
 footer {
@@ -378,7 +378,7 @@ footer {
 }
 
 .h-img {
-    height: 100vh;
+    height: 60vh;
     object-fit: cover;
 }
 
