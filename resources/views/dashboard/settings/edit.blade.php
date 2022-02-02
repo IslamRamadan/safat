@@ -52,7 +52,21 @@
                 <input value="{{ $setting->ad_image}}"  type="file" name="ad_image"
                        class="form-control @error('ad_image') is-invalid @enderror" id="ad_image">
             </div>
-
+            
+            <div class="form-group">
+                <label for="landing_image">
+                    @lang('site.landing_image') <span style="color:red; font-size:15px;"> (1360px * 650px)</span>
+                </label>
+                <input value="{{ $setting->landing_image}}"  type="file" name="landing_image"
+                       class="form-control @error('landing_image') is-invalid @enderror" id="landing_image">
+            </div>
+            <div class="form-group">
+                <label for="landing_image_mob">
+                    @lang('site.landing_image_mob') <span style="color:red; font-size:15px;"> (360px * 570px)</span>
+                </label>
+                <input value="{{ $setting->landing_image_mob}}"  type="file" name="landing_image_mob"
+                       class="form-control @error('landing_image_mob') is-invalid @enderror" id="landing_image_mob">
+            </div>
             <div class="form-group">
                 <label for="site_des_ar">
                     @lang('site.page_details_ar')
@@ -185,6 +199,13 @@
                 </label>
                 <input value="{{ $setting->telegram}}"  type="text" name="telegram"
                        class="form-control @error('telegram') is-invalid @enderror" id="telegram">
+            </div>
+            <div class="form-group">
+                <label for="snapchat">
+                    snapchat
+                </label>
+                <input value="{{ $setting->snapchat}}"  type="text" name="snapchat"
+                       class="form-control @error('snapchat') is-invalid @enderror" id="snapchat">
             </div>
 
 

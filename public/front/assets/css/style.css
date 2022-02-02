@@ -44,7 +44,7 @@ Blog CSS
 .single-blog-post .post-image .tag a {
     display: inline-block;
     background-color: #ffffff;
-    color: #ec7d23;
+    color: #000;
     -webkit-transition: 0.5s;
     transition: 0.5s;
     border-radius: 5px;
@@ -88,7 +88,7 @@ Blog CSS
 
 .single-blog-post .post-content .post-meta li a:hover,
 .single-blog-post .post-content .post-meta li a:focus {
-    color: #ec7d23;
+    color: #000;
 }
 
 .single-blog-post .post-content .post-meta li::before {
@@ -139,7 +139,7 @@ Blog CSS
 .single-blog-post .post-content .read-more-btn::before {
     content: '';
     position: absolute;
-    background-color: #ec7d23;
+    background-color: #000;
     left: 0;
     bottom: 0;
     height: 1px;
@@ -173,7 +173,7 @@ Blog CSS
 
 .single-blog-post:hover .post-image .tag a,
 .single-blog-post:focus .post-image .tag a {
-    background-color: #ec7d23;
+    background-color: #000;
     color: #ffffff;
 }
 
@@ -212,9 +212,9 @@ Blog CSS
 
 .blog-slides.owl-theme .owl-nav [class*=owl-]:hover,
 .blog-slides.owl-theme .owl-nav [class*=owl-]:focus {
-    background-color: #ec7d23;
+    background-color: #000;
     color: #ffffff;
-    border-color: #ec7d23;
+    border-color: #000;
     -webkit-box-shadow: 0px 8px 16px 0px rgba(241, 96, 1, 0.2);
     box-shadow: 0px 8px 16px 0px rgba(241, 96, 1, 0.2);
 }
@@ -429,7 +429,7 @@ Blog CSS
 }
 
 .single-blog-post-box .post-content .category:hover {
-    color: #ec7d23;
+    color: #000;
 }
 
 .single-blog-post-box .post-content h3 {
@@ -467,13 +467,13 @@ Blog CSS
 }
 
 .single-blog-post-box .post-content .post-content-footer li .post-author span {
-    color: #ec7d23;
+    color: #000;
     font-weight: 500;
     font-size: 15px;
 }
 
 .single-blog-post-box .post-content .post-content-footer li i {
-    color: #ec7d23;
+    color: #000;
     position: absolute;
     left: 7px;
     top: 3px;
@@ -513,7 +513,7 @@ Blog CSS
 }
 
 .bg-dark .single-blog-post-box .post-content .category {
-    color: #ec7d23;
+    color: #000;
 }
 
 .bg-dark .single-blog-post-box .post-content .category:hover {

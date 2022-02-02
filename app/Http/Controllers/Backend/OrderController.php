@@ -6,10 +6,13 @@ use App\Country;
 use App\Http\Controllers\Controller;
 use App\Order;
 use App\OrderItem;
+use App\CustomSize;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use RealRashid\SweetAlert\Facades\Alert;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Session;
+use App\City;
 
 class OrderController extends Controller
 {
@@ -18,7 +21,27 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
+            $filter = Session::get('filter');
+          if($filter != null ){
+            $data = Order::where('status','!=',0);
+
+            if($filter['from']!= null){
+              $data->whereDate('created_at','>=',$filter['from']);
+            }
+
+            if($filter['to']!= null){
+              $data->whereDate('created_at','<=',$filter['to']);
+
+            }
+            if($filter['city_id']!= null){
+              $data->where('city_id','<=',$filter['city_id']);
+            }
+            $data=$data->latest()->get();
+          }else{
             $data = Order::where('status','!=',0)->latest()->get();
+
+          }
+            // $data = Order::where('status','!=',0)->latest()->get();
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('status', function ($artist) {
@@ -32,6 +55,8 @@ class OrderController extends Controller
                     if($artist->status == 2){
                         return 'تم الأستلام';
                     }
+                })->addColumn('city_name', function ($artist) {
+                    return $artist->city->name;
                 })
                 ->addColumn('action', function($row){
 //                    <a class="btn btn-success"  href="'.route('countries.edit' , $row->id).'" id="edit-user" >Edit </a>
@@ -62,9 +87,21 @@ class OrderController extends Controller
                 })
                 ->rawColumns(['action'])
                 ->make(true);
-        }
+        }elseif($request->has('filter')){
+          $filter=[
+            'from'=>$request->from,
+            'to'=>$request->to,
+            'city_id'=>$request->city_id
+          ];
+          Session::put('filter', $filter);
+          $cities = City::get();
+          // dd(  $filter);
+          return view('dashboard.orders.index',compact('cities'));
 
-        return view('dashboard.orders.index');
+        }
+          $cities = City::get();
+        Session::forget('filter');
+        return view('dashboard.orders.index',compact('cities'));
     }
     public function not_paid(Request $request)
     {
@@ -148,6 +185,7 @@ class OrderController extends Controller
 
         $order = Order::find($order_id);
 
+
         if(!$order){
             Alert::error('خطأ','الطلب غير موجود بالنظام ');
             return back();
@@ -175,13 +213,51 @@ class OrderController extends Controller
                     return $artist->product->price?:"";
                 })
                 ->addColumn('height', function ($artist) {
-                    return $artist->height->height->name?:"";
+                    if(isset($artist->height->height->name)){
+
+                        return $artist->height->height->name?:"";
+                    }
+                    else{
+                        return "-";
+                    }
                 })
                 ->addColumn('size', function ($artist) {
-                    return $artist->size->size->name?:"";
+                    if(isset($artist->size->size->name)){
+
+                        return $artist->size->size->name?:"";
+                    }
+                    else{
+
+                    return "-";
+                    }
+
+                })
+                ->addColumn('color', function ($artist) {
+                    if(isset($artist->colors->color->name_ar)){
+
+                        return $artist->colors->color->name_ar?:"";
+                    }
+                    else{
+
+                    return "-";
+                    }
+
+                })->addColumn('action', function ($artist) {
+                    if($artist->product_height_id == 0){
+
+                        return   '<button class="btn btn-success " onclick="button_model_view('. $artist->id.');" data-toggle="modal" data-target="#myModal"
+                      style="margin:5px"
+                    >Size details</button>';
+                    }
+                    else{
+
+                    return "-";
+                    }
+
                 })
 //                ->rawColumns(['action'])
                 ->make(true);
+                
         }
 
         return view('dashboard.orders.view' , compact('order'));
@@ -192,9 +268,18 @@ class OrderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function get_customSize(Request $request)
     {
-        //
+       $items= CustomSize::where('order_item_id',$request->id)->get();
+       
+       $val='';
+        
+       foreach($items as $k=> $item){
+           $val .= '<tr> <td>'.$item->height.'</td><td>'.__("site.the_front".$item->the_front).'</td><td>'. $item->order_size .'</td><td>'. __("site.veil_size".$item->veil_size) .'</td>';
+       
+           $val .= '<td>'. $item->note .'</td> </tr>';
+       }
+       return $val;
     }
 
     /**

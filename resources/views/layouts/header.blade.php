@@ -43,10 +43,22 @@
 
     {{-- slider ismail end --}}
 
+<script src="{{asset('front/js/jquery-3.6.0.js')}}"></script>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
-        crossorigin="anonymous"></script>
+
     <style>
+    .bg-b nav .ul2 {
+    margin-top: 35px;
+}
+        .MyServices img {
+        height: 400px !important;
+        object-fit: cover !important;
+        }
+        span.is_required {
+            color: #993333;
+            font-size: large;
+            font-weight: 800;
+        }
         .heart2 {
 
             right: 35px !important;
@@ -61,7 +73,20 @@
             width: 150px;
             height: 150px;
         }
-
+        .whats-app {
+            position: fixed;
+            width: 50px;
+            height: 50px;
+            bottom: 40px;
+            background-color: #25d366;
+            color: #FFF;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 3px 4px 3px #999;
+            left: 15px;
+            z-index: 100;
+        }
 
         @media only screen and (max-width: 960px) {
             .title-span {
@@ -223,7 +248,7 @@
 
         <div>
             <a class="nav-link " href="{{ route('/') }}" style="padding: 3px !important;"> <img
-                    src="{{ asset('/storage/' . $my_setting->logo) }}" width="100"></a>
+                    src="{{ asset('/storage/' . $my_setting->logo) }}" width="150"></a>
         </div>
 
         <div class="text-right align-self-center mr-4">
@@ -339,7 +364,10 @@
 
                 </nav>
             </div>
-
+             <a  class="whats-app" href="https://wa.me/{{ $my_setting->whatsapp }}" target="_blank"
+                    title="whatsapp">
+                    <i class="fab fa-whatsapp my-float"></i>
+                </a>
             <div class="clearfix"></div>
         </div>
     </div>
@@ -609,12 +637,12 @@
                 @auth()
                     <li class="nav-item ">
                         <a class="nav-link " href="{{ route('myaccount') }}"> <i class="fas fa-user sml-fa"
-                                style="color:#d76797"></i> </a>
+                                style="color:#fff"></i> </a>
                     </li>
                 @endauth
 
                 <li class="nav-item"><a class="nav-link " href="{{ route('cart') }}"><i
-                            class="fas fa-shopping-cart sml-fa" style="font-size: 25px;color:#d76797"></i><span
+                            class="fas fa-shopping-cart sml-fa" style="font-size: 25px;color:#fff"></i><span
                             class='badge badge-warning' id='lblCartCount'>
                             {{ Session::has('cart_details') ? Session::get('cart_details')['totalQty'] : '0' }}
                         </span>

@@ -4,6 +4,80 @@
 
 @endsection
 @section('content')
+    <style>
+        @media (min-width: 0px) and (max-width: 425px) {
+            .h {
+                height: 30vh !important;
+                object-fit: fill;
+                margin-top: 0;
+            }
+
+            .carousel-inner {
+                height: 30%;
+            }
+
+            .carousel {
+                margin-top: 20px;
+            }
+
+            .new1 {
+                margin-bottom: -75px;
+                /* margin-top: 3px; */
+            }
+        }
+
+        @media (min-width: 425px) and (max-width: 600px) {
+            .h {
+                height: 40vh !important;
+                object-fit: fill;
+                margin-top: 0 !important;
+            }
+
+            .carousel-inner {
+                height: 50%;
+            }
+
+            .carousel {
+                margin-top: -20px;
+            }
+        }
+
+        @media (min-width: 425px) and (max-width: 571px) {
+            .h {
+                height: 35vh !important;
+                object-fit: fill;
+                margin-top: 80px !important;
+            }
+
+            .carousel-inner {
+                height: 48%;
+            }
+
+            .carousel {
+                margin-top: -20px;
+            }
+        }
+
+        @media (min-width: 601px) and (max-width: 820px) {
+            .h {
+                height: 40vh !important;
+                object-fit: fill;
+            }
+
+            .carousel-indicators {
+                bottom: -17px !important;
+            }
+
+            .new1 {
+                padding-top: 6vh;
+            }
+
+            .carousel-inner {
+                height: 40%;
+            }
+        }
+
+    </style>
     <!-----start carousel --->
     <div id="carouselExampleIndicators" class="carousel slide relative" data-ride="carousel">
         <ol class="carousel-indicators">
@@ -11,31 +85,35 @@
             <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
             <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
         </ol>
+
         <div class="carousel-inner">
-            <div class="carousel-item active ">
-                <img class=" w-100 h " src="{{ asset('front/img/11.jpeg') }}" alt="1 slide">
-                <div class="abs w-100">
-                    <p class="c-w mr-0">it has finally started</p>
-                    <h1 class=""> Sara Almutairi</h1>
-                    <button class=" btn btn-danger">shop now <i class="far fa-heart"></i> </button>
+            <?php
+            $i = 0;
+            ?>
+            @foreach ($sliders as $one)
+                <div class="carousel-item  @if ($i == 0) active @endif ">
+                    <img class=" w-100 h " src="{{ asset('storage/' . $one->img) }}" alt="1 slide"
+                        style="height: 60vh">
+                    @if (app()->getLocale() == 'en')
+                        <div class="abs w-100">
+                            <p class="c-w mr-0"></p>
+                            <h1 class=""> </h1>
+                            {{-- <button class=" btn btn-danger">@lang('site.shop_now') <i class="far fa-heart"></i></button> --}}
+                    </div> @else
+                        <div class="abs w-100">
+                            <p class="c-w mr-0"></p>
+                            <h1 class=""> </h1>
+                            {{-- <button class=" btn btn-danger">@lang('site.shop_now') <i class="far fa-heart"></i></button> --}}
+                        </div>
+                    @endif
+
+
                 </div>
-            </div>
-            <div class="carousel-item  ">
-                <img class=" w-100 h " src="{{ asset('front/img/5.jpeg') }}" alt="1 slide">
-                <div class="abs w-100">
-                    <p class="c-w mr-0">it has finally started</p>
-                    <h1 class=""> Sara Almutairi</h1>
-                    <button class=" btn btn-danger">shop now <i class="far fa-heart"></i> </button>
-                </div>
-            </div>
-            <div class="carousel-item  ">
-                <img class=" w-100 h " src="{{ asset('front/img/8.jpeg') }}" alt="1 slide">
-                <div class="abs w-100">
-                    <p class="c-w mr-0">it has finally started</p>
-                    <h1 class=""> Sara Almutairi</h1>
-                    <button class=" btn btn-danger">shop now <i class="far fa-heart"></i> </button>
-                </div>
-            </div>
+                <?php
+                $i++;
+                ?>
+            @endforeach
+
 
         </div>
         <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
@@ -298,215 +376,233 @@
 
                                         @auth()
                                             {{ Auth::user()->getPrice($b->price) }}
-                                            {{ Auth::user()->country->currency->code }}
-                                        @endauth
-                                        @guest()
-                                            @if (Cookie::get('name'))
-                                                {{ number_format($b->price / App\Country::find(Cookie::get('name'))->currency->rate, 2) }}
-                                                {{ App\Country::find(Cookie::get('name'))->currency->code }}
+                                            @if (Lang::locale() == 'en')
+                                                {{ Auth::user()->country->currency->code }}
                                             @else
-                                                {{ $b->price }} @lang('site.kwd')
+                                                {{ Auth::user()->country->currency->code_ar }}
 
-                                            @endif
-                                        @endguest
-                                    </h5>
+                                            @endif @endauth
+                                            @guest()
+                                                @if (Cookie::get('name'))
+                                                    {{ number_format($b->price / App\Country::find(Cookie::get('name'))->currency->rate, 2) }}
+                                                    @if (Lang::locale() == 'en')
+                                                        {{ App\Country::find(Cookie::get('name'))->currency->code }}
+                                                    @else
+                                                        {{ App\Country::find(Cookie::get('name'))->currency->code_ar }}
+
+                                                    @endif
+                                                @else
+                                                    {{ $b->price }} @lang('site.kwd')
+
+                                                @endif
+                                            @endguest
+                                        </h5>
+                                    </div>
                                 </div>
-                            </div>
-                            <hr>
-                            {{-- @endif --}}
-                        @endif
+                                <hr>
+                                {{-- @endif --}}
+                            @endif
 
 
-                    @endforeach
-                @endif
-            </div>
-            <div class="col-lg-9 col-md-8 pad-0 ">
-                <div class="row text-center">
-                    @if ($category->products->count() > 0)
-                        @foreach ($category->products as $p)
-                            @if ($p)
-                                @if ($p->appearance == 1)
+                        @endforeach
+                    @endif
+                </div>
+                <div class="col-lg-9 col-md-8 pad-0 ">
+                    <div class="row text-center">
+                        @if ($category->products->count() > 0)
+                            @foreach ($category->products as $p)
+                                @if ($p)
+                                    @if ($p->appearance == 1)
 
-                                    <div class="col-6 col-md-6 col-lg-4">
-                                        <div class=" product relative text-dir mb-3">
+                                        <div class="col-6 col-md-6 col-lg-4">
+                                            <div class=" product relative text-center mb-3">
 
-                                            {{-- <div class="  heart ">
+                                                {{-- <div class="  heart ">
                                         <a href="#" class="addToWishList text-white" data-product-id="{{$p->id}}">
                                             <i class="far fa-heart "></i>
                                         </a>
 
                                     </div> --}}
 
-                                            <a href="{{ route('product', $p->id) }}" class="image-hover ">
-                                                <div style="position: relative">
-                                                    <img src="{{ asset('/storage/' . $p->img) }}"
-                                                        onerror="this.onerror=null;this.src='{{ asset('front/img/3.jpg') }}'"
-                                                        width="100%" class="show-img image">
-                                                    <div class="middle">
-                                                        <div class="btn btn-danger">@lang('site.add_to_cart')</div>
+                                                <a href="{{ route('product', $p->id) }}" class="image-hover ">
+                                                    <div style="position: relative">
+                                                        <img src="{{ asset('/storage/' . $p->img) }}"
+                                                            onerror="this.onerror=null;this.src='{{ asset('front/img/3.jpg') }}'"
+                                                            width="100%" class="show-img image">
+                                                        <div class="middle">
+                                                            <div class="btn btn-danger">@lang('site.add_to_cart')</div>
+                                                        </div>
+                                                        @if ($img = App\ProdImg::where('product_id', $p->id)->first())
+                                                            <img src="{{ asset($img->img) }}" width="100%"
+                                                                class="hide-img image">
+                                                            <div class="middle">
+                                                                <div class="btn btn-danger">@lang('site.add_to_cart')</div>
+                                                            </div>
+                                                        @else
+                                                            <img src="{{ asset('/storage/' . $p->img) }}" width="100%"
+                                                                class="hide-img image">
+                                                            <div class="middle">
+                                                                <div class="btn btn-danger">@lang('site.add_to_cart')</div>
+                                                            </div>
+                                                        @endif
                                                     </div>
-                                                    @if ($img = App\ProdImg::where('product_id', $p->id)->first())
-                                                        <img src="{{ asset($img->img) }}" width="100%"
-                                                            class="hide-img image">
-                                                        <div class="middle">
-                                                            <div class="btn btn-danger">@lang('site.add_to_cart')</div>
-                                                        </div>
-                                                    @else
-                                                        <img src="{{ asset('/storage/' . $p->img) }}" width="100%"
-                                                            class="hide-img image">
-                                                        <div class="middle">
-                                                            <div class="btn btn-danger">@lang('site.add_to_cart')</div>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                            </a>
-                                            <p class="mr-0">
-                                                <a href="{{ route('product', $p->id) }}">
-                                                    @if (Lang::locale() == 'ar')
-                                                        {{ $p->title_ar }}
-
-                                                    @else
-
-                                                        {{ $p->title_en }}
-
-                                                    @endif
-
-
                                                 </a>
-                                            </p>
-                                            <h6><a href="{{ route('product', $p->id) }}">
+                                                <p class="mr-0">
+                                                    <a href="{{ route('product', $p->id) }}">
+                                                        @if (Lang::locale() == 'ar')
+                                                            {{ $p->title_ar }}
+
+                                                        @else
+
+                                                            {{ $p->title_en }}
+
+                                                        @endif
 
 
-                                                    @if (Lang::locale() == 'ar')
-                                                        {{-- {{$p->basic_category->name_ar}}
+                                                    </a>
+                                                </p>
+                                                <h6><a href="{{ route('product', $p->id) }}">
+
+
+                                                        @if (Lang::locale() == 'ar')
+                                                            {{-- {{$p->basic_category->name_ar}}
                                                 -
                                                 {{$p->category->name_ar}} --}}
-                                                        <?php $pieces = explode(' ', $p->description_ar);
-                                                        $first_part = implode(' ', array_splice($pieces, 0, 4)); ?>
-                                                        {{ $first_part }}
-                                                    @else
+                                                            <?php $pieces = explode(' ', $p->description_ar);
+                                                            $first_part = implode(' ', array_splice($pieces, 0, 4)); ?>
+                                                            {{ $first_part }}
+                                                        @else
 
-                                                        {{-- {{$p->basic_category->name_en}}
+                                                            {{-- {{$p->basic_category->name_en}}
                                                 -
                                                 {{$p->category->name_en}} --}}
-                                                        <?php $pieces = explode(' ', $p->description_en);
-                                                        $first_part = implode(' ', array_splice($pieces, 0, 4)); ?>
-                                                        {{ $first_part }}
-                                                    @endif
+                                                            <?php $pieces = explode(' ', $p->description_en);
+                                                            $first_part = implode(' ', array_splice($pieces, 0, 4)); ?>
+                                                            {{ $first_part }}
+                                                        @endif
 
 
-                                                </a></h6>
-                                            <h5>
+                                                    </a></h6>
+                                                <h5>
 
 
-                                                @auth()
-                                                    {{ Auth::user()->getPrice($p->price) }}
-                                                    {{ Auth::user()->country->currency->code }}
-                                                @endauth
-                                                @guest()
-                                                    @if (Cookie::get('name'))
-                                                        {{ number_format($p->price / App\Country::find(Cookie::get('name'))->currency->rate, 2) }}
-                                                        {{ App\Country::find(Cookie::get('name'))->currency->code }}
-                                                    @else
-                                                        {{ $p->price }}
-                                                        @lang('site.kwd')
-                                                    @endif
-                                                @endguest
+                                                    @auth()
+                                                        {{ Auth::user()->getPrice($p->price) }}
+                                                        @if (Lang::locale() == 'en')
+                                                            {{ Auth::user()->country->currency->code }}
+                                                        @else
+                                                            {{ Auth::user()->country->currency->code_ar }}
 
-                                            </h5>
-                                        </div>
+                                                        @endif @endauth
+                                                        @guest()
+                                                            @if (Cookie::get('name'))
+                                                                {{ number_format($p->price / App\Country::find(Cookie::get('name'))->currency->rate, 2) }}
+                                                                @if (Lang::locale() == 'en')
+                                                                    {{ App\Country::find(Cookie::get('name'))->currency->code }}
+                                                                @else
+                                                                    {{ App\Country::find(Cookie::get('name'))->currency->code_ar }}
 
-                                    </div>
+                                                                @endif
+                                                            @else
+                                                                {{ $p->price }}
+                                                                @lang('site.kwd')
+                                                            @endif
+                                                        @endguest
 
-                                @endif
+                                                    </h5>
+                                                </div>
 
+                                            </div>
+
+                                        @endif
+
+                                    @endif
+                                @endforeach
+
+                            @else
+                                <h5 style="text-align: center;margin: auto">
+                                    @lang('site.no_data')
+                                </h5>
                             @endif
-                        @endforeach
 
-                    @else
-                        <h5 style="text-align: center;margin: auto">
-                            @lang('site.no_data')
-                        </h5>
-                    @endif
+                        </div>
+                        <br><br>
 
+                        {{-- <nav aria-label="Page navigation example  "> --}}
+                        {{-- <ul class="pagination justify-content-center"> --}}
+                        {{-- <li class="page-item"> --}}
+                        {{-- <a class="page-link"><i class="fas fa-angle-right  main-color" style="font-size: 20px;"></i> --}}
+                        {{-- </a> --}}
+                        {{-- </li> --}}
+                        {{-- <li class="page-item"><a class="page-link">1</a></li> --}}
+                        {{-- <li class="page-item"><a class="page-link">2</a></li> --}}
+                        {{-- <li class="page-item"><a class="page-link">3</a></li> --}}
+
+
+                        {{-- <li class="page-item "> --}}
+                        {{-- <a class="page-link"> <i class="fas fa-angle-left main-color" style="font-size: 20px;"></i></a> --}}
+                        {{-- </li> --}}
+                        {{-- </ul> --}}
+                        {{-- </nav> --}}
+                    </div>
                 </div>
-                <br><br>
-
-                {{-- <nav aria-label="Page navigation example  "> --}}
-                {{-- <ul class="pagination justify-content-center"> --}}
-                {{-- <li class="page-item"> --}}
-                {{-- <a class="page-link"><i class="fas fa-angle-right  main-color" style="font-size: 20px;"></i> --}}
-                {{-- </a> --}}
-                {{-- </li> --}}
-                {{-- <li class="page-item"><a class="page-link">1</a></li> --}}
-                {{-- <li class="page-item"><a class="page-link">2</a></li> --}}
-                {{-- <li class="page-item"><a class="page-link">3</a></li> --}}
-
-
-                {{-- <li class="page-item "> --}}
-                {{-- <a class="page-link"> <i class="fas fa-angle-left main-color" style="font-size: 20px;"></i></a> --}}
-                {{-- </li> --}}
-                {{-- </ul> --}}
-                {{-- </nav> --}}
             </div>
-        </div>
-    </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script>
-        $(document).on('click', '.addToWishList', function(e) {
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+            <script>
+                $(document).on('click', '.addToWishList', function(e) {
 
-            e.preventDefault();
-            @guest()
-                // $('.not-loggedin-modal').css('display','block');
-                // console.log('You are guest'
+                    e.preventDefault();
+                    @guest()
+                        // $('.not-loggedin-modal').css('display','block');
+                        // console.log('You are guest'
 
-                {{-- {{\RealRashid\SweetAlert\Facades\Alert::error('error', 'Please Login first!')}} --}}
-                Swal.fire({
-                icon: '?',
-                title:'Login first!',
-                confirmButtonColor: '#d76797',
-                position:'bottom-start',
-                showCloseButton: true,
-                })
-            @endguest
-            @auth
-                $.ajax({
-                type: 'get',
-                url: "{{ route('wishlist.store') }}",
-                data: {
-                'productId': $(this).attr('data-product-id'),
-                },
-                success: function (data) {
-                if (data.message) {
-                Swal.fire({
-                position: 'center',
-                icon: 'success',
-                title: 'Added successfully!',
-                showConfirmButton: false,
-                timer: 1500
-                })
-                {{-- {{\RealRashid\SweetAlert\Facades\Alert::error('ok', 'ok!')}} --}}
+                        {{-- {{\RealRashid\SweetAlert\Facades\Alert::error('error', 'Please Login first!')}} --}}
+                        Swal.fire({
+                        icon: '?',
+                        title:'Login first!',
+                        confirmButtonColor: '#ec7d23',
+                        position:'bottom-start',
+                        showCloseButton: true,
+                        })
+                    @endguest
+                    @auth
+                        $.ajax({
+                        type: 'get',
+                        url: "{{ route('wishlist.store') }}",
+                        data: {
+                        'productId': $(this).attr('data-product-id'),
+                        },
+                        success: function (data) {
+                        if (data.message) {
+                        Swal.fire({
+                        position: 'center',
+                        icon: 'success',
+                        title: 'Added successfully!',
+                        showConfirmButton: false,
+                        timer: 1500
+                        })
+                        {{-- {{\RealRashid\SweetAlert\Facades\Alert::error('ok', 'ok!')}} --}}
 
-                } else {
-                // alert('This product already in you wishlist');
-                Swal.fire({
-                position: 'center',
-                icon: 'info',
-                title: 'This product already in you wishlist',
-                showConfirmButton: false,
-                timer: 1500
-                })
+                        } else {
+                        // alert('This product already in you wishlist');
+                        Swal.fire({
+                        position: 'center',
+                        icon: 'info',
+                        title: 'This product already in you wishlist',
+                        showConfirmButton: false,
+                        timer: 1500
+                        })
 
-                {{-- {{\RealRashid\SweetAlert\Facades\Alert::error('no', 'this product added already!')}} --}}
+                        {{-- {{\RealRashid\SweetAlert\Facades\Alert::error('no', 'this product added already!')}} --}}
 
-                }
-                }
+                        }
+                        }
+                        });
+                    @endauth
+
+
                 });
-            @endauth
+            </script>
 
-
-        });
-    </script>
-
-@endsection
+        @endsection

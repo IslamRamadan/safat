@@ -24,7 +24,7 @@
 
                                 @csrf
                                 <!--<div class="alert alert-success" style="margin-top: -45px;text-align:center"></div>
-                                       -->
+                                           -->
                                 <h6>@lang('site.mandatory')</h6>
 
                                 @guest()
@@ -86,7 +86,7 @@
 
                                     <div class="form-group">
                                         <label for="Orders_city_id" class="required font-weight-bold" style="color:red">
-                                            @lang('site.region') <span class="required">*</span></label>
+                                            @lang('site.city') <span class="required">*</span></label>
                                         <select style="height: 45px; " class="form-control" name="city_id"
                                             id="Orders_city_id">
                                         </select>
@@ -110,7 +110,7 @@
 
                                     <div class="form-group">
                                         <label for="Orders_city_id" class="required font-weight-bold" style="color:red">
-                                            @lang('site.region') <span class="required">*</span></label>
+                                            @lang('site.city') <span class="required">*</span></label>
                                         <select style="height: 45px;   " class="form-control" name="city_id"
                                             id="Orders_city_id">
                                         </select>
@@ -138,10 +138,15 @@
                                 {{-- value="{{old('national_id')}}" --}}
                                 {{-- type="text" maxlength="100"></div> --}}
 
-
+                                <div class="form-group">
+                                    <label for="Orders_region" class="required font-weight-bold"
+                                        style="color:red">@lang('site.region')<span class="required">*</span></label>
+                                    <input class="form-control" placeholder="" name="region" id="Orders_region"
+                                        value="{{ old('region') }}" type="text" maxlength="255">
+                                </div>
                                 <div class="form-group">
                                     <label for="Orders_address_line1" class="required font-weight-bold"
-                                        style="color:red"><span class="required">*</span>@lang('site.add_1')</label>
+                                        style="color:red">@lang('site.add_1')<span class="required">*</span></label>
                                     <input class="form-control" placeholder="" name="address1" id="Orders_address_line1"
                                         value="{{ old('address1') }}" type="text" maxlength="255">
                                 </div>
@@ -208,17 +213,17 @@
                                 </div>
                                 <br>
                                 @foreach (Session::get('cart') as $cart_parent)
-                                    @foreach ($cart_parent as $key => $cart_child)
+                                    {{-- @foreach ($cart_parent as $key => $cart_child) --}}
                                         <div class="row border-bottom mr-0 p-3">
-                                            <a href="{{ route('product', $cart_child['product_id']) }}"
+                                            <a href="{{ route('product', $cart_parent['product_id']) }}"
                                                 class=" col-3 pad-0">
                                                 <img alt=" T-shirts"
-                                                    src="{{ asset('storage/' . \App\Product::find($cart_child['product_id'])['img']) }}"
+                                                    src="{{ asset('storage/' . \App\Product::find($cart_parent['product_id'])['img']) }}"
                                                     class="w-100">
                                             </a>
                                             <div class="col-9">
-                                                <a href="{{ route('product', $cart_child['product_id']) }}">
-                                                    {{ \App\Product::find($cart_child['product_id'])['title_en'] }}
+                                                <a href="{{ route('product', $cart_parent['product_id']) }}">
+                                                    {{ \App\Product::find($cart_parent['product_id'])['title_en'] }}
 
                                                 </a>
                                                 <p class="font-weight-bold">
@@ -226,31 +231,48 @@
 
 
                                                     @auth()
-                                                        {{ Auth::user()->getPrice(\App\Product::find($cart_child['product_id'])['price']) }}
-                                                        {{ Auth::user()->country->currency->code }}
+                                                        {{ Auth::user()->getPrice(\App\Product::find($cart_parent['product_id'])['price']) }}
+                                                        @if (Lang::locale() == 'en')
+                                                            {{ Auth::user()->country->currency->code }}
+                                                        @else
+                                                            {{ Auth::user()->country->currency->code_ar }}
+
+                                                        @endif
+
                                                     @endauth
                                                     @guest()
                                                         @if (Cookie::get('name'))
-                                                            {{ number_format(\App\Product::find($cart_child['product_id'])['price'] / App\Country::find(Cookie::get('name'))->currency->rate, 2) }}
-                                                            {{ App\Country::find(Cookie::get('name'))->currency->code }}
+                                                            {{ number_format(\App\Product::find($cart_parent['product_id'])['price'] / App\Country::find(Cookie::get('name'))->currency->rate, 2) }}
+                                                            @if (Lang::locale() == 'en')
+                                                                {{ App\Country::find(Cookie::get('name'))->currency->code }}
+                                                            @else
+                                                                {{ App\Country::find(Cookie::get('name'))->currency->code_ar }}
+
+                                                            @endif
                                                         @else
-                                                            {{ \App\Product::find($cart_child['product_id'])['price'] }}
+                                                            {{ \App\Product::find($cart_parent['product_id'])['price'] }}
                                                             @lang('site.kwd')
                                                         @endif
                                                     @endguest
 
                                                     <br>
                                                     @lang('site.quantity')
-                                                    : {{ $cart_child['quantity'] }}
+                                                    : {{ $cart_parent['quantity'] }}
                                                     <br>
-                                                    @lang('site.size'):
-                                                    {{ \App\ProdSize::find($cart_child['product_size_id'])->size['name'] }}
-                                                    <br>
-                                                    @lang('site.code'): {{ $cart_child['product_id'] }} <br>
+                                                    {{-- @lang('site.size'):
+                                                    {{ $cart_parent['product_size_id'] == 0 ? __('site.is_cart_custm') : \App\ProdSize::find($cart_child['product_size_id'])->size['name'] }}
+                                                    <br> --}}
+                                                    {{-- @if (Lang::locale() == 'en')
+                                                    @lang('site.color'): {{ \App\ProdColor::find($cart_child['color'])->color->name_en }} <br>
+                                                    @else
+                                                    @lang('site.color'): {{ \App\ProdColor::find($cart_child['color']) ? \App\ProdColor::find($cart_child['color'])->color->name_ar : '-'}} <br>
+
+                                                        @endif --}}
+                                                    @lang('site.code'): {{ $cart_parent['product_id'] }} <br>
                                                 </p>
                                             </div>
                                         </div>
-                                    @endforeach
+                                    {{-- @endforeach --}}
                                 @endforeach
                                 <div class="row  dir-rtl">
                                     <div class="col-12 mt-3" style="text-align: left">
@@ -276,12 +298,22 @@
                                                     {{-- {{Session::get('cart_details')['totalPrice']}} @lang('site.kwd') --}}
                                                     @auth()
                                                         {{ Auth::user()->getPrice(Session::get('cart_details')['totalPrice']) }}
-                                                        {{ Auth::user()->country->currency->code }}
+                                                        @if (Lang::locale() == 'en')
+                                                            {{ Auth::user()->country->currency->code }}
+                                                        @else
+                                                            {{ Auth::user()->country->currency->code_ar }}
+
+                                                        @endif
                                                     @endauth
                                                     @guest()
                                                         @if (Cookie::get('name'))
                                                             {{ number_format(Session::get('cart_details')['totalPrice'] / App\Country::find(Cookie::get('name'))->currency->rate, 2) }}
-                                                            {{ App\Country::find(Cookie::get('name'))->currency->code }}
+                                                            @if (Lang::locale() == 'en')
+                                                                {{ App\Country::find(Cookie::get('name'))->currency->code }}
+                                                            @else
+                                                                {{ App\Country::find(Cookie::get('name'))->currency->code_ar }}
+
+                                                            @endif
                                                         @else
                                                             {{ Session::get('cart_details')['totalPrice'] }}
                                                             @lang('site.kwd')
@@ -292,40 +324,51 @@
 
 
                                             @if (Session::has('coupon'))
-                                            <p>
-                                            <div class="d-flex justify-content-between">
-                                                <div><span class="font-weight-bold">
-                                                        @lang('site.coupon'):
-                                                    </span>
-                                                    <span>
-                                                        <form action="{{ route('coupon.destroy') }}" method="POST"
-                                                            style="display: inline">
-                                                            {{ csrf_field() }}
-                                                            {{ method_field('delete') }}
-                                                            <button type="submit"
-                                                                class="btn btn-link text-danger font-weight-bold">@lang('site.delete')</button>
-                                                        </form>
-                                                    </span>
+                                                <p>
+                                                <div class="d-flex justify-content-between">
+                                                    <div><span class="font-weight-bold">
+                                                            @lang('site.coupon'):
+                                                        </span>
+                                                        <span>
+                                                            <form action="{{ route('coupon.destroy') }}" method="POST"
+                                                                style="display: inline">
+                                                                {{ csrf_field() }}
+                                                                {{ method_field('delete') }}
+                                                                <button type="submit"
+                                                                    class="btn btn-link text-danger font-weight-bold">@lang('site.delete')</button>
+                                                            </form>
+                                                        </span>
 
+                                                    </div>
+                                                    <div><span style="color: red">
+                                                            {{-- {{Session::get('cart_details')['totalPrice']}} @lang('site.kwd') --}}
+                                                            -
+                                                            @auth()
+                                                                {{ Auth::user()->getPrice(Session::get('coupon')['discount']) }}
+                                                                @if (Lang::locale() == 'en')
+                                                                    {{ Auth::user()->country->currency->code }}
+                                                                @else
+                                                                    {{ Auth::user()->country->currency->code_ar }}
+
+                                                                @endif
+                                                            @endauth
+                                                            @guest()
+                                                                @if (Cookie::get('name'))
+                                                                    {{ number_format(Session::get('coupon')['discount'] / App\Country::find(Cookie::get('name'))->currency->rate, 2) }}
+                                                                    @if (Lang::locale() == 'en')
+                                                                        {{ App\Country::find(Cookie::get('name'))->currency->code }}
+                                                                    @else
+                                                                        {{ App\Country::find(Cookie::get('name'))->currency->code_ar }}
+
+                                                                    @endif
+                                                                @else
+                                                                    {{ Session::get('coupon')['discount'] }}
+                                                                    @lang('site.kwd')
+                                                                @endif
+                                                            @endguest
+                                                        </span></div>
                                                 </div>
-                                                <div><span style="color: red">
-                                                        {{-- {{Session::get('cart_details')['totalPrice']}} @lang('site.kwd') --}}
-                                                        -
-                                                        @auth()
-                                                            {{ Auth::user()->getPrice(Session::get('coupon')['discount']) }}
-                                                            {{ Auth::user()->country->currency->code }}
-                                                        @endauth
-                                                        @guest()
-                                                            @if (Cookie::get('name'))
-                                                                {{ number_format(Session::get('coupon')['discount'] / App\Country::find(Cookie::get('name'))->currency->rate, 2) }}
-                                                                {{ App\Country::find(Cookie::get('name'))->currency->code }}
-                                                            @else
-                                                                {{ Session::get('coupon')['discount'] }} @lang('site.kwd')
-                                                            @endif
-                                                        @endguest
-                                                    </span></div>
-                                            </div>
-                                            </p>
+                                                </p>
                                             @endif
 
 
@@ -368,30 +411,30 @@
                             </div>
                             @if (!Session::has('coupon'))
 
-                            <div class="text-dir m-2">
-                                <form action="{{ route('coupon.store') }}">
-                                    @csrf
-                                    <label class="font-weight-bold">@lang('site.have_coupon')</label>
-                                    <input id="coupon" type="text"
-                                        class="form-control @error('coupon') is-invalid @enderror" name="coupon"
-                                        autocomplete="coupon">
-                                    <p style="color: red">@lang('site.coupon_notice')</p>
-                                    @if ($errors->any())
-                                        {{-- @dd('ok') --}}
+                                <div class="text-dir m-2">
+                                    <form action="{{ route('coupon.store') }}">
+                                        @csrf
+                                        <label class="font-weight-bold">@lang('site.have_coupon')</label>
+                                        <input id="coupon" type="text"
+                                            class="form-control @error('coupon') is-invalid @enderror" name="coupon"
+                                            autocomplete="coupon">
+                                        <p style="color: red">@lang('site.coupon_notice')</p>
+                                        @if ($errors->any())
+                                            {{-- @dd('ok') --}}
 
-                                        {!! implode('', $errors->all('<div class="alert alert-danger"> :message</div>')) !!}
-                                    @endif
-                                    @if (session()->has('success_message'))
-                                        <div class="alert alert-success">
-                                            {{ session()->get('success_message') }}
-                                        </div>
-                                    @endif
-                                    <button type="submit" class="btn btn-third-col bg-b">@lang('site.apply')</button>
+                                            {!! implode('', $errors->all('<div class="alert alert-danger"> :message</div>')) !!}
+                                        @endif
+                                        @if (session()->has('success_message'))
+                                            <div class="alert alert-success">
+                                                {{ session()->get('success_message') }}
+                                            </div>
+                                        @endif
+                                        <button type="submit" class="btn btn-third-col bg-b">@lang('site.apply')</button>
 
-                                </form>
+                                    </form>
 
-                            </div>
-                @endif
+                                </div>
+                            @endif
 
                         </div>
 
@@ -456,7 +499,7 @@
                         if (!result.success) {
                             Swal.fire({
                                 icon: '?',
-                                confirmButtonColor: '#d76797',
+                                confirmButtonColor: '#ec7d23',
                                 position: 'bottom-start',
                                 showCloseButton: true,
                                 title: result.msg,
@@ -475,7 +518,7 @@
                         Swal.fire({
                             title: 'لم تكتمل العمليه ',
                             icon: '?',
-                            confirmButtonColor: '#d76797',
+                            confirmButtonColor: '#ec7d23',
                             position: 'bottom-start',
                             showCloseButton: true,
                         })
@@ -518,7 +561,7 @@
                         if (!result.success) {
                             Swal.fire({
                                 icon: '?',
-                                confirmButtonColor: '#d76797',
+                                confirmButtonColor: '#ec7d23',
                                 position: 'bottom-start',
                                 showCloseButton: true,
                                 title: result.msg,
@@ -538,7 +581,7 @@
                         Swal.fire({
                             title: 'لم تكتمل العمليه ',
                             icon: '?',
-                            confirmButtonColor: '#d76797',
+                            confirmButtonColor: '#ec7d23',
                             position: 'bottom-start',
                             showCloseButton: true,
                         })

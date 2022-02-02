@@ -194,7 +194,8 @@ $action.=' <a href="' . url('basic_categories/destroy', $row->id) . '" class="bt
             {
                 unlink(storage_path('app/public/'.$cat->image_url));
             }
-            $img = \Image::make($image)->resize(512,640);
+            $img = \Image::make($image);
+            // $img = \Image::make($image)->resize(512,640);
             $img->save(public_path('storage/'.$path.$file_name),60);
 
 

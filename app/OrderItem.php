@@ -14,7 +14,7 @@ protected $guarded=[];
 
 
     protected $fillable= [
-      'order_id' , 'product_id' , 'product_height_id' , 'product_size_id' , 'quantity'
+      'order_id' , 'product_id' , 'product_height_id' , 'product_size_id' , 'quantity','color'
     ];
 
 
@@ -28,6 +28,9 @@ protected $guarded=[];
 
     public function size(){
         return $this->belongsTo('App\ProdSize' , 'product_size_id' , 'id');
+    }
+    public function colors(){
+        return $this->belongsTo('App\ProdColor' , 'color' , 'id');
     }
 
 

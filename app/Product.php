@@ -11,9 +11,7 @@ class Product extends Model
     protected $fillable = [
         'title_en'  , 'title_ar' , 'description_en','description_ar',
         'appearance','best_selling','featured','new','price','delivery_period','img','height_img',
-        'basic_category_id','category_id','size_guide_id','has_offer','before_price'
-
-
+        'basic_category_id','category_id','quantity','is_order','order_s','order_l','order_m','order_xl','order_type'
 
     ];
     protected $guarded=[];
@@ -29,6 +27,9 @@ class Product extends Model
     }
     public function size_guide(){
         return $this->belongsTo('App\SizeGuide' , 'size_guide_id' , 'id');
+    }
+     public function colors(){
+        return $this->hasMany('App\ProdColor' , 'product_id'  , 'id');
     }
 
 

@@ -2,13 +2,10 @@
     <div class="container">
         <div class="row res-mobile text-dir">
 
-            <div class="col-lg-3 col-md-6 mb-6 col-sm-6 mb-lg-0">
-                <div class="text-center">
-                <img src="{{ asset('/storage/' . $my_setting->footer_logo) }}" style="mix-blend-mode: multiply;
-                    " alt="" width="100" class="mb-3">
-                    </div>
+            <div class="col-lg-4 col-md-6 mb-6 col-sm-6 mb-lg-0"><img src="{{ asset('/storage/' . $my_setting->footer_logo) }}" style="mix-blend-mode: multiply;
+                    " alt="" width="180" class="mb-3">
                 {{-- <p class="font-italic text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt.</p> --}}
-                <ul class="list-inline mt-4 text-center" style="direction: ltr">
+                <ul class="list-inline mt-4" style="direction: ltr">
                     @if (\App\Settings::all()->first()->whatsapp)
                         <li class="list-inline-item"><a href="https://wa.me/{{ $my_setting->whatsapp }}" target="_blank"
                                 title="whatsapp"><i class="fab fa-whatsapp fa-2x"></i></a></li>
@@ -75,7 +72,7 @@
 
             </div> --}}
 
-            <div class="col-lg-3 col-md-6 mb-6 col-sm-6 mb-lg-0">
+            <div class="col-lg-4 col-md-6 mb-6 col-sm-6 mb-lg-0">
                 <h5 class="font-weight-bold">@lang('site.contact_us')
                 </h5>
                 <p> <a href="{{ route('policy') }}"> @lang('site.privacy_policy') </a>
@@ -85,21 +82,11 @@
 
 
             </div>
-            <div class="col-lg-3 col-md-6 mb-6 col-sm-6 mb-lg-0">
-                <h5 class="font-weight-bold">@lang('site.contact_us')
-                </h5>
-                <p><span class="font-weight-bold">@lang('site.phone') &nbsp;</span> <a href=""> {{$my_setting->phone}} </a>
-                <p><span class="font-weight-bold">@lang('site.address1') &nbsp;</span> <a href=""> @lang('site.address_one') </a>
-                <p><span class="font-weight-bold">@lang('site.address2') &nbsp;</span> <a href=""> @lang('site.address_two') </a>
-
-
-
-            </div>
-            <div class="col-lg-3 col-md-6 mb-6 col-sm-6 mb-lg-0">
+            <div class="col-md-4">
                 <h5 class="font-weight-bold">@lang('site.location')
                 </h5>
                 <iframe
-                    src="https://www.google.com/maps/place/89+%D9%85%D9%88%D9%84%E2%80%AD/@29.1733361,48.0974687,17z/data=!3m1!4b1!4m5!3m4!1s0x3fcf0a1955885157:0x8098b6351a2b6f42!8m2!3d29.1733361!4d48.09528?hl=ar-US"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1781287.9077480363!2d48.65696112404058!3d29.30938918651801!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3fc5363fbeea51a1%3A0x74726bcd92d8edd2!2z2KfZhNmD2YjZitiq4oCO!5e0!3m2!1sar!2seg!4v1585667151145!5m2!1sar!2seg"
                     width="100%" height="200" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false"
                     tabindex="0"></iframe>
             </div>
@@ -111,13 +98,12 @@
 <div class="container-fluid pad-0 bg-dark  text-center">
     <div class="container  ">
         <br>
-        <p class="c-w mr-0">Copyright 2021 © RAYAN STORE
+        <p class="c-w mr-0">Copyright 2021 © SARA MERDAS
             Design by <a href="">bluezone</a>
         </p>
         <br>
     </div>
 </div>
-
 
 
 <script src="{{ asset('front/js/jquery-3.3.1.min.js') }}"></script>
@@ -136,10 +122,12 @@
 <link href="//cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js" integrity="sha512-jNDtFf7qgU0eH/+Z42FG4fw3w7DM/9zbgNPe3wfJlCylVDTT3IgKW5r92Vy9IHa6U50vyMz5gRByIu4YIXFtaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 
 <script>
     $(document).ready(function() {
-
+        $("img.lazy").lazyload();
         // jQuery counterUp
         $('.counter').counterUp({
             delay: 10,
@@ -244,6 +232,7 @@
 
 
 {{-- slider ismail start --}}
+
 {{-- <script src="{{asset('front/assets/js/jquery.min.js')}}"></script> --}}
 {{-- <script src="{{asset('front/assets/js/bootstrap.min.js')}}"></script> --}}
 <script src="{{asset('front/assets/js/owl.carousel.min.js')}}"></script>
@@ -255,20 +244,17 @@
     loop:true,
     margin:10,
     responsiveClass:true,
-    lazyLoad:true,
-    autoWidth:true,
-
     responsive:{
         0:{
-            items:1,
+            items:2,
             nav:true
         },
         600:{
-            items:2,
+            items:3,
             nav:false
         },
         1080:{
-            items:3,
+            items:4,
             nav:true,
             loop:true
         }

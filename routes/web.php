@@ -31,20 +31,18 @@ Route::group(
 
 //        Route::get('rest' , 'HomeController@rest');
     Route::get('home', function () {
-        return redirect()->route('/');
+        return redirect()->route('home');
     });
 
     Auth::routes(['verify' => true]);
 
 //    Route::get('/home', 'HomeController@index')->name('home');
-//    Route::get('/home', 'HomeController@index')->name('home');
-    Route::get('/','front\homeController@home')->name('/');
+          Route::get('/', 'front\homeController@index')->name('/');
+        Route::get('/home','front\homeController@home')->name('home');
 //    Route::get('/account','front\homeController@account')->name('account');
     Route::get('/cart','front\homeController@cart')->name('cart');
     Route::get('/post/{id}','front\homeController@post')->name('post');
     Route::get('/category/{type}/{id}','front\homeController@category')->name('category');
-    Route::get('/new_arrive','front\homeController@new_arrive')->name('new');
-    Route::get('/offers','front\homeController@offers')->name('offer');
     Route::get('/checkout','front\homeController@checkout')->name('checkout');
     Route::group(['middleware' => ['auth']], function () {
         Route::get('/myaccount', 'front\homeController@myaccount')->name('myaccount');
@@ -98,8 +96,8 @@ Route::group(
     Route::post('/getDelivery','front\CartController@getDelivery')->name('get.delivery');
 
     Route::post('/order/store','front\CartController@store')->name('order.store');
-    Route::get('payment_callback' , 'front\CartController@callBackUrl');
-    Route::get('payment_error' , 'front\CartController@errorUrl');
+    Route::get('payment_callback' , 'front\CartController@callBackUrl')->name('paycallBackUrl');
+    Route::get('payment_error' , 'front\CartController@errorUrl')->name('payerrorUrl');
     Route::get('/coupon/store','front\CouponController@store')->name('coupon.store');
     Route::delete('/coupon','front\CouponController@destroy')->name('coupon.destroy');
 
@@ -127,9 +125,16 @@ Route::group(
         Route::resource('sizes','Backend\SizeController');
         Route::resource('heights','Backend\HeightController');
         Route::resource('products','Backend\ProductController');
+        Route::post('/add_section', 'Backend\ProductController@add_section')->name("add.section");
+
         Route::resource('contact_us','Backend\ContactUsController');
         Route::resource('orders','Backend\OrderController');
+        Route::post('/orders/filter','Backend\OrderController@index')->name('filter');
+
         Route::get('/order/notpaid','Backend\OrderController@not_paid')->name('noorders');
+        Route::post('/get_customSize','Backend\OrderController@get_customSize')->name('get_customSize');
+
+
         Route::resource('posts','Backend\PostController');
         Route::resource('news','Backend\NewsController');
         Route::resource('coupons','Backend\CouponController');
@@ -171,6 +176,10 @@ Route::group(
         Route::post('currencies_users/update','Backend\CurrencyController@updateCurrency')->name('currencies.update.currency');
 //>>>>>>> Stashed changes
         Route::get('admin' , 'Backend\AdminController@admin')->name('admin');
+           Route::get('colors/destroy/{id}','Backend\ColorController@destroy');
+        Route::resource('colors','Backend\ColorController');
+        Route::post('custom_colors/update/{id}','Backend\ColorController@updateColor')->name('colors.update.color');
+
     });
 
     Route::get('admin/login' , 'HomeController@adminLogin');

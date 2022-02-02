@@ -10,6 +10,8 @@ use App\ContactUs;
 use App\Country;
 use App\Http\Controllers\Controller;
 use App\Pages;
+use App\Order;
+
 use App\ProdImg;
 use App\Product;
 use App\Slider;
@@ -29,18 +31,18 @@ class homeController extends Controller
 {
     public function home()
     {
-        //        dd(Cookie::get('name'));
+//        dd(Cookie::get('name'));
         //TODO :: IF COOKIE IS NULL SET COOKIE NAME
-        if (!Cookie::get('name')) {
-            $country = Country::first();
+        if (!Cookie::get('name') ){
+            $country=Country::first();
             Cookie::queue('name', $country->id, 43829);
         } else {
 
-            //            Cookie::queue(Cookie::forget('name'));
-            //dd('ok');
-            $c = Country::find(Cookie::get('name'));
-            if (!$c) {
-                $country_new = Country::first();
+//            Cookie::queue(Cookie::forget('name'));
+//dd('ok');
+            $c=Country::find(Cookie::get('name'));
+            if(!$c){
+                $country_new=Country::first();
                 Cookie::queue('name', $country_new->id, 43829);
             }
         }
@@ -48,32 +50,39 @@ class homeController extends Controller
 
 
 
-        //        return  $request->paymentId;
+//        return  $request->paymentId;
         $sliders = Slider::all();
         $new_arrive = Product::orderBy('created_at', 'desc')->where('new', 1)->where('appearance', 1)
-            ->offset(0)->limit(8)->get();
-        $offers = Product::orderBy('created_at', 'desc')->where('has_offer', 1)->where('appearance', 1)
-            ->offset(0)->limit(8)->get();
+            ->offset(0)->limit(6)->get();
         $posts = Post::orderBy('created_at', 'desc')->where('appearance', 1)
             ->offset(0)->limit(3)->get();
-        // dd($new_arrive);
-        return view('front.index', compact('sliders', 'new_arrive', 'posts','offers'));
+            // $order=Order::first();
+            //  Session::put('order', $order);
+            // // dd($new_arrive);
+            // Alert::success('Payment Completed Successfully !', '');
+        return view('front.index', compact('sliders', 'new_arrive','posts'));
     }
 
-    public function account()
+    public function index()
+    {
+        return view('front.landing');
+    }
+     public function account()
     {
         return view('front.account');
     }
 
+
     public function cart()
     {
+        // Session::forget('cart');
         return view('front.cart');
     }
     public function post($id)
     {
-        $post = Post::findOrfail($id);
+        $post=Post::findOrfail($id);
         // dd($post);
-        return view('front.post', compact('post'));
+        return view('front.post',compact('post'));
     }
 
     public function contactUs()
@@ -121,6 +130,7 @@ class homeController extends Controller
             if (session()->has("success")) {
                 Alert::success('نجح', 'تم الأرسال');
             }
+
         }
 
         return redirect()->back();
@@ -128,14 +138,17 @@ class homeController extends Controller
 
     public function category($type, $id)
     {
-        //        $prod_img=ProdImg::where('product_id',$id)->first()->img;
-        //        dd($prod_img);
+//        $prod_img=ProdImg::where('product_id',$id)->first()->img;
+//        dd($prod_img);
+        $sliders = Slider::all();
+
         if ($type == 1) {
-            $last_views = Product::where('best_selling', 1)->where('basic_category_id', $id)->where('appearance', 1)->orderBy('updated_at',  'DESC')->take(3)->get();
+        $last_views = Product::where('best_selling',1)->where('basic_category_id',$id)->where('appearance', 1)->orderBy('updated_at' ,  'DESC')->take(3)->get();
 
             $category = BasicCategory::findOrFail($id);
+
         } else {
-            $last_views = Product::where('best_selling', 1)->where('category_id', $id)->where('appearance', 1)->orderBy('updated_at',  'DESC')->take(3)->get();
+        $last_views = Product::where('best_selling',1)->where('category_id',$id)->where('appearance', 1)->orderBy('updated_at' ,  'DESC')->take(3)->get();
 
             $category = Category::findOrFail($id);
         }
@@ -144,36 +157,7 @@ class homeController extends Controller
             Alert::error('خطأ', 'هذا القسم غير متوفر حاليا');
             return back();
         }
-        return view('front.category', compact('category', 'type', 'last_views'));
-    }
-
-    public function new_arrive()
-    {
-
-
-        $new_arrivals = Product::where('new', 1)->where('appearance', 1)->orderBy('updated_at',  'DESC')->get();
-        // dd($new_arrivals);
-
-
-        if (!$new_arrivals) {
-            Alert::error('خطأ', ' غير متوفر حاليا');
-            return back();
-        }
-        return view('front.new', compact('new_arrivals'));
-    }
-    public function offers()
-    {
-
-
-        $new_arrivals = Product::where('has_offer', 1)->where('appearance', 1)->orderBy('updated_at',  'DESC')->get();
-        // dd($new_arrivals);
-
-
-        if (!$new_arrivals) {
-            Alert::error('خطأ', ' غير متوفر حاليا');
-            return back();
-        }
-        return view('front.offer', compact('new_arrivals'));
+        return view('front.category', compact('category', 'type','last_views','sliders'));
     }
 
     public function checkout()
@@ -186,10 +170,10 @@ class homeController extends Controller
         return view('front.myaccount');
     }
 
-    //    public function myorder()
-    //    {
-    //        return view('front.myorder');
-    //    }
+//    public function myorder()
+//    {
+//        return view('front.myorder');
+//    }
 
     public function payment()
     {
@@ -229,11 +213,11 @@ class homeController extends Controller
         $messeges = [
 
             'name.required' => "اسم العميل مطلوب",
-            //            'email.required' => "البريد الالكتروني مطلوب",
+//            'email.required' => "البريد الالكتروني مطلوب",
             'phone.required' => "رقم الهاتف مطلوب",
             'country.required' => "برجاء اختيار الدوله",
-            //                'email.unique'=>" البريد الإلكتروني مربوط بحساب اخر",
-            //            'email.email' => " البريد الإلكتروني غير صحيح يرجي إضافة رمز @",
+//                'email.unique'=>" البريد الإلكتروني مربوط بحساب اخر",
+//            'email.email' => " البريد الإلكتروني غير صحيح يرجي إضافة رمز @",
             'password.required' => "كلمة المرور مطلوبه",
             'password.min' => "كلمة المرور يجب الا تقل عن 8 أحرف",
 
@@ -242,10 +226,10 @@ class homeController extends Controller
         $validator = Validator::make($request->all(), [
 
             'name' => ['required'],
-            'phone' => ['required', 'unique:users,phone,' . $request['id']],
+            'phone' => ['required','unique:users,phone,' . $request['id']],
             'country' => ['required'],
 
-            //            'email' => ['required', 'email', 'unique:users,email,' . $request['id']],
+//            'email' => ['required', 'email', 'unique:users,email,' . $request['id']],
             //"qut"=> "required|Numeric",
             "password" => ['required', 'min:8'],
 
@@ -279,28 +263,28 @@ class homeController extends Controller
         return back();
 
 
-        //        $uId = $request->user_id;
-        //        User::updateOrCreate(['id' => $uId],['name' => $request->name, 'email' => $request->email]);
-        //        if(empty($request->user_id))
-        //            $msg = 'User created successfully.';
-        //        else
-        //            $msg = 'User data is updated successfully';
-        //        return redirect()->route('users.index')->with('success',$msg);
+//        $uId = $request->user_id;
+//        User::updateOrCreate(['id' => $uId],['name' => $request->name, 'email' => $request->email]);
+//        if(empty($request->user_id))
+//            $msg = 'User created successfully.';
+//        else
+//            $msg = 'User data is updated successfully';
+//        return redirect()->route('users.index')->with('success',$msg);
 
 
     }
 
 
 
-    //    public function home(){
-    //        return view('front.index');
-    //    }
-    //    public function home(){
-    //        return view('front.index');
-    //    }
-    //    public function home(){
-    //        return view('front.index');
-    //    }
+//    public function home(){
+//        return view('front.index');
+//    }
+//    public function home(){
+//        return view('front.index');
+//    }
+//    public function home(){
+//        return view('front.index');
+//    }
 
     public function getAddToCart(Request $request, $id)
     {
@@ -309,24 +293,24 @@ class homeController extends Controller
         $cart = new Cart($oldCart);
         $cart->add($product, $product->id);
         $request->session()->put('cart', $cart);
-        //        dd($request->session()->get('cart'));
-        //        return redirect()->route('/');
+//        dd($request->session()->get('cart'));
+//        return redirect()->route('/');
         return back();
     }
 
     public function getCart()
     {
-        //        if (!Session::has('cart')) {
-        //            return view('shop.shopping-cart');
-        //        }
-        //        $oldCart = Session::get('cart');
-        //        $cart = new Cart($oldCart);
+//        if (!Session::has('cart')) {
+//            return view('shop.shopping-cart');
+//        }
+//        $oldCart = Session::get('cart');
+//        $cart = new Cart($oldCart);
         return view('front.cart');
     }
 
     public function store(Request $request)
     {
-        //        dd($request->all());
+//        dd($request->all());
         // dd($request->id);
         //        TODO :: MAKE SEARCH CAT = 1 OR SUB = 2  & NAME & ID (FOR SUB OR CAT)
 
@@ -345,7 +329,9 @@ class homeController extends Controller
                     if ($request->id) {
                         //  $q->where('category_id', $request->id);
                     }
+
                 })->orderBy("id", "desc")->paginate();
+
             }
 
             if ($cat_or_sub == 2) {
@@ -357,6 +343,7 @@ class homeController extends Controller
                         //    $q->where('category_id', $request->id);
                     }
                 })->orderBy("id", "desc")->paginate();
+
             }
         } else {
             $items = Product::where(function ($q) use ($request) {
@@ -369,43 +356,43 @@ class homeController extends Controller
             })->orderBy("id", "desc")->paginate();
         }
 
-        //        $value = '<div class="container border-main" style="width: 100%">
-        //                    <div class="row row5" style="width: 100%">';
-        //
-        //        $value .= '<div class="col-12" style="display:flex;flex-wrap:wrap">';
-        //        if($items->count() > 0){
-        //            foreach ($items as $one) {
-        //
-        //                $value.= ' <div class="card col-12 col-md-4 col-lg-3 " style="margin: 10px ">'
-        //                    . '  <h6 class="bg-main abs">ref:' . $one->id . '</h6>'
-        //                    . '<a href="' . route("product", $one->id) . '">'
-        //                    . ' <img height="200" src="' . asset($one->img) . '" class="card-img-top  " alt="..."> </a>'
-        //                    . ' <div class="card-body">'
-        //                    . '     <a href="' . route("product", $one->id) . '" class="card-text ">' . $one->title_en . '</a> '
-        //                    . '<p class="card-title" href=""><b>KWD' . $one->price . '</b></p>'
-        //
-        //                    . '</div>'
-        //                    . '<div class="row mr-0">'
-        //                    . '<a href="' . "#". '" class="btn btn-dark border col-9">add to
-        //                                cart</a>'
-        //                    . '<div class="btn btn-light border col-3 heart text-center">'
-        //                    . '<i   class="fas fa-heart heart-none"></i><i class="far fa-heart  heart-block"></i></div>
-        //'
-        //                    . '</div>' . '</div>'
-        //                ;
-        //
-        //
-        //            }
-        //
-        //        } else {
-        //            $value.= '<p style="text-align: center ;width: 100%;margin: 30px" >
-        //لا يوجد نتائج مطابقه
-        //</p>';
-        //        }
-        //
-        //        $value .=  '</div>'
-        //            . '</div>'
-        //            . '</div>';
+//        $value = '<div class="container border-main" style="width: 100%">
+//                    <div class="row row5" style="width: 100%">';
+//
+//        $value .= '<div class="col-12" style="display:flex;flex-wrap:wrap">';
+//        if($items->count() > 0){
+//            foreach ($items as $one) {
+//
+//                $value.= ' <div class="card col-12 col-md-4 col-lg-3 " style="margin: 10px ">'
+//                    . '  <h6 class="bg-main abs">ref:' . $one->id . '</h6>'
+//                    . '<a href="' . route("product", $one->id) . '">'
+//                    . ' <img height="200" src="' . asset($one->img) . '" class="card-img-top  " alt="..."> </a>'
+//                    . ' <div class="card-body">'
+//                    . '     <a href="' . route("product", $one->id) . '" class="card-text ">' . $one->title_en . '</a> '
+//                    . '<p class="card-title" href=""><b>KWD' . $one->price . '</b></p>'
+//
+//                    . '</div>'
+//                    . '<div class="row mr-0">'
+//                    . '<a href="' . "#". '" class="btn btn-dark border col-9">add to
+//                                cart</a>'
+//                    . '<div class="btn btn-light border col-3 heart text-center">'
+//                    . '<i   class="fas fa-heart heart-none"></i><i class="far fa-heart  heart-block"></i></div>
+//'
+//                    . '</div>' . '</div>'
+//                ;
+//
+//
+//            }
+//
+//        } else {
+//            $value.= '<p style="text-align: center ;width: 100%;margin: 30px" >
+//لا يوجد نتائج مطابقه
+//</p>';
+//        }
+//
+//        $value .=  '</div>'
+//            . '</div>'
+//            . '</div>';
 
 
         $value1 = ' <div class="container pad-0 ">
@@ -463,5 +450,8 @@ class homeController extends Controller
 
 
         return response()->json($value1);
+
     }
+
+
 }

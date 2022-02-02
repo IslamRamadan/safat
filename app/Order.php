@@ -10,7 +10,7 @@ class Order extends Model
 
     protected $fillable = [
       'name' , 'email' , 'phone' , 'country_id' ,  'city_id' , 'total_price' , 'total_quantity',
-        'user_id' , 'address1' , 'address2' , 'note' , 'postal_code' , 'national_id'
+        'user_id' , 'address1' , 'address2' , 'note' , 'postal_code' , 'national_id','region'
     ];
 
 

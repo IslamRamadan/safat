@@ -33,10 +33,9 @@
             <div class="row">
                 <div class="col-lg-12 margin-tb">
                     <div class="pull-left" style="float: right">
-                        {{--                <a class="btn btn-success mb-2" id="new-user" data-toggle="modal">New User</a>--}}
                         <a class="btn btn-info mb-2" href="{{route('sizes.index')}}">@lang('site.sizes')</a>
                         <a class="btn btn-outline-info mb-2" href="{{route('heights.index')}}">@lang('site.heights')</a>
-                        <a class="btn btn-primary mb-2" href="{{route('size_guides.index')}}">@lang('site.size_guid')</a>
+                         <a class="btn btn-info mb-2" href="{{route('colors.index')}}">@lang('site.colors')</a>
                     </div>
                     <div class="pull-right">
                         {{--                <a class="btn btn-success mb-2" id="new-user" data-toggle="modal">New User</a>--}}

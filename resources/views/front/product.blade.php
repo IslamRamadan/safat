@@ -6,10 +6,25 @@
 @section('content')
     <!-----start  --->
     <br><br>
+    <style>
+        .justify-content-center .form-check {
+            padding: 0 !important;
+        }
 
+        @media (min-width: 0px) and (max-width: 570px) {
+            .h-img {
+                height: 60vh;
+            }
+
+            .carousel {
+                margin-top: 0 !important;
+            }
+        }
+
+    </style>
     <div class="container">
         <div class="row dir-rtl">
-            <div class="col-md-6 product pad-0">
+            <div class="col-md-5 product pad-0">
                 {{-- <div class="  heart "> --}}
                 {{-- <i class="far fa-heart "></i></div> --}}
 
@@ -21,13 +36,13 @@
 
 
                 <div id="carouselExampleIndicators" class="carousel slide carousel1 " data-ride="carousel">
-                    <div class="carousel-inner">
+                    <div class="carousel-inner prod">
                         <div class="carousel-item active">
                             {{-- <div class="  zoom "><a href="" data-toggle="modal" data-target="#zoom"><i
                                         class="fas fa-expand-alt"></i></a></div> --}}
 
-                            <img data-enlargeable src="{{ asset('/storage/' . $product->img) }}" class="d-block w-100 h-img" alt="..."
-                                data-toggle="modal" data-target="#staticBackdrop">
+                            <img data-enlargeable src="{{ asset('/storage/' . $product->img) }}"
+                                class="d-block w-100 h-img" alt="..." data-toggle="modal" data-target="#staticBackdrop">
                         </div>
                         {{-- <div class="carousel-item"> --}}
                         {{-- <img src="{{asset('/storage/'.$product->height_img)}}" class="d-block w-100 h-img" alt="..." data-toggle="modal" data-target="#staticBackdrop"> --}}
@@ -38,8 +53,8 @@
                         @if ($product->images->count() > 0)
                             @foreach ($product->images as $img)
                                 <div class="carousel-item">
-                                    <img data-enlargeable src="{{ asset($img->img) }}" class="d-block w-100 h-img" alt="..."
-                                        data-toggle="modal" data-target="#staticBackdrop">
+                                    <img data-enlargeable src="{{ asset($img->img) }}" class="d-block w-100 h-img"
+                                        alt="..." data-toggle="modal" data-target="#staticBackdrop">
                                     {{-- <div class="  zoom "><a href="" data-toggle="modal" data-target="#zoom3"><i
                                                 class="fas fa-expand-alt"></i></a></div> --}}
 
@@ -64,7 +79,7 @@
                 </div>
 
                 <ol class=" position-relative navbar"
-                    style="width:100%;margin-top:10px;z-index: 10;list-style: none;justify-content:center">
+                    style="width:100%;margin-top:10px;list-style: none;justify-content:center">
                     <br>
 
 
@@ -182,7 +197,12 @@
                     @guest()
                         @if (Cookie::get('name'))
                             {{ number_format($product->price / App\Country::find(Cookie::get('name'))->currency->rate, 2) }}
-                            {{ App\Country::find(Cookie::get('name'))->currency->code }}
+                            @if (Lang::locale() == 'en')
+                                {{ App\Country::find(Cookie::get('name'))->currency->code }}
+                            @else
+                                {{ App\Country::find(Cookie::get('name'))->currency->code_ar }}
+
+                            @endif
 
                         @else
                             {{ $product->price }}
@@ -191,48 +211,86 @@
 
                     @else
                         {{ Auth::user()->getPrice($product->price) }}
-                        {{ Auth::user()->country->currency->code }}
-                    @endguest
-                </h6>
-
-
-                <br>
-                <div id="colors">
-                    <div id="s" class="color-blocks" style="">
-                        <span>@lang('site.size') :</span>
-
-                        @if ($product->product_sizes->count() > 0)
-                            <div class="d-flex rtl-margin">
-                                @foreach ($product->product_sizes as $size)
-
-                                    <div class="radio-inline color">
-                                        <input type="radio" name="size" value="{{ $size->id }}"
-                                            id="size-{{ $size->id }}">
-                                        <label for="size-{{ $size->id }}">{{ $size->size->name }}</label>
-                                    </div>
-
-
-                                @endforeach
-                            </div>
+                        @if (Lang::locale() == 'en')
+                            {{ Auth::user()->country->currency->code }}
                         @else
-                            المنتج غير متوفر
-                        @endif
-                    </div>
-                </div>
-                <br>
-                <br>
+                            {{ Auth::user()->country->currency->code_ar }}
+
+                        @endif @endguest
+                    </h6>
+
+
+                    <br>
+                    {{-- @if ($product->is_order == 1)
+                        @include('front.includes.custom_sizes')
 
 
 
-                <div id="heights">
+                    @else
+                        <div id="colors">
+                            <div id="s" class="color-blocks" style="">
+                                <span>@lang('site.size') :</span>
 
-                </div>
+                                @if ($product->product_sizes->count() > 0)
+                                    <div class="d-flex rtl-margin">
+                                        @foreach ($product->product_sizes as $size)
+
+                                            <div class="radio-inline color">
+                                                <input type="radio" name="size" value="{{ $size->id }}"
+                                                    id="size-{{ $size->id }}">
+                                                <label for="size-{{ $size->id }}">{{ $size->size->name }}</label>
+                                            </div>
+
+
+                                        @endforeach
+                                    </div>
+                                @else
+                                    المنتج غير متوفر
+                                @endif
+                            </div>
+                        </div>
+                    @endif --}}
+
+
+                    {{-- @if (Lang::locale() == 'en')
+                        <div id="heights" style="margin-bottom: 15px; margin-top: -25px;">
+                        @else
+
+                            <div id="heights">
+
+                    @endif
+
+                </div> --}}
 
                 {{-- <br>
                 <h6 style="font-weight:600 " class="textarea-dir" >@lang('site.note')</h6>
 
                 <textarea  class="w-100  " rows="5"></textarea> --}}
-                <br><br>
+
+                {{-- @if ($product->colors->count() > 0)
+                    @if (Lang::locale() == 'ar')
+                        <br>
+                        <br>
+                    @endif
+                    <div id="colors" class="mb-2 d-inline">
+                        <div id="s" class="color-blocks" style="">
+                            <span class="">@lang('site.color') :</span>
+
+
+                            <div class="d-flex rtl-margin">
+
+                                <select class="form-control" id="color_val" name="color">
+                                    @foreach ($product->colors as $color)
+                                        <option value="{{ $color->id }}">{{ $color->color->name_en }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                    <br><br>
+                @endif --}}
+
                 <form class=" product-count float-right d-none">
                     <a rel="nofollow" class="btn btn-default btn-minus" href="#" title="Subtract">&ndash;</a>
                     <input type="text" disabled="" size="2" autocomplete="off"
@@ -240,433 +298,615 @@
                     <a rel="nofollow" class="btn btn-default btn-plus" href="#" title="Add" style="margin: -9px;">+</a>
                 </form>
 
-                <a class="btn bg-main " data-toggle="modal" data-target="#exampleModalCenter"
-                    style="width: 100%;background: #d76797 !important;">@lang('site.size_guide')</a>
-                <a id="add_cart" class="btn bg-main "
-                    style="width: 100%;background: #000000 !important;margin-top:10px">@lang('site.add_to_cart')</a>
+                 <a id="add_cart" class="btn bg-main " style="width: 100%;background: #000000 !important;margin-top:10px"
+                    is_order="{{ $product->is_order }}">@lang('site.add_to_cart')</a>
                 <a class="btn bg-main addToWishList" data-product-id="{{ $product->id }}"
-                    style="margin:10px 0px;width: 100%;background: #d76797 !important;">@lang('site.add_to_wishlist')</a>
+                    style="margin:10px 0px;width: 100%;background: rgb(32, 137, 223) !important;">@lang('site.add_to_wishlist')</a>
 
 
             </div>
+
+
         </div>
 
-    </div>
-    <!--- end  ---><br>
-    <div class="container ">
-        {{-- <hr> --}}
-        {{-- @if ($product->product_hights->count() > 0) --}}
-        {{-- <div class="row"> --}}
-        {{-- <h5 class="col-md-2">@lang('site.height')</h5> --}}
-        {{-- <p class="col-md-10"> --}}
-        {{-- @foreach ($product->product_hights as $height) --}}
-        {{-- @if ($height->quantity > 0) --}}
-        {{-- {{$height->height->name}}, --}}
-        {{-- @endif --}}
-        {{-- @endforeach --}}
-        {{-- </p> --}}
-        {{-- </div> --}}
-        {{-- <hr> --}}
-        {{-- @endif --}}
-        {{-- @if ($product->product_sizes->count() > 0) --}}
-        {{-- <div class="row"> --}}
-        {{-- <h5 class="col-md-2 " >@lang('site.size')</h5> --}}
-        {{-- <p class="col-md-10"> --}}
-        {{-- @foreach ($product->product_sizes as $height) --}}
-        {{-- {{$height->size->name}}, --}}
-        {{-- @endforeach --}}
+        </div>
 
-        {{-- </p> --}}
-        {{-- </div> --}}
+        <!--- end  --->
+        <div class="product-collateral dir-rtl text-dir">
+            <dl id="collateral-tabs" class="collateral-tabs">
+                <div class="tab-content">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h2>خصائص المنتج</h2>
+                            <table class="table table-hover product-attribute-specs-table">
+                                <colgroup>
+                                    <col width="25%">
+                                    <col>
+                                </colgroup>
+                                <tbody>
+                                    <tr>
+                                        <th class="label text-uppercase">نوع الاكسسوار</th>
+                                        <td class="data">شـــوّاية</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="label text-uppercase">العرض(سم)</th>
+                                        <td class="data">55.88</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="label text-uppercase">الإرتفاع(سم)</th>
+                                        <td class="data">91.44</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="label text-uppercase">قطر الدائرة(سم)</th>
+                                        <td class="data">66.675</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="label text-uppercase">اللون</th>
+                                        <td class="data">أحمر </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="label text-uppercase">اللون التفصيلي</th>
+                                        <td class="data">أحمر</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="label text-uppercase">المواد التفصيلية</th>
+                                        <td class="data">99% فولاذ، 1% بلاستيك</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="label text-uppercase">الطراز</th>
+                                        <td class="data">حديث</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="label text-uppercase">بلد المنشأ</th>
+                                        <td class="data">China</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-sm-6">
+                            <h2>معلومات عامة</h2>
+                            <table class="table table-hover product-attribute-specs-table">
+                                <colgroup>
+                                    <col width="25%">
+                                    <col>
+                                </colgroup>
+                                <tbody>
+                                    <tr>
+                                        <th class="label text-uppercase">رمز المنتج</th>
+                                        <td class="data">60079689</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="label text-uppercase">الموديل</th>
+                                        <td class="data">60079689</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </dl>
+        </div>
+        <div class="container ">
 
-        {{-- @endif --}}
+            <h3 class="text-center ">@lang('site.related_products')
+            </h3>
+            <br>
 
-        {{-- <hr> --}}
-        <h3 class="text-center ">@lang('site.related_products')
-        </h3>
-        <br>
+            <div class="row text-dir">
 
-        <div class="row text-dir">
-
-            <div class="col-12">
-                <ul class="tablinks  row MyServices mr-0 pad-0 text-center justify-content-center">
-                    <div class="swiper mySwiper">
-                        <div class="swiper-wrapper">
-                            @if (\App\BasicCategory::find($product->basic_category_id)->products->count() > 0)
-                                @foreach (\App\BasicCategory::find($product->basic_category_id)->products as $p)
-                                    @if ($p->id != $product->id && $p->appearance == 1)
-                                        <div class="swiper-slide" data-swiper-autoplay="2000">
-                                            <div class=" product relative">
-                                                {{-- <div class="  heart ">
+                <div class="col-12">
+                    <ul class="tablinks  row  mr-0 pad-0 text-center justify-content-center">
+                        <div class="swiper mySwiper">
+                            <div class="swiper-wrapper">
+                                @if (\App\BasicCategory::find($product->basic_category_id)->products->count() > 0)
+                                    @foreach (\App\BasicCategory::find($product->basic_category_id)->products as $p)
+                                        @if ($p->id != $product->id && $p->appearance == 1)
+                                            <div class="swiper-slide" data-swiper-autoplay="2000">
+                                                <div class=" product relative">
+                                                    {{-- <div class="  heart ">
                                                     <a href="#" class="addToWishList text-white"
                                                         data-product-id="{{ $p->id }}">
                                                         <i class="far fa-heart "></i>
                                                     </a>
 
                                                 </div> --}}
-                                                <div style="flex-direction: column;display: flex">
-                                                    <div>
-                                                        <a href="{{ route('product', $p->id) }}"
-                                                            class="test image-hover">
+                                                    <div style="flex-direction: column;display: flex">
+                                                        <div>
+                                                            <a href="{{ route('product', $p->id) }}"
+                                                                class="test image-hover">
 
-                                                            <img src="{{ asset('/storage/' . $p->img) }}"
-                                                                onerror="this.onerror=null;this.src='{{ asset('front/img/3.jpg') }}'"
-                                                                width="100%" class="show-img ">
-
-                                                            @if ($img = App\ProdImg::where('product_id', $p->id)->first())
-                                                                <img src="{{ asset($img->img) }}" width="100%"
-                                                                    class="hide-img">
-                                                                <div class="middle">
-                                                                    <div class="btn btn-danger">@lang('site.add_to_cart')
-                                                                    </div>
-                                                                </div>
-                                                            @else
                                                                 <img src="{{ asset('/storage/' . $p->img) }}"
-                                                                    width="100%" class="hide-img">
-                                                                <div class="middle">
-                                                                    <div class="btn btn-danger">@lang('site.add_to_cart')
+                                                                    onerror="this.onerror=null;this.src='{{ asset('front/img/3.jpg') }}'"
+                                                                    width="100%" class="show-img ">
+
+                                                                @if ($img = App\ProdImg::where('product_id', $p->id)->first())
+                                                                    <img src="{{ asset($img->img) }}" width="100%"
+                                                                        class="hide-img">
+                                                                    <div class="middle">
+                                                                        <div class="btn btn-danger">@lang('site.add_to_cart')
+                                                                        </div>
                                                                     </div>
-                                                                </div>
-                                                            @endif
-                                                        </a>
-                                                    </div>
-
-                                                    <div class="text-dir">
-                                                        <p class="mr-0">
-                                                            <a href="{{ route('product', $p->id) }}">
-                                                                @if (Lang::locale() == 'ar')
-                                                                    {{ $p->title_ar }}
-
                                                                 @else
-
-                                                                    {{ $p->title_en }}
-
+                                                                    <img src="{{ asset('/storage/' . $p->img) }}"
+                                                                        width="100%" class="hide-img">
+                                                                    <div class="middle">
+                                                                        <div class="btn btn-danger">@lang('site.add_to_cart')
+                                                                        </div>
+                                                                    </div>
                                                                 @endif
-
-
                                                             </a>
-                                                        </p>
-                                                        <h6><a href="{{ route('product', $p->id) }}">
+                                                        </div>
+
+                                                        <div class="text-center">
+                                                            <p class="mr-0">
+                                                                <a href="{{ route('product', $p->id) }}">
+                                                                    @if (Lang::locale() == 'ar')
+                                                                        {{ $p->title_ar }}
+
+                                                                    @else
+
+                                                                        {{ $p->title_en }}
+
+                                                                    @endif
 
 
-                                                                @if (Lang::locale() == 'ar')
-                                                                    {{-- {{$p->basic_category->name_ar}}
+                                                                </a>
+                                                            </p>
+                                                            <h6><a href="{{ route('product', $p->id) }}">
+
+
+                                                                    @if (Lang::locale() == 'ar')
+                                                                        {{-- {{$p->basic_category->name_ar}}
                                                 -
                                                 {{$p->category->name_ar}} --}}
-                                                                    <?php $pieces = explode(' ', $p->description_ar);
-                                                                    $first_part = implode(' ', array_splice($pieces, 0, 4)); ?>
-                                                                    {{ $first_part }}
-                                                                @else
+                                                                        <?php $pieces = explode(' ', $p->description_ar);
+                                                                        $first_part = implode(' ', array_splice($pieces, 0, 4)); ?>
+                                                                        {{ $first_part }}
+                                                                    @else
 
-                                                                    {{-- {{$p->basic_category->name_en}}
+                                                                        {{-- {{$p->basic_category->name_en}}
                                                 -
                                                 {{$p->category->name_en}} --}}
-                                                                    <?php $pieces = explode(' ', $p->description_en);
-                                                                    $first_part = implode(' ', array_splice($pieces, 0, 4)); ?>
-                                                                    {{ $first_part }}
-                                                                @endif
+                                                                        <?php $pieces = explode(' ', $p->description_en);
+                                                                        $first_part = implode(' ', array_splice($pieces, 0, 4)); ?>
+                                                                        {{ $first_part }}
+                                                                    @endif
 
 
-                                                            </a></h6>
-                                                        <h5>
+                                                                </a></h6>
+                                                            <h5 class="dir-rtl">
 
 
-                                                            @auth()
-                                                                {{ Auth::user()->getPrice($p->price) }}
-                                                                {{ Auth::user()->country->currency->code }}
-                                                            @endauth
-                                                            @guest()
-                                                                @if (Cookie::get('name'))
-                                                                    {{ number_format($p->price / App\Country::find(Cookie::get('name'))->currency->rate, 2) }}
-                                                                    {{ App\Country::find(Cookie::get('name'))->currency->code }}
-                                                                @else
-                                                                    {{ $p->price }}
-                                                                    @lang('site.kwd')
-                                                                @endif
-                                                            @endguest
+                                                                @auth()
+                                                                    {{ Auth::user()->getPrice($p->price) }}
+                                                                    @if (Lang::locale() == 'en')
+                                                                        {{ Auth::user()->country->currency->code }}
+                                                                    @else
+                                                                        {{ Auth::user()->country->currency->code_ar }}
 
-                                                        </h5>
-                                                        </h5>
+                                                                    @endif
+                                                                @endauth
+                                                                @guest()
+                                                                    @if (Cookie::get('name'))
+                                                                        {{ number_format($p->price / App\Country::find(Cookie::get('name'))->currency->rate, 2) }}
+                                                                        @if (Lang::locale() == 'en')
+                                                                            {{ App\Country::find(Cookie::get('name'))->currency->code }}
+                                                                        @else
+                                                                            {{ App\Country::find(Cookie::get('name'))->currency->code_ar }}
+
+                                                                        @endif
+                                                                    @else
+                                                                        {{ $p->price }}
+                                                                        @lang('site.kwd')
+                                                                    @endif
+                                                                @endguest
+
+                                                            </h5>
+                                                            </h5>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                    @endif
-                                @endforeach
+                                        @endif
+                                    @endforeach
+                            </div>
+
                         </div>
+                    @else
+                        لا يوجد
+                        @endif
 
-                    </div>
-                @else
-                    لا يوجد
-                    @endif
-
-                </ul>
-            </div>
-        </div>
-        <br><br>
-    </div>
-
-    <!-- Button trigger modal -->
-
-
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
-        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-
-                <div class="modal-body">
-                    <img src="{{ asset('/storage/' . $product->size_guide->image_url) }}" class="d-block w-100 h-img"
-                        style="object-fit: contain" alt="..." data-toggle="modal" data-target="#staticBackdrop">
+                    </ul>
                 </div>
-
             </div>
+            <br><br>
         </div>
-    </div>
-    <!--- end  --->
 
-@endsection
-@section('script')
-    <script>
-        $(document).ready(function() {
-            $('#heights').hide();
-            let sizeVal;
+        <!-- Button trigger modal -->
 
-            $('input[name="size"]').on('click', function() {
 
+        <!-- Modal -->
+        {{-- <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+            aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-body">
+                        <img src="{{ asset('/storage/' . $product->size_guide->image_url) }}" class="d-block w-100 h-img"
+                            style="object-fit: contain" alt="..." data-toggle="modal" data-target="#staticBackdrop">
+                    </div>
+
+                </div>
+            </div>
+        </div> --}}
+        <!--- end  --->
+
+    @endsection
+    @section('script')
+        <script>
+            $(document).ready(function() {
                 $('#heights').hide();
-                // console.log($(this).val())
-                //TODO :: ON CLICK IF CHECKED VIEW THE HEIGHTS ELSE MAKE CONTAINER HIDDEN
+                let sizeVal;
 
-                if ($('input[name=size]').is(':checked')) {
-                    var card_type = $("input[name=size]:checked").val();
-                    sizeVal = card_type;
-                    getHeights(sizeVal);
-                }
-            });
-            //TODO :: GET #S ->CONTENT
-            $('#add_cart').on('click', function() {
+                $('input[name="size"]').on('click', function() {
 
+                    $('#heights').hide();
+                    // console.log($(this).val())
+                    //TODO :: ON CLICK IF CHECKED VIEW THE HEIGHTS ELSE MAKE CONTAINER HIDDEN
 
-                //GET PRODUCT ID
-                //GET QUANTITY
-                //GET SIZE ID
-                //GET HEIGHT ID
-
-
-                let size = 0;
-                let height = 0;
-                let product = '{{ $product->id }}';
-                let quantity = $("input[name=quantity]").val();;
-
-                //TODO :: IF NOT SELECTED HEIGHT OR SIZE ASK TO CHOOSE
-
-                if ($('input[name=size]').is(':checked')) {
-                    size = $("input[name=size]:checked").val();
-                }
-
-                if ($('input[name=height]').is(':checked')) {
-                    height = $("input[name=height]:checked").val();
-                }
-
-                if ((size == 0) || (height == 0)) {
-                    Swal.fire({
-                        icon: '?',
-                        title: 'يرجي تحديد الخيارات ',
-                        confirmButtonColor: '#d76797',
-                        position: 'bottom-start',
-                        showCloseButton: true,
-                    })
-                } else {
-                    addToCart(product, quantity, height, size);
-                }
-
-            });
-
-            function addToCart(productId, quantity, heightId, sizeId) {
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                    if ($('input[name=size]').is(':checked')) {
+                        var card_type = $("input[name=size]:checked").val();
+                        sizeVal = card_type;
+                        getHeights(sizeVal);
                     }
                 });
+                //TODO :: GET #S ->CONTENT
+                $('#add_cart').on('click', function() {
 
-                $.ajax({
-                    url: "{{ route('add.to.cart') }}",
-                    method: 'post',
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        quantity: quantity,
-                        product_id: productId,
-                        product_size_id: sizeId,
-                        product_height_id: heightId,
-                    },
-                    success: function(result) {
-                        //CHECK SIZE VALUES
-                        //CHECK HEIGHTS VALUE
-                        Swal.fire({
-                            toast: true,
-                            icon: 'success',
-                            title: 'تمت الإضافه الي السله',
-                            animation: false,
-                            position: 'bottom-start',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
-                            didOpen: (toast) => {
-                                toast.addEventListener('mouseenter', Swal.stopTimer)
-                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+
+                    //GET PRODUCT ID
+                    //GET QUANTITY
+                    //GET SIZE ID
+                    //GET HEIGHT ID
+
+
+                    let size = 0;
+                    let height = 0;
+                    let product = '{{ $product->id }}';
+                    let quantity = $("input[name=quantity]").val();
+                    let color = $('#color_val').find(":selected").val();
+                    let is_order = $(this).attr('is_order');
+
+                    // if order
+                    let height_order = $("input[name=height_order]").val();
+                    let order_size = $('input[name="order_size"]:checked').val();
+
+                    // console.log(order_size );
+                    let shoulder = $("input[name=shoulder]").val();
+                    let chest = $("input[name=chest]").val();
+                    let the_front = $('#the_front').find(":selected").val();
+                    let veil_size = $('#veil_size').find(":selected").val();
+                    let note = $('#note').val();
+                    let hole_sleeve = $("input[name=hole_sleeve]").val();
+                    let sleeve_length = $("input[name=sleeve_length]").val();
+                    let is_bs_ca = $("input[name=is_bs_ca]").val();
+                    //TODO :: IF NOT SELECTED HEIGHT OR SIZE ASK TO CHOOSE
+
+
+                    if ($('input[name=size]').is(':checked')) {
+                        size = $("input[name=size]:checked").val();
+                    }
+
+                    if ($('input[name=height]').is(':checked')) {
+                        height = $("input[name=height]:checked").val();
+                    }
+                    // if (is_order == 0) {
+
+
+
+                        // if ((size == 0) || (height == 0)) {
+                        //     Swal.fire({
+                        //         icon: '?',
+                        //         title: 'يرجي تحديد الخيارات ',
+                        //         confirmButtonColor: '#000',
+                        //         position: 'bottom-start',
+                        //         showCloseButton: true,
+                        //     })
+                        // } else {
+                            addToCart(product, quantity, height, size, color);
+                        // }
+                    // } else {
+                    //     //  console.log(order_size );
+
+                    //     if ((height_order == '') || (order_size == null)) {
+                    //         Swal.fire({
+                    //             icon: '?',
+                    //             title: 'يرجي تحديد الخيارات ',
+                    //             confirmButtonColor: '#000',
+                    //             position: 'bottom-start',
+                    //             showCloseButton: true,
+                    //         })
+                    //     } else {
+                    //         addToCart_order(product, quantity, height_order, color, the_front, veil_size, note,
+                    //             order_size);
+                    //     }
+                    // }
+
+                });
+
+                function addToCart(productId, quantity, heightId, sizeId, color) {
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                        }
+                    });
+
+                    $.ajax({
+                        url: "{{ route('add.to.cart') }}",
+                        method: 'post',
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            quantity: quantity,
+                            product_id: productId,
+                            product_size_id: sizeId,
+                            color: color,
+                            product_height_id: heightId,
+                        },
+                        success: function(result) {
+                            //CHECK SIZE VALUES
+                            //CHECK HEIGHTS VALUE
+                            if (result.success==false) {
+                                Swal.fire({
+                                toast: true,
+                                icon: 'warning',
+                                title: result.message,
+                                animation: false,
+                                position: 'bottom-start',
+                                showConfirmButton: false,
+                                timer: 3000,
+                                timerProgressBar: true,
+                                didOpen: (toast) => {
+                                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                }
+                            });
                             }
-                        });
-                        // console.log(result);
+                            else{
+                                Swal.fire({
+                                toast: true,
+                                icon: 'success',
+                                title: result.message,
+                                animation: false,
+                                position: 'bottom-start',
+                                showConfirmButton: false,
+                                timer: 3000,
+                                timerProgressBar: true,
+                                didOpen: (toast) => {
+                                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                }
+                            });
+                            }
 
-                        location.reload();
+                            // console.log(result);
+
+                            // location.reload();
 
 
+                        },
+                        error: function(error) {
+
+
+                            console.log(error);
+                            Swal.fire({
+                                title: 'لم تكتمل العمليه ',
+                                icon: '?',
+                                confirmButtonColor: '#000',
+                                position: 'bottom-start',
+                                showCloseButton: true,
+                            })
+                            // Swal.fire({
+                            //         title: 'لم تكتمل العمليه ',
+                            //         icon: '؟',
+                            //         iconHtml: '؟',
+                            //         confirmButtonText: 'ok',
+                            //         showCancelButton: false,
+                            //         showCloseButton: true
+                            //         })
+                        }
+                    });
+                }
+
+                function addToCart_order(productId, quantity, height_order, color, the_front, veil_size, note,
+                    order_size) {
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                        }
+                    });
+
+                    $.ajax({
+                        url: "{{ route('add.to.cart') }}",
+                        method: 'post',
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            quantity: quantity,
+                            product_id: productId,
+                            color: color,
+                            height_order: height_order,
+                            the_front: the_front,
+                            veil_size: veil_size,
+                            note: note,
+                            order_size: order_size
+
+                        },
+                        success: function(result) {
+                            //CHECK SIZE VALUES
+                            //CHECK HEIGHTS VALUE
+                            Swal.fire({
+                                toast: true,
+                                icon: 'success',
+                                title: 'تمت الإضافه الي السله',
+                                animation: false,
+                                position: 'bottom-start',
+                                showConfirmButton: false,
+                                timer: 3000,
+                                timerProgressBar: true,
+                                didOpen: (toast) => {
+                                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                }
+                            });
+                            // console.log(result);
+
+                            // location.reload();
+
+
+                        },
+                        error: function(error) {
+
+
+                            console.log(error);
+                            Swal.fire({
+                                title: 'لم تكتمل العمليه ',
+                                icon: '?',
+                                confirmButtonColor: '#000',
+                                position: 'bottom-start',
+                                showCloseButton: true,
+                            })
+                            // Swal.fire({
+                            //         title: 'لم تكتمل العمليه ',
+                            //         icon: '؟',
+                            //         iconHtml: '؟',
+                            //         confirmButtonText: 'ok',
+                            //         showCancelButton: false,
+                            //         showCloseButton: true
+                            //         })
+                        }
+                    });
+                }
+
+                function getHeights(sizeId) {
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                        }
+                    });
+
+                    $.ajax({
+                        url: "{{ route('get.heights') }}",
+                        method: 'get',
+                        data: {
+                            size_id: sizeId
+                        },
+                        success: function(result) {
+                            //CHECK SIZE VALUES
+                            //CHECK HEIGHTS VALUE
+                            // console.log(result);
+                            $('#heights').html(result);
+                            $('#heights').show();
+                        }
+                    });
+                }
+                //TODO :: WHEN CHOOSE SIZE SHOW HEIGHT
+                //TODO :: REFRESH CHECKOUT CART
+                //TODO :: ADD & REMOVE FROM CART
+            })
+
+            $(document).on('click', '.addToWishList', function(e) {
+
+                e.preventDefault();
+                @guest()
+                    // $('.not-loggedin-modal').css('display','block');
+                    // console.log('You are guest'
+
+                    {{-- {{\RealRashid\SweetAlert\Facades\Alert::error('error', 'Please Login first!')}} --}}
+                    Swal.fire({
+                    icon: '?',
+                    title:'Login first!',
+                    confirmButtonColor: '#000',
+                    position:'bottom-start',
+                    showCloseButton: true,
+                    })
+                @endguest
+                @auth
+                    $.ajax({
+                    type: 'get',
+                    url:"{{ route('wishlist.store') }}",
+                    data:{
+                    'productId':$(this).attr('data-product-id'),
                     },
-                    error: function(error) {
+                    success:function (data) {
+                    if (data.message){
+                    Swal.fire({
+                    icon: '?',
+                    title: 'Added successfully!',
+                    confirmButtonColor: '#000',
+                    position:'bottom-start',
+                    showCloseButton: true,
+                    showConfirmButton: false,
+                    timer: 1500
+                    })
+                    $(".heart").click(function() {
+                    $(this).toggleClass("heart-hover");
 
+                    });
 
-                        console.log(error);
-                        Swal.fire({
-                            title: 'لم تكتمل العمليه ',
-                            icon: '?',
-                            confirmButtonColor: '#d76797',
-                            position: 'bottom-start',
-                            showCloseButton: true,
-                        })
-                        // Swal.fire({
-                        //         title: 'لم تكتمل العمليه ',
-                        //         icon: '؟',
-                        //         iconHtml: '؟',
-                        //         confirmButtonText: 'ok',
-                        //         showCancelButton: false,
-                        //         showCloseButton: true
-                        //         })
                     }
-                });
-            }
+                    else {
+                    // alert('This product already in you wishlist');
+                    Swal.fire({
+                    title: 'This product already in you wishlist',
+                    icon: '?',
+                    confirmButtonColor: '#000',
+                    position:'bottom-start',
+                    showCloseButton: true,
+                    showConfirmButton: false,
+                    timer: 1500
+                    });
+                    $(".heart").click(function() {
+                    $(this).toggleClass("heart-hover");
 
-            function getHeights(sizeId) {
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                    });
+
+
                     }
-                });
-
-                $.ajax({
-                    url: "{{ route('get.heights') }}",
-                    method: 'get',
-                    data: {
-                        size_id: sizeId
-                    },
-                    success: function(result) {
-                        //CHECK SIZE VALUES
-                        //CHECK HEIGHTS VALUE
-                        // console.log(result);
-                        $('#heights').html(result);
-                        $('#heights').show();
                     }
-                });
-            }
-            //TODO :: WHEN CHOOSE SIZE SHOW HEIGHT
-            //TODO :: REFRESH CHECKOUT CART
-            //TODO :: ADD & REMOVE FROM CART
-        })
-
-        $(document).on('click', '.addToWishList', function(e) {
-
-            e.preventDefault();
-            @guest()
-                // $('.not-loggedin-modal').css('display','block');
-                // console.log('You are guest'
-
-                {{-- {{\RealRashid\SweetAlert\Facades\Alert::error('error', 'Please Login first!')}} --}}
-                Swal.fire({
-                icon: '?',
-                title:'Login first!',
-                confirmButtonColor: '#d76797',
-                position:'bottom-start',
-                showCloseButton: true,
-                })
-            @endguest
-            @auth
-                $.ajax({
-                type: 'get',
-                url:"{{ route('wishlist.store') }}",
-                data:{
-                'productId':$(this).attr('data-product-id'),
-                },
-                success:function (data) {
-                if (data.message){
-                Swal.fire({
-                icon: '?',
-                title: 'Added successfully!',
-                confirmButtonColor: '#d76797',
-                position:'bottom-start',
-                showCloseButton: true,
-                showConfirmButton: false,
-                timer: 1500
-                })
-                $(".heart").click(function() {
-                $(this).toggleClass("heart-hover");
-
-                });
-
-                }
-                else {
-                // alert('This product already in you wishlist');
-                Swal.fire({
-                title: 'This product already in you wishlist',
-                icon: '?',
-                confirmButtonColor: '#d76797',
-                position:'bottom-start',
-                showCloseButton: true,
-                showConfirmButton: false,
-                timer: 1500
-                });
-                $(".heart").click(function() {
-                $(this).toggleClass("heart-hover");
-
-                });
+                    });
+                @endauth
 
 
-                }
-                }
-                });
-            @endauth
-
-
-        });
-    </script>
-    <script>
-        $('img[data-enlargeable]').addClass('img-enlargeable').click(function() {
-            var src = $(this).attr('src');
-            var modal;
-
-            function removeModal() {
-                modal.remove();
-                $('body').off('keyup.modal-close');
-            }
-            modal = $('<div>').css({
-                background: 'RGBA(0,0,0,.5) url(' + src + ') no-repeat center',
-                backgroundSize: 'contain',
-                width: '100%',
-                height: '100%',
-                position: 'fixed',
-                zIndex: '10000',
-                top: '0',
-                left: '0',
-                cursor: 'zoom-out'
-            }).click(function() {
-                removeModal();
-            }).appendTo('body');
-            //handling ESC
-            $('body').on('keyup.modal-close', function(e) {
-                if (e.key === 'Escape') {
-                    removeModal();
-                }
             });
-        });
-    </script>
-@endsection
+        </script>
+        <script>
+            $('img[data-enlargeable]').addClass('img-enlargeable').click(function() {
+                var src = $(this).attr('src');
+                var modal;
+
+                function removeModal() {
+                    modal.remove();
+                    $('body').off('keyup.modal-close');
+                }
+                modal = $('<div>').css({
+                    background: 'RGBA(0,0,0,.5) url(' + src + ') no-repeat center',
+                    backgroundSize: 'contain',
+                    width: '100%',
+                    height: '100%',
+                    position: 'fixed',
+                    zIndex: '10000',
+                    top: '0',
+                    left: '0',
+                    cursor: 'zoom-out'
+                }).click(function() {
+                    removeModal();
+                }).appendTo('body');
+                //handling ESC
+                $('body').on('keyup.modal-close', function(e) {
+                    if (e.key === 'Escape') {
+                        removeModal();
+                    }
+                });
+            });
+        </script>
+    @endsection

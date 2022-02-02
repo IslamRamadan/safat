@@ -67,7 +67,26 @@
                                     style="margin: auto;background-color: #1a202c" class="col-md-4 col-12 img-fluid">
                             </td>
                         </tr>
+                        <tr>
+                            <td width="10%" style="font-weight: bold">
+                                @lang('site.landing_image')
 
+                            </td>
+                            <td width="90%">
+                                <img src="{{ asset('/storage/' . $setting->landing_image) }}"
+                                    style="margin: auto;background-color: #1a202c" class="col-md-4 col-12 img-fluid">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="10%" style="font-weight: bold">
+                                @lang('site.landing_image_mob')
+
+                            </td>
+                            <td width="90%">
+                                <img src="{{ asset('/storage/' . $setting->landing_image_mob) }}"
+                                    style="margin: auto;background-color: #1a202c" class="col-md-4 col-12 img-fluid">
+                            </td>
+                        </tr>
                         <tr>
                             <td width="10%" style="font-weight: bold">
                                 @lang('site.site_ar')
@@ -216,7 +235,15 @@
                                 {{ $setting->telegram }}
                             </td>
                         </tr>
+                        <tr>
+                            <td width="10%" style="font-weight: bold">
+                                @lang('site.snapchat')
 
+                            </td>
+                            <td width="90%">
+                                {{ $setting->snapchat }}
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>

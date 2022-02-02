@@ -14,7 +14,10 @@ class Country extends Model
     public function currency(){
         return $this->belongsTo('App\Currency' , 'currency_id' , 'id');
     }
-
+public function getNameAttribute()
+       {
+           return app()->getLocale()=='ar'? $this->name_ar : $this->name_en;
+       }
 
     public function cities(){
         return $this->hasMany('App\City' , 'country_id' , 'id');

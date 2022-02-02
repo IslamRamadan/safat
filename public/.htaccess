@@ -1,3 +1,30 @@
+<IfModule mod_expires.c>
+ ExpiresActive On
+
+ # Images
+ ExpiresByType image/jpeg "access plus 1 year"
+ ExpiresByType image/gif "access plus 1 year"
+ ExpiresByType image/png "access plus 1 year"
+ ExpiresByType image/webp "access plus 1 year"
+ ExpiresByType image/svg+xml "access plus 1 year"
+ ExpiresByType image/x-icon "access plus 1 year"
+
+ # Video
+ ExpiresByType video/mp4 "access plus 1 year"
+ ExpiresByType video/mpeg "access plus 1 year"
+
+ # CSS, JavaScript
+ ExpiresByType text/css "access plus 1 month"
+ ExpiresByType text/javascript "access plus 1 month"
+ ExpiresByType application/javascript "access plus 1 month"
+
+ # Others
+ ExpiresByType application/pdf "access plus 1 month"
+ ExpiresByType application/x-shockwave-flash "access plus 1 month"
+</IfModule>
+
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
@@ -14,8 +41,66 @@
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
-    # Send Requests To Front Controller...
+    # Handle Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !^http://bluezonekw.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://bluezonekw.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://mymall-kw.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://mymall-kw.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://root.mymall-kw.com.bluezonekw.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://root.mymall-kw.com.bluezonekw.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://saramerdas.shop/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://saramerdas.shop$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://saramerdas.shop.bluezonekw.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://saramerdas.shop.bluezonekw.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://store.mymall-kw.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://store.mymall-kw.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.bluezonekw.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.bluezonekw.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.mymall-kw.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.mymall-kw.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.root.mymall-kw.com.bluezonekw.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.root.mymall-kw.com.bluezonekw.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.saramerdas.shop/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.saramerdas.shop$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.saramerdas.shop.bluezonekw.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.saramerdas.shop.bluezonekw.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.store.mymall-kw.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.store.mymall-kw.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://bluezonekw.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://bluezonekw.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://mymall-kw.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://mymall-kw.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://root.mymall-kw.com.bluezonekw.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://root.mymall-kw.com.bluezonekw.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://saramerdas.shop/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://saramerdas.shop$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://saramerdas.shop.bluezonekw.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://saramerdas.shop.bluezonekw.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://store.mymall-kw.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://store.mymall-kw.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.bluezonekw.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.bluezonekw.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.mymall-kw.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.mymall-kw.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.root.mymall-kw.com.bluezonekw.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.root.mymall-kw.com.bluezonekw.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.saramerdas.shop/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.saramerdas.shop$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.saramerdas.shop.bluezonekw.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.saramerdas.shop.bluezonekw.com$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.store.mymall-kw.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.store.mymall-kw.com$      [NC]
+RewriteRule .*\.(jpg|jpeg|gif|png|bmp)$ - [F,NC]
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “ea-php73” package as the default “PHP” programming language.
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php73 .php .php7 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit

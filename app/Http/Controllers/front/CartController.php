@@ -25,7 +25,7 @@ use Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Lang;
-
+use App\CustomSize;
 class CartController extends Controller
 {
     /**
@@ -94,11 +94,12 @@ class CartController extends Controller
 
     public function addToCart(Request $request)
     {
-
+        // dd($request->all());
         if (!is_array(Session::get('cart'))) {
             Session::forget('cart');
             //            return   Session::get('cart');
         }
+
         //
         //        $cart = Session::get('cart');
         //
@@ -114,7 +115,7 @@ class CartController extends Controller
         //        Session::flash('success','barang berhasil ditambah ke keranjang!');
         //
 
-        //        Session::forget('cart');
+                // Session::forget('cart');
         $product = $request->except('_token');
 
         $cart = Session::get('cart');
@@ -122,38 +123,98 @@ class CartController extends Controller
         $cart_details = Session::get('cart_details');
 
         $current_product = Product::find($product['product_id']);
+        // dd($product['quantity'],$current_product->quantity) ;
+        if ($product['quantity'] > $current_product->quantity) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'الكميه الموجوده حاليا لهذا المقاس اقل من الكميه المطلوبه.',
+                ]
+            );
 
-        $current_height = ProdHeight::find($product['product_height_id']);
-
-
-        if ($product['quantity'] > $current_height->quantity) {
-
-            Alert::error('الكميه الموجوده حاليا لهذا المقاس اقل من الكميه المطلوبه !');
-
-            return back();
         }
 
-        if (isset($cart[$product['product_id']][$product['product_height_id']])) :
-            $cart[$product['product_id']][$product['product_height_id']]['quantity'] += $product['quantity'];
+
+
+
+        // if($current_product->is_order != 1){
+        //  $current_height = ProdHeight::find($product['product_height_id']);
+
+        // if ($product['quantity'] > $current_height->quantity) {
+
+        //     Alert::error('الكميه الموجوده حاليا لهذا المقاس اقل من الكميه المطلوبه !');
+
+        //     return back();
+        // }
+
+        // }else{
+
+        //     $product['product_height_id']=0;
+        //     $product['product_size_id']=0;
+
+
+
+        // }
+        // dd(Session::get('cart'));
+
+
+        $id=$product['product_id'];
+        // $height_id=$product['product_height_id'];
+        $quantity=$product['quantity'];
+        // $color=$request->color ? $product['color']:0;
+        // $product['color']=$color;
+
+        if (isset($cart[$product['product_id']])) :
+            $cart[$product['product_id']]['quantity'] += $quantity;
         else :
-            $cart[$product['product_id']][$product['product_height_id']] = $product;
-            $cart[$product['product_id']][$product['product_height_id']]['quantity'] = $product['quantity']; // Dynamically add initial qty
+            $cart[$product['product_id']] = $product;
+            $cart[$product['product_id']]['quantity'] = $quantity; // Dynamically add initial qty
         endif;
 
-        Session::put('cart', $cart);
+        // if (isset($cart[$id][$height_id."-".$color])) :
+        //     $cart[$id][$height_id."-".$color]['quantity'] += $quantity;
+        // else :
+        //     $cart[$id][$height_id."-".$color] = $product;
+        //     $cart[$id][$height_id."-".$color]['quantity'] = $quantity; // Dynamically add initial qty
+        // endif;
 
+
+    //    if($current_product->is_order ==1 ){
+    //        $custm_size = [
+    //            'cart_id'=>$id."-".$height_id."-".$color,
+    //            'height'=>$product['height_order'],
+    //         //   'shoulder'=>$product['shoulder'],
+    //         //   'chest'=>$product['chest'],
+    //            'the_front'=>$request->the_front ? $product['the_front'] : 0,
+    //            'veil_size'=>$request->veil_size ?$product['veil_size']: 0,
+    //            'note'=>$product['note'],
+    //         //   'hole_sleeve'=>$product['hole_sleeve'],
+    //         //   'sleeve_length'=>$product['sleeve_length'],
+    //            'order_size'=>$product['order_size']
+    //            ];
+
+    //      $arry_cust= Session::get('custm_sizes');
+
+    //     //  dd( $arry_cust);
+    //     $arry_cust != null ? array_push($arry_cust ,$custm_size ) : $arry_cust[]=$custm_size;
+
+    //       Session::put('custm_sizes', $arry_cust);
+    //     //   dd(Session::get('custm_sizes'));
+    //    }
+        Session::put('cart', $cart);
+        // dd($cart[$product['product_id']]['quantity']);
         $total_price = 0;
         $total_qty = 0;
 
         if (count($cart) > 0) {
             foreach ($cart as $key => $item) {
-                if (count($item) > 0) {
-                    foreach ($item as $i) {
-                        $total_price += Product::find($key)->price * intval($i['quantity']);
-                        $total_qty += intval($i['quantity']);
+
+                        // dd($cart,$item['quantity']);
+                        $total_price += Product::find($key)->price * $item['quantity'];
+                        $total_qty += $item['quantity'];
+                        // dd($cart,$item,$i,$total_price,$total_qty);
                         //                        $total_price = $i;
-                    }
-                }
+
             }
         }
 
@@ -162,12 +223,12 @@ class CartController extends Controller
         $cart_details['totalQty'] = $total_qty;
 
         Session::put('cart_details', $cart_details);
-
+        // dd($cart,$cart_details);
         return response()->json(
             [
                 'success' => true,
                 'cart_items' => count(Session::get('cart')),
-                'message' => 'Cart updated.',
+                'message' => 'تمت الاضافه الي السله',
                 'cart_data' => Session::get('cart'),
                 'cart_details' => Session::get('cart_details'),
 
@@ -224,15 +285,22 @@ class CartController extends Controller
 
                                 if (Auth::check()) {
                                     $val .= Auth::user()->getPrice($product->price) . ' ';
-                                    $val .= Auth::user()->country->currency->code;
+                                    if (Lang::locale() == 'en') {
+                                        $val .= Auth::user()->country->currency->code;
+                                    } else {
+                                        $val .= Auth::user()->country->currency->code_ar;
+                                    }
                                 } else {
                                     if (Cookie::get('name')) {
                                         $val .= number_format(($product->price / Country::find(Cookie::get('name'))->currency->rate), 2) . ' ';
-
-                                        $val .= Country::find(Cookie::get('name'))->currency->code;
+                                        if (Lang::locale() == 'en') {
+                                            $val .= Country::find(Cookie::get('name'))->currency->code;
+                                        } else {
+                                            $val .= Country::find(Cookie::get('name'))->currency->code_ar;
+                                        }
                                     } else {
 
-                                        $val .= $product->price . ' KWD';
+                                        $val .= $product->price . \Lang::get('site.kwd');
                                     }
                                     //
 
@@ -266,14 +334,22 @@ class CartController extends Controller
         //            $cart_details['totalPrice']
         if (Auth::check()) {
             $val .= Auth::user()->getPrice($product->price) . ' ';
-            $val .= Auth::user()->country->currency->code;
+            if (Lang::locale() == 'en') {
+                $val .= Auth::user()->country->currency->code;
+            } else {
+                $val .= Auth::user()->country->currency->code_ar;
+            }
         } else {
             if (Cookie::get('name')) {
                 $val .= number_format(($cart_details['totalPrice'] / Country::find(Cookie::get('name'))->currency->rate), 2) . ' ';
 
-                $val .= Country::find(Cookie::get('name'))->currency->code;
+                if (Lang::locale() == 'en') {
+                    $val .= Country::find(Cookie::get('name'))->currency->code;
+                } else {
+                    $val .= Country::find(Cookie::get('name'))->currency->code_ar;
+                }
             } else {
-                $val .= $cart_details['totalPrice'] . ' KWD';
+                $val .= $cart_details['totalPrice'] . \Lang::get('site.kwd');;
             }
             //
 
@@ -300,9 +376,9 @@ class CartController extends Controller
         }
     }
 
-
-    public function reduceFromCart(Request $request)
+   public function reduceFromCart(Request $request)
     {
+        // dd($request->all());
         //        Session::forget('cart');
         //        Session::forget('cart_details');
         //        return  response()->json([
@@ -311,8 +387,9 @@ class CartController extends Controller
         //        ]);
 
         $product_id = $request->product_id;
-        $product_height_id = $request->product_height_id;
+        // $product_height_id = $request->product_height_id;
         $operation = $request->operation;
+        // $color = $request->color;
 
         //        Session::forget('cart_details');
 
@@ -323,7 +400,7 @@ class CartController extends Controller
         //                foreach ($cart_item as $key => $value)
         //            }
         //        }
-        $item = $cart[$product_id][$product_height_id];
+        $item = $cart[$product_id];
         $quantity = $item['quantity'];
         $product = Product::find($product_id);
 
@@ -338,27 +415,30 @@ class CartController extends Controller
 
         if ($operation > 0) {
             //IF QUANTITY >= CURRENT PLUS ONE
-            $prod_height = ProdHeight::find($product_height_id);
-            if ($prod_height->quantity < ($quantity + 1)) {
+            // if($product_height_id != 0 ){
+                // $prod_height = ProdHeight::find($product_height_id);
+            if ($product->quantity < ($quantity + 1)) {
                 return  response()->json([
                     'success' => false,
                     'msg' => 'Quantity Requested not Available of this item !'
                 ]);
             }
+            // }
 
-            $cart[$product_id][$product_height_id]['quantity'] = $cart[$product_id][$product_height_id]['quantity']  + 1;
+
+            $cart[$product_id]['quantity'] = $cart[$product_id]['quantity']  + 1;
             $cart_details['totalQty'] = $cart_details['totalQty'] + 1;
             $cart_details['totalPrice'] = $cart_details['totalPrice'] + $price;
         } elseif ($operation < 0) {
             //TODO :: IF OPERATION -1 GET QUANTITY SUB FROM QUANTITY OR REMOVE
 
             if ($quantity > 1) {
-                $cart[$product_id][$product_height_id]['quantity'] =  $cart[$product_id][$product_height_id]['quantity'] - 1;
+                $cart[$product_id]['quantity'] =  $cart[$product_id]['quantity'] - 1;
 
                 $cart_details['totalQty'] = $cart_details['totalQty'] - 1;
                 $cart_details['totalPrice'] = $cart_details['totalPrice'] -  $price;
             } else {
-                unset($cart[$product_id][$product_height_id]);
+                unset($cart[$product_id]);
 
                 $cart_details['totalQty'] = $cart_details['totalQty'] - $quantity;
                 $cart_details['totalPrice'] = $cart_details['totalPrice'] - ($quantity * $price);
@@ -401,6 +481,7 @@ class CartController extends Controller
     }
 
 
+
     public function removeFromShoppingCart($product_id, $product_height_id)
     {
 
@@ -409,6 +490,7 @@ class CartController extends Controller
 
         //GET ITEM AND IF THE QUANTITY EQUALS OR MORE CALL REMOVE CART
         $cart = Session::get('cart');
+
 
         //        foreach ($cart as $cart_item){
         //            if($cart_item == $cart[$product_id]){
@@ -571,7 +653,11 @@ class CartController extends Controller
                 //                $delivery .= Auth::user()->getPrice($city->delivery).' ';
                 //                $delivery .= Auth::user()->country->currency->code;
                 $val = Auth::user()->getPrice($city->delivery) . ' ';
-                $val .= Auth::user()->country->currency->code;
+                if (Lang::locale() == 'en') {
+                    $val .= Auth::user()->country->currency->code;
+                } else {
+                    $val .= Auth::user()->country->currency->code_ar;
+                }
             } else {
                 if (Cookie::get('name')) {
                     //                    $delivery .= number_format(($city->delivery / Country::find(Cookie::get('name'))->currency->rate),2) . ' ';
@@ -580,11 +666,15 @@ class CartController extends Controller
 
                     $val = number_format(($city->delivery / Country::find(Cookie::get('name'))->currency->rate), 2) . ' ';
 
-                    $val .= Country::find(Cookie::get('name'))->currency->code;
+                    if (Lang::locale() == 'en') {
+                        $val .= Country::find(Cookie::get('name'))->currency->code;
+                    } else {
+                        $val .= Country::find(Cookie::get('name'))->currency->code_ar;
+                    }
                 } else {
 
                     //                    $delivery .=$city->delivery. ' KWD';
-                    $val = $city->delivery . ' KWD';
+                    $val = $city->delivery . \Lang::get('site.kwd');;
                 }
                 //
 
@@ -611,7 +701,11 @@ class CartController extends Controller
                 //                $delivery .= Auth::user()->getPrice($city->delivery).' ';
                 //                $delivery .= Auth::user()->country->currency->code;
                 $val = Auth::user()->getPrice($city->delivery) . ' ';
-                $val .= Auth::user()->country->currency->code;
+                if (Lang::locale() == 'en') {
+                    $val .= Auth::user()->country->currency->code;
+                } else {
+                    $val .= Auth::user()->country->currency->code_ar;
+                }
             } else {
                 if (Cookie::get('name')) {
                     //                    $delivery .= number_format(($city->delivery / Country::find(Cookie::get('name'))->currency->rate),2) . ' ';
@@ -619,11 +713,15 @@ class CartController extends Controller
                     //                    $delivery .= Country::find(Cookie::get('name'))->currency->code;
                     $val = number_format(($city->delivery / Country::find(Cookie::get('name'))->currency->rate), 2) . ' ';
 
-                    $val .= Country::find(Cookie::get('name'))->currency->code;
+                    if (Lang::locale() == 'en') {
+                        $val .= Country::find(Cookie::get('name'))->currency->code;
+                    } else {
+                        $val .= Country::find(Cookie::get('name'))->currency->code_ar;
+                    }
                 } else {
 
                     //                    $delivery .=$city->delivery. ' KWD';
-                    $val = $city->delivery . ' KWD';
+                    $val = $city->delivery . \Lang::get('site.kwd');;
                 }
                 //
 
@@ -640,7 +738,14 @@ class CartController extends Controller
             $val2 = Auth::user()->getPrice($city->delivery);
             $val3 = (Auth::user()->getPrice($request->total_value));
             $total_value = $val2 + $val3;
-            $total_value_string = ' ' . $total_value . ' ' . Auth::user()->country->currency->code;
+
+            if (Lang::locale() == 'en') {
+
+                $total_value_string = ' ' . $total_value . ' ' . Auth::user()->country->currency->code;
+            } else {
+                $total_value_string = ' ' . $total_value . ' ' .  Auth::user()->country->currency->code_ar;
+            }
+
             //            $total_value .= Auth::user()->country->currency->code;
 
         } else {
@@ -648,11 +753,15 @@ class CartController extends Controller
                 $val2 = ($city->delivery / Country::find(Cookie::get('name'))->currency->rate);
                 $val3 = $request->total_value / Country::find(Cookie::get('name'))->currency->rate;
                 $total_value = number_format($val2 + $val3, 2);
-                $total_value_string = $total_value . ' ' . Country::find(Cookie::get('name'))->currency->code;
+                if (Lang::locale() == 'en') {
+                    $total_value_string = $total_value . ' ' . Country::find(Cookie::get('name'))->currency->code;
+                } else {
+                    $total_value_string = $total_value . ' ' . Country::find(Cookie::get('name'))->currency->code_ar;
+                }
             } else {
 
                 $total_value = $request->total_value + $city->delivery;
-                $total_value_string = $total_value . " KWD ";
+                $total_value_string = $total_value . \Lang::get('site.kwd');
             }
 
             //            dd($total_value_string);
@@ -668,7 +777,7 @@ class CartController extends Controller
             'success' => true,
             'ship' => $val,
             'total_value' => $total_value_string,
-            'delivery' => $delivery
+            'delivery' => __('site.limit_dil')
         ]);
         //        }
 
@@ -774,6 +883,10 @@ class CartController extends Controller
 
         foreach ($cart as $cart_item) {
             foreach ($cart_item as $item) {
+
+                if($item['product_height_id'] != 0 ){
+
+
                 $height = ProdHeight::find($item['product_height_id']);
                 if ($height->quantity >= $item['quantity']) {
                     $height->quantity = $height->quantity - $item['quantity'];
@@ -812,6 +925,61 @@ class CartController extends Controller
 
                     Alert::error($msg, '');
                     return back();
+                }
+                }else{
+
+                     $item['order_id']  = $order->id;
+
+                    $order_item=OrderItem::create($item);
+                    $custm_carts = Session::get('custm_sizes');
+
+                        $k=0;
+                    foreach($custm_carts as $custm_cart){
+                        // dd($item);
+                        // $i=$item['product_id'].'-'.0.'-'.$item['color_id'];
+
+                        if($custm_cart['cart_id']==$item['product_id']."-".'0'."-".$item['color'] ){
+                            $k ++;
+
+                            if($item['quantity'] >= $k){
+
+                                CustomSize::create([
+                                    'order_item_id'=>$order_item->id,
+                                    'height'=>$custm_cart['height'],
+                                    // 'shoulder'=>$custm_cart['shoulder'],
+                                    // 'chest'=>$custm_cart['chest'],
+                                    'the_front'=>$custm_cart['the_front'],
+                                    'veil_size'=>$custm_cart['veil_size']	,
+                                    'note'=>$custm_cart['note'],
+                                    // "hole_sleeve" =>$custm_cart['hole_sleeve'],
+                                    // "sleeve_length" =>$custm_cart['sleeve_length'],
+                                    'order_size'=>$custm_cart['order_size']
+                                ]);
+                            }
+                        }
+
+                    }
+
+
+                    $b = BestSeller::where([
+                        'product_id' => $item['product_id']
+                    ])->first();
+
+                    if (!$b) {
+                        $be = new BestSeller();
+                        $be->product_id = $item['product_id'];
+                        $be->rate = 1;
+                        $be->save();
+                    } else {
+                        $b->rate = $b->rate + 1;
+                        $b->save();
+                    }
+
+                    BestSeller::firstOrCreate([
+                        'product_id' => $item['product_id']
+                    ])->touch();
+
+
                 }
             }
         }
@@ -959,11 +1127,9 @@ class CartController extends Controller
         //Test
 
 
-        // $apiURL = 'https://apitest.myfatoorah.com';
-        // $apiKey = 'rLtt6JWvbUHDDhsZnfpAhpYk4dxYDQkbcPTyGaKp2TYqQgG7FGZ5Th_WD53Oq8Ebz6A53njUoo1w3pjU1D4vs_ZMqFiz_j0urb_BH9Oq9VZoKFoJEDAbRZepGcQanImyYrry7Kt6MnMdgfG5jn4HngWoRdKduNNyP4kzcp3mRv7x00ahkm9LAK7ZRieg7k1PDAnBIOG3EyVSJ5kK4WLMvYr7sCwHbHcu4A5WwelxYK0GMJy37bNAarSJDFQsJ2ZvJjvMDmfWwDVFEVe_5tOomfVNt6bOg9mexbGjMrnHBnKnZR1vQbBtQieDlQepzTZMuQrSuKn-t5XZM7V6fCW7oP-uXGX-sMOajeX65JOf6XVpk29DP6ro8WTAflCDANC193yof8-f5_EYY-3hXhJj7RBXmizDpneEQDSaSz5sFk0sV5qPcARJ9zGG73vuGFyenjPPmtDtXtpx35A-BVcOSBYVIWe9kndG3nclfefjKEuZ3m4jL9Gg1h2JBvmXSMYiZtp9MR5I6pvbvylU_PP5xJFSjVTIz7IQSjcVGO41npnwIxRXNRxFOdIUHn0tjQ-7LwvEcTXyPsHXcMD8WtgBh-wxR8aKX7WPSsT1O8d8reb2aR7K3rkV3K82K_0OgawImEpwSvp9MNKynEAJQS6ZHe_J_l77652xwPNxMRTMASk1ZsJL';
-        //Live
-        $apiURL = 'https://api.myfatoorah.com';
-        $apiKey = 'bOP13e6rFDKxF8Q1GSGwrj327hMz4Pp7FEipItzvOVvmayOCblo1FDh2UV5uHGvgQatGWtPJGl68PQQJ4a3X3Xfp8VvSISvECda7uFZrJoo-JRBWbuGa4VLuKCTSaa1unjBoW8ywv1BL-dBPo3gMdjHovkbyDj8q2YRu_sH_IEMpKMeTUPkdeJI0l0DfDNTjqfj8iojDTZkfvOizJ4nGq2MOhBNHNsMdDcSX5yxfLv8ZJwqv_DVrZbfUxoVXX6kgHKMQcu7HBhqiO60K6Riujviasephrsa8k7qnylOZbLbEaSIXRuc7C_nRvvmUwqbw9HHG00gWAePF5KHsuuIquufKqfBZbIdbMWrM6bAzZkKSxCMIvM0adIJjzMWkI5SJc82ujVo76VRMpNvL-hx9cobZSN5AU1GklZXDCiTsITAo-AD60R3Q9M98YDYZVdihDc5lfGarVnEIMfqoz5qWI7m8te7Lj-V8oyFCpxZlTVa3SET7htHL9FvA_iQ1rivns7JnKwezb7l6jPi6uihYJmdQBbfqCJ27gkOanKQ7mBGPFscfyFX0e0dL5Cp7vhi3akde0GCtz9IBUkmXHU6bGVroP08agaxH92Y8Oxs_uTaAj87dNW4INKfwLur6Oepcy9egvLG0IYovcPhvXzw1fPEeXqDvL1vzmWNSycuMNdSyfBvz'; //Live token value to be placed here: https://myfatoorah.readme.io/docs/live-token
+
+         $apiURL = env('PAY_APIURL');
+        $apiKey = env('PAY_APIKEY') ;
 
 
         /* ------------------------ Call SendPayment Endpoint ----------------------- */
@@ -994,7 +1160,7 @@ class CartController extends Controller
             foreach ($order_item as $item) {
 
                 // dd(Product::find($item->product_id)->price*$coupon['percentage']/100);
-                $product_price=Product::find($item->product_id)->price*$coupon['percentage']/100;
+                $product_price = Product::find($item->product_id)->price * $coupon['percentage'] / 100;
                 array_push($invoiceItems, [
                     'ItemName'  => Product::find($item->product_id)->title_ar, //ISBAN, or SKU
                     'Quantity'  => $item->quantity, //Item's quantity
@@ -1008,7 +1174,7 @@ class CartController extends Controller
             //     'Quantity'  => 1, //Item's quantity
             //     'UnitPrice' => number_format($coupon['discount'], 3, '.', ''), //Price per item
             // ]);
-        }else{
+        } else {
             foreach ($order_item as $item) {
                 array_push($invoiceItems, [
                     'ItemName'  => Product::find($item->product_id)->title_ar, //ISBAN, or SKU
@@ -1043,8 +1209,8 @@ class CartController extends Controller
             'MobileCountryCode'  => $country_code,
             'CustomerMobile'     => $phone,
             'CustomerEmail'      => $email ?? "no@gmail.com",
-            'CallBackUrl'        => 'http://127.0.0.1:8000/payment_callback',
-            'ErrorUrl'           =>  'http://127.0.0.1:8000/payment_error', //or 'https://example.com/error.php'
+             'CallBackUrl'        => route('paycallBackUrl'),
+            'ErrorUrl'           =>  route('payerrorUrl'), //or 'https://example.com/error.php'
             //'Language'           => 'en', //or 'ar'
             //            'CustomerReference'  => $order->id,
             //            'CustomerCivilId'    => $order->national_id,
@@ -1150,14 +1316,8 @@ class CartController extends Controller
 
         /* ------------------------ Configurations ---------------------------------- */
 
-        //Test
-        // $apiURL = 'https://apitest.myfatoorah.com';
-        // $apiKey = 'rLtt6JWvbUHDDhsZnfpAhpYk4dxYDQkbcPTyGaKp2TYqQgG7FGZ5Th_WD53Oq8Ebz6A53njUoo1w3pjU1D4vs_ZMqFiz_j0urb_BH9Oq9VZoKFoJEDAbRZepGcQanImyYrry7Kt6MnMdgfG5jn4HngWoRdKduNNyP4kzcp3mRv7x00ahkm9LAK7ZRieg7k1PDAnBIOG3EyVSJ5kK4WLMvYr7sCwHbHcu4A5WwelxYK0GMJy37bNAarSJDFQsJ2ZvJjvMDmfWwDVFEVe_5tOomfVNt6bOg9mexbGjMrnHBnKnZR1vQbBtQieDlQepzTZMuQrSuKn-t5XZM7V6fCW7oP-uXGX-sMOajeX65JOf6XVpk29DP6ro8WTAflCDANC193yof8-f5_EYY-3hXhJj7RBXmizDpneEQDSaSz5sFk0sV5qPcARJ9zGG73vuGFyenjPPmtDtXtpx35A-BVcOSBYVIWe9kndG3nclfefjKEuZ3m4jL9Gg1h2JBvmXSMYiZtp9MR5I6pvbvylU_PP5xJFSjVTIz7IQSjcVGO41npnwIxRXNRxFOdIUHn0tjQ-7LwvEcTXyPsHXcMD8WtgBh-wxR8aKX7WPSsT1O8d8reb2aR7K3rkV3K82K_0OgawImEpwSvp9MNKynEAJQS6ZHe_J_l77652xwPNxMRTMASk1ZsJL';
-
-        //Live
-        $apiURL = 'https://api.myfatoorah.com';
-        $apiKey = 'bOP13e6rFDKxF8Q1GSGwrj327hMz4Pp7FEipItzvOVvmayOCblo1FDh2UV5uHGvgQatGWtPJGl68PQQJ4a3X3Xfp8VvSISvECda7uFZrJoo-JRBWbuGa4VLuKCTSaa1unjBoW8ywv1BL-dBPo3gMdjHovkbyDj8q2YRu_sH_IEMpKMeTUPkdeJI0l0DfDNTjqfj8iojDTZkfvOizJ4nGq2MOhBNHNsMdDcSX5yxfLv8ZJwqv_DVrZbfUxoVXX6kgHKMQcu7HBhqiO60K6Riujviasephrsa8k7qnylOZbLbEaSIXRuc7C_nRvvmUwqbw9HHG00gWAePF5KHsuuIquufKqfBZbIdbMWrM6bAzZkKSxCMIvM0adIJjzMWkI5SJc82ujVo76VRMpNvL-hx9cobZSN5AU1GklZXDCiTsITAo-AD60R3Q9M98YDYZVdihDc5lfGarVnEIMfqoz5qWI7m8te7Lj-V8oyFCpxZlTVa3SET7htHL9FvA_iQ1rivns7JnKwezb7l6jPi6uihYJmdQBbfqCJ27gkOanKQ7mBGPFscfyFX0e0dL5Cp7vhi3akde0GCtz9IBUkmXHU6bGVroP08agaxH92Y8Oxs_uTaAj87dNW4INKfwLur6Oepcy9egvLG0IYovcPhvXzw1fPEeXqDvL1vzmWNSycuMNdSyfBvz'; //Live token value to be placed here: https://myfatoorah.readme.io/docs/live-token
-
+        $apiURL = env('PAY_APIURL');
+        $apiKey = env('PAY_APIKEY') ;
 
         /* ------------------------ Call getPaymentStatus Endpoint ------------------ */
         //Inquiry using paymentId
@@ -1200,7 +1360,7 @@ class CartController extends Controller
             //                    dd($request->all());
 
             Alert::error('Order is not Exist !');
-            return redirect()->route('/');
+            return redirect()->route('home');
         }
         session()->forget('coupon');
 
@@ -1230,7 +1390,7 @@ class CartController extends Controller
         Alert::success('Payment Completed Successfully !', '');
 
 
-        return redirect()->route('/')->with(['order' => $order]);
+        return redirect()->route('home')->with(['order' => $order]);
         //ORDER 1
 
 
@@ -1255,12 +1415,25 @@ class CartController extends Controller
 
         $order = Order::where('invoice_id', $invoice_id)->first();
         // dd($order);
+        foreach($order-> order_items as $item ){
+             $cat_type=Product::find($item->product_id)->basic_category->type;
+                if($cat_type == 1){
+                    $height = ProdHeight::where("product_id",$item->product_id)->where('height_id',0)->first();
+                }else{
+
+                    $height = ProdHeight::find($item->product_height_id);
+                }
+
+                    $height->quantity = $height->quantity + $item->quantity;
+                    $height->save();
+
+        }
         session()->forget('coupon');
 
 
         Alert::error('Payment Not Completed !', '');
 
-        return redirect()->route('/')->with(['order' => $order]);;
+        return redirect()->route('home')->with(['order' => $order]);;
     }
 
 
