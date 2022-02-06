@@ -186,16 +186,17 @@ class homeController extends Controller
         return view('front.payment');
     }
 
-    public function policy()
+    public function policy($id)
     {
-        $page = Pages::findOrFail(1);
+        $page = Pages::findOrFail($id);
         return view('front.policy', compact('page'));
     }
 
     public function product($id)
     {
 
-        $product = Product::findOrFail($id);
+        $product = Product::where('id',$id)->where('appearance',1)->with('property')->first();
+        // dd($product);
         if (!$product) {
             abort(404);
         }

@@ -19222,3 +19222,30 @@ div.dataTables_wrapper div.dataTables_filter input {
 
 
 /*# sourceMappingURL=dashboard-free.css.map */
+
+.dir-rtl:lang(ar) {
+    direction: rtl;
+}
+
+.dir-rtl:lang(en) {
+    direction: ltr;
+}
+
+.text-dir:lang(ar) {
+    text-align: right;
+}
+
+.text-dir:lang(en) {
+    text-align: left;
+}
+
+
+/*# sourceMappingURL=dashboard-free.css.map */
+
+.flex-rtl:lang(ar) {
+    justify-content: flex-end;
+}
+
+.flex-rtl:lang(en) {
+    justify-content: flex-start;
+}

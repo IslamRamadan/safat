@@ -364,6 +364,7 @@
         <br class="d-none d-md-block">
 
         <div class="row justify-content-between">
+            @if (Lang::locale() == 'en')
 
             <div class="col-lg-3 col-md-3 col-sm-12 pad-0 fashion text-dir">
                 <br>
@@ -376,7 +377,7 @@
                 </button>
             </a>
             </div>
-
+            @endif
 
             <div class="col-lg-8 col-md-8 col-sm-12   pad-0">
                 <div class="blog-slides owl-carousel owl-theme owl-loaded owl-drag">
@@ -481,6 +482,20 @@
                 </div>
 
             </div>
+            @if (Lang::locale() == 'ar')
+
+            <div class="col-lg-3 col-md-3 col-sm-12 pad-0 fashion text-dir">
+                <br>
+                <h1>@lang('site.new_arrival')</h1>
+
+                <p>@lang('site.discover_new') </p>
+                <a href="{{route('new')}}">
+                <button class="gq gr gs dg ck dh di cn gt c gu gv cq p cr gw gx gy">
+                    <div class="text-center">@lang('site.new_in')</div>
+                </button>
+            </a>
+            </div>
+            @endif
         </div>
         <br><br>
     </div>
@@ -499,7 +514,7 @@
         <b></b>
     </h2>
     <br><br>
-<div class="row text-center">
+<div class="row text-center dir-rtl">
     @if (App\Product::count() > 0)
         @foreach (App\Product::select('id','title_en','title_ar','description_en','description_ar','appearance','price','img')->where('appearance',1)->get() as $p)
             @if ($p)

@@ -13,6 +13,7 @@ use RealRashid\SweetAlert\Facades\Alert;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Session;
 use App\City;
+use Carbon\Carbon;
 
 class OrderController extends Controller
 {
@@ -20,6 +21,12 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
+        $order = Order::where('status','!=',0)->latest()->get();
+        $number=$order->count();
+        $total_price=$order->sum('total_price');
+        $today=$order->where('created_at','>=',  Carbon::today())->count();
+        $today_price=$order->where('created_at','>=',  Carbon::today())->sum('total_price');
+
         if ($request->ajax()) {
             $filter = Session::get('filter');
           if($filter != null ){
@@ -34,7 +41,7 @@ class OrderController extends Controller
 
             }
             if($filter['city_id']!= null){
-              $data->where('city_id','<=',$filter['city_id']);
+              $data->where('city_id','=',$filter['city_id']);
             }
             $data=$data->latest()->get();
           }else{
@@ -57,6 +64,16 @@ class OrderController extends Controller
                     }
                 })->addColumn('city_name', function ($artist) {
                     return $artist->city->name;
+                })
+                ->addColumn('item_img', function ($artist) {
+                    // dd($artist->order_items->product_id);
+                    foreach ($artist->order_items as $item) {
+                        # code...
+                    // dd($item->product->img);
+                    return asset('/storage/' . $item->product->img);
+
+                    }
+                    // return $artist->product_id;
                 })
                 ->addColumn('action', function($row){
 //                    <a class="btn btn-success"  href="'.route('countries.edit' , $row->id).'" id="edit-user" >Edit </a>
@@ -96,12 +113,12 @@ class OrderController extends Controller
           Session::put('filter', $filter);
           $cities = City::get();
           // dd(  $filter);
-          return view('dashboard.orders.index',compact('cities'));
+          return view('dashboard.orders.index',compact('cities','today_price','today','total_price','number'));
 
         }
           $cities = City::get();
         Session::forget('filter');
-        return view('dashboard.orders.index',compact('cities'));
+        return view('dashboard.orders.index',compact('cities','today_price','today','total_price','number'));
     }
     public function not_paid(Request $request)
     {
@@ -196,42 +213,55 @@ class OrderController extends Controller
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('product', function ($artist) {
-                    return $artist->product->title_en?:'' . ' - ' . $artist->product->title_ar?:'' ;
+                    if(isset($artist->product)){
+
+                        return $artist->product->title_en?:'' . ' - ' . $artist->product->title_ar?:'' ;
+                    }
+                    else{
+
+                    return "-";
+                    }
                 })
                 ->addColumn('category', function ($artist) {
-                    $val = '';
-                    $val .= '( '.$artist->product->basic_category->name_en?:"" . ' - ' .$artist->product->basic_category->name_ar?:"" .' ) /';
-                    $val .= ' ( '.$artist->product->category->name_en?:"" . ' - ' .$artist->product->category->name_ar?:"" .' ) ';
-                    return $val;
+                    if(isset($artist->product->basic_category)){
+
+                        $val = '';
+                        $val .= '( '.$artist->product->basic_category->name_en?:"" . ' - ' .$artist->product->basic_category->name_ar?:"" .' ) /';
+                        $val .= ' ( '.$artist->product->category->name_en?:"" . ' - ' .$artist->product->category->name_ar?:"" .' ) ';
+                        return $val;
+                                        }
+                    else{
+
+                    return "-";
+                    }
+
+
 
                 })
                 ->addColumn('image', function ($artist) {
-                    $url = asset('/storage/' . $artist->product->img);
-                    return $url;
-                })
-                ->addColumn('price', function ($artist) {
-                    return $artist->product->price?:"";
-                })
-                ->addColumn('height', function ($artist) {
-                    if(isset($artist->height->height->name)){
+                    if(isset($artist->product)){
 
-                        return $artist->height->height->name?:"";
-                    }
-                    else{
-                        return "-";
-                    }
-                })
-                ->addColumn('size', function ($artist) {
-                    if(isset($artist->size->size->name)){
-
-                        return $artist->size->size->name?:"";
-                    }
+                        $url = asset('/storage/' . $artist->product->img);
+                        return $url;
+                                        }
                     else{
 
                     return "-";
                     }
 
                 })
+                ->addColumn('price', function ($artist) {
+                    if(isset($artist->product)){
+
+                        return $artist->product->price?:"";
+                    }
+                    else{
+
+                    return "-";
+                    }
+                })
+
+
                 ->addColumn('color', function ($artist) {
                     if(isset($artist->colors->color->name_ar)){
 
@@ -257,7 +287,7 @@ class OrderController extends Controller
                 })
 //                ->rawColumns(['action'])
                 ->make(true);
-                
+
         }
 
         return view('dashboard.orders.view' , compact('order'));
@@ -271,12 +301,12 @@ class OrderController extends Controller
     public function get_customSize(Request $request)
     {
        $items= CustomSize::where('order_item_id',$request->id)->get();
-       
+
        $val='';
-        
+
        foreach($items as $k=> $item){
            $val .= '<tr> <td>'.$item->height.'</td><td>'.__("site.the_front".$item->the_front).'</td><td>'. $item->order_size .'</td><td>'. __("site.veil_size".$item->veil_size) .'</td>';
-       
+
            $val .= '<td>'. $item->note .'</td> </tr>';
        }
        return $val;

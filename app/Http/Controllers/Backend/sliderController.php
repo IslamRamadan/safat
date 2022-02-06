@@ -55,10 +55,10 @@ class sliderController extends Controller
             'photo.required'=>"صورة البانر مطلوبة",
             'photo.mimes'=>" يجب ان تكون الصورة jpg او jpeg او png  ",
             'photo.max'=>" الحد الاقصي للصورة 4 ميجا ",
-            "name_en.required"=>"اسم البانر بالانجليزيه مطلوب",
-            "name_ar.required"=>"اسم البانر بالعربيه مطلوب",
-            "description_en.required"=>"وصف البانر بالانجليزيه مطلوب",
-            "description_ar.required"=>"وصف البانر بالعربيه مطلوب",
+            // "name_en.required"=>"اسم البانر بالانجليزيه مطلوب",
+            // "name_ar.required"=>"اسم البانر بالعربيه مطلوب",
+            // "description_en.required"=>"وصف البانر بالانجليزيه مطلوب",
+            // "description_ar.required"=>"وصف البانر بالعربيه مطلوب",
 
 
         ];
@@ -67,10 +67,10 @@ class sliderController extends Controller
         $validator =  Validator::make($request->all(), [
 
             'photo'=>'required|mimes:jpg,jpeg,png|max:4100',
-            "name_en"=>  " required",
-            "name_ar"=>  " required",
-            "description_ar"=>  " required",
-            "description_en"=>  " required",
+            // "name_en"=>  " required",
+            // "name_ar"=>  " required",
+            // "description_ar"=>  " required",
+            // "description_en"=>  " required",
 
         ], $messeges);
 
@@ -160,10 +160,10 @@ class sliderController extends Controller
             'photo.required'=>"صورة البانر مطلوبة",
             'photo.mimes'=>" يجب ان تكون الصورة jpg او jpeg او png  ",
             'photo.max'=>" الحد الاقصي للصورة 4 ميجا ",
-            "name_en.required"=>"اسم البانر بالانجليزيه مطلوب",
-            "name_ar.required"=>"اسم البانر بالعربيه مطلوب",
-            "description_en.required"=>"وصف البانر بالانجليزيه مطلوب",
-            "description_ar.required"=>"وصف البانر بالعربيه مطلوب",
+            // "name_en.required"=>"اسم البانر بالانجليزيه مطلوب",
+            // "name_ar.required"=>"اسم البانر بالعربيه مطلوب",
+            // "description_en.required"=>"وصف البانر بالانجليزيه مطلوب",
+            // "description_ar.required"=>"وصف البانر بالعربيه مطلوب",
 
 
         ];
@@ -172,10 +172,10 @@ class sliderController extends Controller
         $validator =  Validator::make($request->all(), [
 
             'photo'=>'mimes:jpg,jpeg,png|max:4100',
-            "name_en"=>  " required",
-            "name_ar"=>  " required",
-            "description_ar"=>  " required",
-            "description_en"=>  " required",
+            // "name_en"=>  " required",
+            // "name_ar"=>  " required",
+            // "description_ar"=>  " required",
+            // "description_en"=>  " required",
 
         ], $messeges);
 

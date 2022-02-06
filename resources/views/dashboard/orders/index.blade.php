@@ -90,24 +90,130 @@
                 @lang('site.paid_orders')
             </h6>
         </div>
-        
+        <div class="row mt-2">
+            <div class="col-xl-3 col-sm-6  mb-4">
+                <a href="{{route('orders.index')}}">
+
+                <div class="card">
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <div class="col-8">
+                                <div class="numbers text-dir">
+                                    <p class="text-sm mb-0 text-capitalize font-weight-bold">@lang('site.num_paid_orders')</p>
+                                    <h5 class="font-weight-bolder mb-0">
+                                        {{$number}}
+                                    </h5>
+                                </div>
+                            </div>
+                            <div class="col-4 text-end">
+                                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+                                    <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </a>
+            </div>
+
+            <div class="col-xl-3 col-sm-6  mb-4">
+                <a href="{{route('orders.index')}}">
+
+                <div class="card">
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <div class="col-8">
+                                <div class="numbers text-dir">
+                                    <p class="text-sm mb-0 text-capitalize font-weight-bold">@lang('site.total_orders')</p>
+                                    <h5 class="font-weight-bolder mb-0">
+                                        {{$total_price}} <span>@lang('site.kwd')</span>
+                                    </h5>
+                                </div>
+                            </div>
+                            <div class="col-4 text-end">
+                                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+                                    <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </a>
+            </div>
+
+            <div class="col-xl-3 col-sm-6  mb-4">
+                <a href="#">
+
+                <div class="card">
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <div class="col-8">
+                                <div class="numbers text-dir">
+                                    <p class="text-sm mb-0 text-capitalize font-weight-bold">@lang('site.today_orders')</p>
+                                    <h5 class="font-weight-bolder mb-0">
+                                        {{$today}}
+                                    </h5>
+                                </div>
+                            </div>
+                            <div class="col-4 text-end">
+                                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+
+                                        <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </a>
+            </div>
+
+            <div class="col-xl-3 col-sm-6  mb-4">
+                <a href="#">
+
+                <div class="card">
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <div class="col-8">
+                                <div class="numbers text-dir">
+                                    <p class="text-sm mb-0 text-capitalize font-weight-bold">@lang('site.total_today')</p>
+                                    <h5 class="font-weight-bolder mb-0">
+                                        {{$today_price}} <span>@lang('site.kwd')</span>
+                                    </h5>
+                                </div>
+                            </div>
+                            <div class="col-4 text-end">
+                                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+                                    <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </a>
+            </div>
+
+
+
+
+
+        </div>
         <div class="card-body px-0 pt-0 pb-2">
             <div class="table-responsive p-0">
-                <table class="table align-items-center justify-content-center mb-0 data-table  text-secondary text-xs ">
+                <table id="example" class="table align-items-center justify-content-center mb-0 data-table  text-secondary text-xs ">
                     <thead>
                     <tr>
             <th width="5%">No</th>
             <th width="5%">Id</th>
+            <th width="10%">@lang('site.invoice_id')</th>
             <th width="10%">@lang('site.username')</th>
             <th width="10%">@lang('site.phone')</th>
-            <th width="10%">@lang('site.email')</th>
-            <th width="10%">@lang('site.order_status')</th>
-            
+
             <th width="10%">@lang('site.city')</th>
             <th width="10%">@lang('site.region')</th>
-            <th width="10%">@lang('site.address')</th>
             <th width="10%">@lang('site.ttl_price')</th>
             <th width="10%">@lang('site.ttl_qut')</th>
+            <th width="10%">@lang('site.order_status')</th>
+            <th width="10%">@lang('site.img')</th>
             <th width="20%">@lang('site.action')</th>
         </tr>
         </thead>
@@ -126,37 +232,79 @@
     $(document).ready(function () {
 
         var table = $('.data-table').DataTable({
-            dom: 'Bfrtip',
-          buttons: [
-            
+        //     dom: 'Bfrtip',
+        buttons: [
+            'copy',
+
+
+                 {
+                extend: 'excel',
+                text: 'excel all',
+                exportOptions: {
+                  columns: ':visible',
+                    modifier: {
+                        selected: null
+                    },
+                    stripHtml: false
+
+                }
+            },
             {
-                extend: 'collection',
-                text: 'Export',
-                buttons: [
-                    'copy',
-                    'excel',
-                    'csv',
-                    'pdf',
-                    'print'
-                ]
-            }
+                extend: 'excel',
+                text: 'excel selected',
+                exportOptions: {
+                  columns: ':visible',
+                  stripHtml: false
+
+                }
+            },{
+                extend: 'print',
+                text: 'Print all',
+                exportOptions: {
+                  columns: ':visible',
+                    modifier: {
+                        selected: null
+                    },
+                    stripHtml: false
+
+                }
+            },
+            {
+                extend: 'print',
+                text: 'Print selected',
+                exportOptions: {
+                  columns: ':visible',
+                  stripHtml: false
+
+                }
+            },
+            'colvis','pageLength'
         ],
+        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+
           processing: true,
           serverSide: true,
             ajax: "{{ route('orders.index') }}",
             columns: [
                 {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                 {data: 'id', name: 'id'},
+                {data: 'invoice_id', name: 'invoice_id'},
                 {data: 'name', name: 'name'},
                 {data: 'phone', name: 'phone'},
-                {data: 'email', name: 'email'},
-                {data: 'status', name: 'status'},
-                
-              {data: 'city_name', name: 'city_name'},
-              {data: 'region', name: 'region'},
-              {data: 'address1', name: 'address1'},
+
+                {data: 'city_name', name: 'city_name'},
+                {data: 'region', name: 'region'},
                 {data: 'total_price', name: 'total_price'},
                 {data: 'total_quantity', name: 'total_quantity'},
+                {data: 'status', name: 'status'},
+                {
+                        data: 'item_img',
+                        name: 'item_img',
+                        render: function(data, type, full, meta) {
+                            return "<img src=\"" + data +
+                                "\"   border=\"0\"  class=\"img-rounded\" align=\"center\"  height=\"50\"/>";
+                        }
+                    },
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });
@@ -222,7 +370,9 @@
 //         });
 
     });
-
+    // $('#example').DataTable( {
+    //     "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
+    // } );
 </script>
 @endsection
 

@@ -42,12 +42,13 @@
                     <tr>
             <th width="5%">No</th>
             <th width="5%">Id</th>
+            <th width="10%">@lang('site.invoice_id')</th>
             <th width="10%">@lang('site.username')</th>
             <th width="10%">@lang('site.phone')</th>
-            <th width="10%">@lang('site.email')</th>
-            <th width="10%">@lang('site.order_status')</th>
+
             <th width="10%">@lang('site.ttl_price')</th>
             <th width="10%">@lang('site.ttl_qut')</th>
+            <th width="10%">@lang('site.order_status')</th>
             <th width="20%">@lang('site.action')</th>
         </tr>
         </thead>
@@ -72,12 +73,12 @@
             columns: [
                 {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                 {data: 'id', name: 'id'},
+                {data: 'invoice_id', name: 'invoice_id'},
                 {data: 'name', name: 'name'},
                 {data: 'phone', name: 'phone'},
-                {data: 'email', name: 'email'},
-                {data: 'status', name: 'status'},
                 {data: 'total_price', name: 'total_price'},
                 {data: 'total_quantity', name: 'total_quantity'},
+                {data: 'status', name: 'status'},
                 {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });

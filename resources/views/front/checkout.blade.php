@@ -30,7 +30,7 @@
                                 @guest()
                                     <input value="0" name="user_id" id="Orders_user_id" type="hidden">
 
-                                    <div class="form-group">
+                                    <div class="form-group col-12">
                                         <label for="Orders_address_line1" class="required font-weight-bold" style="color:red">
                                             @lang('site.full_name')
                                             <span class="required">*</span></label>
@@ -38,15 +38,15 @@
                                             value="{{ old('name') }}" type="text">
                                     </div>
 
-                                    <div class="form-group">
-                                        <label for="Orders_address_line1" class="required font-weight-bold" style="color:red">
-                                            @lang('site.email') <span class="required">*</span></label>
-                                        <input class="form-control" placeholder="E-mail" required="required" name="email"
+                                    <div class="form-group col-12">
+                                        <label for="Orders_address_line1" class="required font-weight-bold" >
+                                            @lang('site.email') <span class="required">(@lang('site.optional'))</span></label>
+                                        <input class="form-control" placeholder="E-mail"  name="email"
                                             id="Orders_email" type="email">
                                     </div>
 
 
-                                    <div class="form-group">
+                                    <div class="form-group col-12">
                                         <label for="Orders_address_line1" class="required font-weight-bold"
                                             style="color:red">@lang('site.phone')
                                             <span class="required">*</span>
@@ -55,7 +55,7 @@
                                         <input id="phone_code" class="form-control" required="required" name="phone"
                                             value="{{ old('phone') }}" type="number" maxlength="11">
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group col-12">
                                         <label for="Orders_country_id" class="required font-weight-bold"
                                             style="color:red">@lang('site.country') <span
                                                 class="required">*</span></label>
@@ -84,7 +84,7 @@
 
                                     </div>
 
-                                    <div class="form-group">
+                                    <div class="form-group col-12">
                                         <label for="Orders_city_id" class="required font-weight-bold" style="color:red">
                                             @lang('site.city') <span class="required">*</span></label>
                                         <select style="height: 45px; " class="form-control" name="city_id"
@@ -108,7 +108,7 @@
                                         value="{{ Auth::user()->country_id }}">
                                     <input type="hidden" name="phone" value="{{ Auth::user()->phone }}">
 
-                                    <div class="form-group">
+                                    <div class="form-group col-12">
                                         <label for="Orders_city_id" class="required font-weight-bold" style="color:red">
                                             @lang('site.city') <span class="required">*</span></label>
                                         <select style="height: 45px;   " class="form-control" name="city_id"
@@ -123,7 +123,7 @@
 
                                 @endguest
 
-                                {{-- <div class="form-group" > --}}
+                                {{-- <div class="form-group col-12" > --}}
                                 {{-- <label for="Orders_postal_code" class="required" style="color:red">@lang('site.postal_code')<span --}}
                                 {{-- class="required">*</span></label> --}}
                                 <input class="form-control" placeholder="" name="postal_code" id="Orders_postal_code"
@@ -131,25 +131,51 @@
 
                                 {{-- </div> --}}
 
-                                {{-- <div class="form-group" id="show_national_id" > --}}
+                                {{-- <div class="form-group col-12" id="show_national_id" > --}}
                                 {{-- <label for="Orders_national_id">@lang('site.ID') </label> --}}
                                 {{-- <input class="form-control" placeholder="" name="national_id" --}}
                                 {{-- id="Orders_national_id" --}}
                                 {{-- value="{{old('national_id')}}" --}}
                                 {{-- type="text" maxlength="100"></div> --}}
 
-                                <div class="form-group">
+                                <div class="form-group col-12">
                                     <label for="Orders_region" class="required font-weight-bold"
                                         style="color:red">@lang('site.region')<span class="required">*</span></label>
                                     <input class="form-control" placeholder="" name="region" id="Orders_region"
                                         value="{{ old('region') }}" type="text" maxlength="255">
                                 </div>
-                                <div class="form-group">
-                                    <label for="Orders_address_line1" class="required font-weight-bold"
-                                        style="color:red">@lang('site.add_1')<span class="required">*</span></label>
-                                    <input class="form-control" placeholder="" name="address1" id="Orders_address_line1"
-                                        value="{{ old('address1') }}" type="text" maxlength="255">
+                                <div class="row">
+                                <div class="form-group col-md-3 col-12">
+                                    <label for="jadah" class="required font-weight-bold"
+                                        style="color:red">@lang('site.jadah')<span class="required">*</span></label>
+                                    <input class="form-control" placeholder="" name="jadah" id="jadah"
+                                        value="{{ old('jadah') }}" type="text" maxlength="255">
                                 </div>
+                                <div class="form-group col-md-3 col-12">
+                                    <label for="street" class="required font-weight-bold"
+                                        style="color:red">@lang('site.street')<span class="required">*</span></label>
+                                    <input class="form-control" placeholder="" name="street" id="street"
+                                        value="{{ old('street') }}" type="text" maxlength="255">
+                                </div>
+                                <div class="form-group col-md-2 col-12">
+                                    <label for="building" class="required font-weight-bold"
+                                        style="color:red">@lang('site.building')<span class="required">*</span></label>
+                                    <input class="form-control" placeholder="" name="building" id="building"
+                                        value="{{ old('building') }}" type="number" maxlength="255">
+                                </div>
+                                <div class="form-group col-md-2 col-12">
+                                    <label for="floor" class="required font-weight-bold"
+                                        >@lang('site.floor')<span class="required">(@lang('site.optional'))</span></label>
+                                    <input class="form-control" placeholder="" name="floor" id="floor"
+                                        value="{{ old('floor') }}" type="number" maxlength="255">
+                                </div>
+                                <div class="form-group col-md-2 col-12">
+                                    <label for="flat" class="required font-weight-bold"
+                                        >@lang('site.flat')<span class="required">(@lang('site.optional'))</span></label>
+                                    <input class="form-control" placeholder="" name="flat" id="flat"
+                                        value="{{ old('flat') }}" type="number" maxlength="255">
+                                </div>
+                            </div>
                                 {{-- <div class="form-group"> --}}
                                 {{-- <label for="Orders_address_line2">@lang('site.add_2')</label> --}}
                                 {{-- <input class="form-control" placeholder="" --}}

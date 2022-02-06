@@ -26,6 +26,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Lang;
 use App\CustomSize;
+
 class CartController extends Controller
 {
     /**
@@ -115,7 +116,7 @@ class CartController extends Controller
         //        Session::flash('success','barang berhasil ditambah ke keranjang!');
         //
 
-                // Session::forget('cart');
+        // Session::forget('cart');
         $product = $request->except('_token');
 
         $cart = Session::get('cart');
@@ -124,15 +125,7 @@ class CartController extends Controller
 
         $current_product = Product::find($product['product_id']);
         // dd($product['quantity'],$current_product->quantity) ;
-        if ($product['quantity'] > $current_product->quantity) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'الكميه الموجوده حاليا لهذا المقاس اقل من الكميه المطلوبه.',
-                ]
-            );
 
-        }
 
 
 
@@ -158,15 +151,31 @@ class CartController extends Controller
         // dd(Session::get('cart'));
 
 
-        $id=$product['product_id'];
+        $id = $product['product_id'];
         // $height_id=$product['product_height_id'];
-        $quantity=$product['quantity'];
+        $quantity = $product['quantity'];
         // $color=$request->color ? $product['color']:0;
         // $product['color']=$color;
 
         if (isset($cart[$product['product_id']])) :
+            if ($product['quantity']+$cart[$product['product_id']]['quantity'] > $current_product->quantity) {
+                return response()->json(
+                    [
+                        'success' => false,
+                        'message' => 'الكميه الموجوده حاليا لهذا المقاس اقل من الكميه المطلوبه.',
+                    ]
+                );
+            }
             $cart[$product['product_id']]['quantity'] += $quantity;
         else :
+            if ($product['quantity'] > $current_product->quantity) {
+                return response()->json(
+                    [
+                        'success' => false,
+                        'message' => 'الكميه الموجوده حاليا لهذا المقاس اقل من الكميه المطلوبه.',
+                    ]
+                );
+            }
             $cart[$product['product_id']] = $product;
             $cart[$product['product_id']]['quantity'] = $quantity; // Dynamically add initial qty
         endif;
@@ -179,28 +188,28 @@ class CartController extends Controller
         // endif;
 
 
-    //    if($current_product->is_order ==1 ){
-    //        $custm_size = [
-    //            'cart_id'=>$id."-".$height_id."-".$color,
-    //            'height'=>$product['height_order'],
-    //         //   'shoulder'=>$product['shoulder'],
-    //         //   'chest'=>$product['chest'],
-    //            'the_front'=>$request->the_front ? $product['the_front'] : 0,
-    //            'veil_size'=>$request->veil_size ?$product['veil_size']: 0,
-    //            'note'=>$product['note'],
-    //         //   'hole_sleeve'=>$product['hole_sleeve'],
-    //         //   'sleeve_length'=>$product['sleeve_length'],
-    //            'order_size'=>$product['order_size']
-    //            ];
+        //    if($current_product->is_order ==1 ){
+        //        $custm_size = [
+        //            'cart_id'=>$id."-".$height_id."-".$color,
+        //            'height'=>$product['height_order'],
+        //         //   'shoulder'=>$product['shoulder'],
+        //         //   'chest'=>$product['chest'],
+        //            'the_front'=>$request->the_front ? $product['the_front'] : 0,
+        //            'veil_size'=>$request->veil_size ?$product['veil_size']: 0,
+        //            'note'=>$product['note'],
+        //         //   'hole_sleeve'=>$product['hole_sleeve'],
+        //         //   'sleeve_length'=>$product['sleeve_length'],
+        //            'order_size'=>$product['order_size']
+        //            ];
 
-    //      $arry_cust= Session::get('custm_sizes');
+        //      $arry_cust= Session::get('custm_sizes');
 
-    //     //  dd( $arry_cust);
-    //     $arry_cust != null ? array_push($arry_cust ,$custm_size ) : $arry_cust[]=$custm_size;
+        //     //  dd( $arry_cust);
+        //     $arry_cust != null ? array_push($arry_cust ,$custm_size ) : $arry_cust[]=$custm_size;
 
-    //       Session::put('custm_sizes', $arry_cust);
-    //     //   dd(Session::get('custm_sizes'));
-    //    }
+        //       Session::put('custm_sizes', $arry_cust);
+        //     //   dd(Session::get('custm_sizes'));
+        //    }
         Session::put('cart', $cart);
         // dd($cart[$product['product_id']]['quantity']);
         $total_price = 0;
@@ -209,11 +218,11 @@ class CartController extends Controller
         if (count($cart) > 0) {
             foreach ($cart as $key => $item) {
 
-                        // dd($cart,$item['quantity']);
-                        $total_price += Product::find($key)->price * $item['quantity'];
-                        $total_qty += $item['quantity'];
-                        // dd($cart,$item,$i,$total_price,$total_qty);
-                        //                        $total_price = $i;
+                // dd($cart,$item['quantity']);
+                $total_price += Product::find($key)->price * $item['quantity'];
+                $total_qty += $item['quantity'];
+                // dd($cart,$item,$i,$total_price,$total_qty);
+                //                        $total_price = $i;
 
             }
         }
@@ -376,7 +385,7 @@ class CartController extends Controller
         }
     }
 
-   public function reduceFromCart(Request $request)
+    public function reduceFromCart(Request $request)
     {
         // dd($request->all());
         //        Session::forget('cart');
@@ -416,7 +425,7 @@ class CartController extends Controller
         if ($operation > 0) {
             //IF QUANTITY >= CURRENT PLUS ONE
             // if($product_height_id != 0 ){
-                // $prod_height = ProdHeight::find($product_height_id);
+            // $prod_height = ProdHeight::find($product_height_id);
             if ($product->quantity < ($quantity + 1)) {
                 return  response()->json([
                     'success' => false,
@@ -796,19 +805,21 @@ class CartController extends Controller
      */
     public function store(Request $request)
     {
-
+        // dd($request->all(),$address);
         //ORDER STORE
         $messeges = [
 
             'name.required' => "اسم العميل مطلوب",
-            'email.required' => "البريد الإلكتروني للعميل مطلوب",
-            'email.email' => "يرجي كتابة البريد الالكتروني بشكل صحيح",
+            // 'email.required' => "البريد الإلكتروني للعميل مطلوب",
+            // 'email.email' => "يرجي كتابة البريد الالكتروني بشكل صحيح",
             'country_id.required' => "يرجي إختيار الدوله",
             'city_id.required' => "يرجي إختيار المدينه",
             'phone.required' => "يرجي إدخال رقم الهاتف",
             'phone.max' => "رقم الهاتف يجب ألا يزيد عن 11 رقم",
             'phone.min' => "رقم الهاتف يجب ألا يقل عن 3 أرقام",
-            'address1.required' => "يرجي إدخال العنوان الاول",
+            'jadah.required' => "يرجي إدخال الجاده",
+            'street.required' => "يرجي إدخال أسم الشارع",
+            'building.required' => "يرجي إدخال رقم المبني",
             //            'postal_code.required' => "يرجي إدخال الرمز البريدي",
 
         ];
@@ -825,7 +836,9 @@ class CartController extends Controller
 
             'phone' => ['required', 'max:11', 'min:3'],
 
-            'address1' => ['required'],
+            'jadah' => ['required'],
+            'building' => ['required'],
+            'street' => ['required'],
 
             //            'postal_code' => ['required'],
 
@@ -834,7 +847,7 @@ class CartController extends Controller
 
         if ($validator->fails()) {
             Alert::error($validator->errors()->first(), '');
-            return back();
+            return back()->withInput();
         }
         if ($request->email == null) {
             $request->merge(['email' => 'no@gmail.com']);
@@ -851,11 +864,13 @@ class CartController extends Controller
 
         $variation = str_replace("+", "", $request['phone']);
         $variation2 = str_replace("-", "", $variation);
+        $address = "جادة ".$request->jadah." شارع " . $request->street . " مبني رقم " . $request->building . " طابق رقم ".$request->floor." شقه رقم " .$request->flat;
 
         $request->merge([
             'total_price' => $cart_details['totalPrice'] + $city->delivery - Session::get('coupon')['discount'],
             'total_quantity' => $cart_details['totalQty'],
-            'phone' => $variation2
+            'phone' => $variation2,
+            'address1'=>$address
         ]);
         //MAKE ORDER TABLE
 
@@ -882,107 +897,145 @@ class CartController extends Controller
         //REACH HEIGHT AND ABSTRACT THE QUANTITY
 
         foreach ($cart as $cart_item) {
-            foreach ($cart_item as $item) {
 
-                if($item['product_height_id'] != 0 ){
+            $product = Product::find($cart_item['product_id']);
+            if ($product->quantity >= $cart_item['quantity']) {
+                $product->quantity = $product->quantity - $cart_item['quantity'];
+                $product->save();
 
-
-                $height = ProdHeight::find($item['product_height_id']);
-                if ($height->quantity >= $item['quantity']) {
-                    $height->quantity = $height->quantity - $item['quantity'];
-                    $height->save();
-
-                    $item['order_id']  = $order->id;
-
-                    OrderItem::create($item);
-
-                    $b = BestSeller::where([
-                        'product_id' => $item['product_id']
-                    ])->first();
-
-                    if (!$b) {
-                        $be = new BestSeller();
-                        $be->product_id = $item['product_id'];
-                        $be->rate = 1;
-                        $be->save();
-                    } else {
-                        $b->rate = $b->rate + 1;
-                        $b->save();
-                    }
-
-                    BestSeller::firstOrCreate([
-                        'product_id' => $item['product_id']
-                    ])->touch();
+                $cart_item['order_id']  = $order->id;
+                OrderItem::create($cart_item);
+                $b = BestSeller::where([
+                    'product_id' => $cart_item['product_id']
+                ])->first();
+                if (!$b) {
+                    $be = new BestSeller();
+                    $be->product_id = $cart_item['product_id'];
+                    $be->rate = 1;
+                    $be->save();
                 } else {
-
-                    $msg = ' المنتج ';
-                    $msg .= Product::find($item['product_id'])->title_en;
-                    $msg .=  ' لا يتوفر منه العدد المطلوب في المقاس ';
-                    $msg .=  ProdHeight::find($item['product_height_id'])->height->name;
-                    $msg .=  ' مع الحجم ';
-                    $msg .=  ProdSize::find($item['product_size_id'])->size->name;
-                    $msg .=  '    يرجي اختبار مقاسات اخري';
-
-                    Alert::error($msg, '');
-                    return back();
+                    $b->rate = $b->rate + 1;
+                    $b->save();
                 }
-                }else{
+                BestSeller::firstOrCreate([
+                    'product_id' => $cart_item['product_id']
+                ])->touch();
+            } else {
 
-                     $item['order_id']  = $order->id;
+                $msg = ' المنتج ';
+                $msg .= Product::find($cart_item['product_id'])->title_en;
+                $msg .=  ' لا يتوفر منه العدد المطلوب في المقاس ';
+                $msg .=  ProdHeight::find($cart_item['product_height_id'])->height->name;
+                $msg .=  ' مع الحجم ';
+                $msg .=  ProdSize::find($cart_item['product_size_id'])->size->name;
+                $msg .=  '    يرجي اختبار مقاسات اخري';
 
-                    $order_item=OrderItem::create($item);
-                    $custm_carts = Session::get('custm_sizes');
-
-                        $k=0;
-                    foreach($custm_carts as $custm_cart){
-                        // dd($item);
-                        // $i=$item['product_id'].'-'.0.'-'.$item['color_id'];
-
-                        if($custm_cart['cart_id']==$item['product_id']."-".'0'."-".$item['color'] ){
-                            $k ++;
-
-                            if($item['quantity'] >= $k){
-
-                                CustomSize::create([
-                                    'order_item_id'=>$order_item->id,
-                                    'height'=>$custm_cart['height'],
-                                    // 'shoulder'=>$custm_cart['shoulder'],
-                                    // 'chest'=>$custm_cart['chest'],
-                                    'the_front'=>$custm_cart['the_front'],
-                                    'veil_size'=>$custm_cart['veil_size']	,
-                                    'note'=>$custm_cart['note'],
-                                    // "hole_sleeve" =>$custm_cart['hole_sleeve'],
-                                    // "sleeve_length" =>$custm_cart['sleeve_length'],
-                                    'order_size'=>$custm_cart['order_size']
-                                ]);
-                            }
-                        }
-
-                    }
-
-
-                    $b = BestSeller::where([
-                        'product_id' => $item['product_id']
-                    ])->first();
-
-                    if (!$b) {
-                        $be = new BestSeller();
-                        $be->product_id = $item['product_id'];
-                        $be->rate = 1;
-                        $be->save();
-                    } else {
-                        $b->rate = $b->rate + 1;
-                        $b->save();
-                    }
-
-                    BestSeller::firstOrCreate([
-                        'product_id' => $item['product_id']
-                    ])->touch();
-
-
-                }
+                Alert::error($msg, '');
+                return back();
             }
         }
+        // foreach ($cart as $cart_item) {
+        //     foreach ($cart_item as $item) {
+
+        //         if($item['product_height_id'] != 0 ){
+
+
+        //         $height = ProdHeight::find($item['product_height_id']);
+        //         if ($height->quantity >= $item['quantity']) {
+        //             $height->quantity = $height->quantity - $item['quantity'];
+        //             $height->save();
+
+        //             $item['order_id']  = $order->id;
+
+        //             OrderItem::create($item);
+
+        //             $b = BestSeller::where([
+        //                 'product_id' => $item['product_id']
+        //             ])->first();
+
+        //             if (!$b) {
+        //                 $be = new BestSeller();
+        //                 $be->product_id = $item['product_id'];
+        //                 $be->rate = 1;
+        //                 $be->save();
+        //             } else {
+        //                 $b->rate = $b->rate + 1;
+        //                 $b->save();
+        //             }
+
+        //             BestSeller::firstOrCreate([
+        //                 'product_id' => $item['product_id']
+        //             ])->touch();
+        //         } else {
+
+        //             $msg = ' المنتج ';
+        //             $msg .= Product::find($item['product_id'])->title_en;
+        //             $msg .=  ' لا يتوفر منه العدد المطلوب في المقاس ';
+        //             $msg .=  ProdHeight::find($item['product_height_id'])->height->name;
+        //             $msg .=  ' مع الحجم ';
+        //             $msg .=  ProdSize::find($item['product_size_id'])->size->name;
+        //             $msg .=  '    يرجي اختبار مقاسات اخري';
+
+        //             Alert::error($msg, '');
+        //             return back();
+        //         }
+        //         }else{
+
+        //              $item['order_id']  = $order->id;
+
+        //             $order_item=OrderItem::create($item);
+        //             $custm_carts = Session::get('custm_sizes');
+
+        //                 $k=0;
+        //             foreach($custm_carts as $custm_cart){
+        //                 // dd($item);
+        //                 // $i=$item['product_id'].'-'.0.'-'.$item['color_id'];
+
+        //                 if($custm_cart['cart_id']==$item['product_id']."-".'0'."-".$item['color'] ){
+        //                     $k ++;
+
+        //                     if($item['quantity'] >= $k){
+
+        //                         CustomSize::create([
+        //                             'order_item_id'=>$order_item->id,
+        //                             'height'=>$custm_cart['height'],
+        //                             // 'shoulder'=>$custm_cart['shoulder'],
+        //                             // 'chest'=>$custm_cart['chest'],
+        //                             'the_front'=>$custm_cart['the_front'],
+        //                             'veil_size'=>$custm_cart['veil_size']	,
+        //                             'note'=>$custm_cart['note'],
+        //                             // "hole_sleeve" =>$custm_cart['hole_sleeve'],
+        //                             // "sleeve_length" =>$custm_cart['sleeve_length'],
+        //                             'order_size'=>$custm_cart['order_size']
+        //                         ]);
+        //                     }
+        //                 }
+
+        //             }
+
+
+        //             $b = BestSeller::where([
+        //                 'product_id' => $item['product_id']
+        //             ])->first();
+
+        //             if (!$b) {
+        //                 $be = new BestSeller();
+        //                 $be->product_id = $item['product_id'];
+        //                 $be->rate = 1;
+        //                 $be->save();
+        //             } else {
+        //                 $b->rate = $b->rate + 1;
+        //                 $b->save();
+        //             }
+
+        //             BestSeller::firstOrCreate([
+        //                 'product_id' => $item['product_id']
+        //             ])->touch();
+
+
+        //         }
+        //     }
+        // }
 
         // Session::forget('cart');
         // Session::forget('cart_details');
@@ -1128,8 +1181,10 @@ class CartController extends Controller
 
 
 
-         $apiURL = env('PAY_APIURL');
-        $apiKey = env('PAY_APIKEY') ;
+        //  $apiURL = env('PAY_APIURL');
+        // $apiKey = env('PAY_APIKEY') ;
+        $apiURL = 'https://apitest.myfatoorah.com';
+        $apiKey = 'rLtt6JWvbUHDDhsZnfpAhpYk4dxYDQkbcPTyGaKp2TYqQgG7FGZ5Th_WD53Oq8Ebz6A53njUoo1w3pjU1D4vs_ZMqFiz_j0urb_BH9Oq9VZoKFoJEDAbRZepGcQanImyYrry7Kt6MnMdgfG5jn4HngWoRdKduNNyP4kzcp3mRv7x00ahkm9LAK7ZRieg7k1PDAnBIOG3EyVSJ5kK4WLMvYr7sCwHbHcu4A5WwelxYK0GMJy37bNAarSJDFQsJ2ZvJjvMDmfWwDVFEVe_5tOomfVNt6bOg9mexbGjMrnHBnKnZR1vQbBtQieDlQepzTZMuQrSuKn-t5XZM7V6fCW7oP-uXGX-sMOajeX65JOf6XVpk29DP6ro8WTAflCDANC193yof8-f5_EYY-3hXhJj7RBXmizDpneEQDSaSz5sFk0sV5qPcARJ9zGG73vuGFyenjPPmtDtXtpx35A-BVcOSBYVIWe9kndG3nclfefjKEuZ3m4jL9Gg1h2JBvmXSMYiZtp9MR5I6pvbvylU_PP5xJFSjVTIz7IQSjcVGO41npnwIxRXNRxFOdIUHn0tjQ-7LwvEcTXyPsHXcMD8WtgBh-wxR8aKX7WPSsT1O8d8reb2aR7K3rkV3K82K_0OgawImEpwSvp9MNKynEAJQS6ZHe_J_l77652xwPNxMRTMASk1ZsJL';
 
 
         /* ------------------------ Call SendPayment Endpoint ----------------------- */
@@ -1209,7 +1264,7 @@ class CartController extends Controller
             'MobileCountryCode'  => $country_code,
             'CustomerMobile'     => $phone,
             'CustomerEmail'      => $email ?? "no@gmail.com",
-             'CallBackUrl'        => route('paycallBackUrl'),
+            'CallBackUrl'        => route('paycallBackUrl'),
             'ErrorUrl'           =>  route('payerrorUrl'), //or 'https://example.com/error.php'
             //'Language'           => 'en', //or 'ar'
             //            'CustomerReference'  => $order->id,
@@ -1316,8 +1371,10 @@ class CartController extends Controller
 
         /* ------------------------ Configurations ---------------------------------- */
 
-        $apiURL = env('PAY_APIURL');
-        $apiKey = env('PAY_APIKEY') ;
+        // $apiURL = env('PAY_APIURL');
+        // $apiKey = env('PAY_APIKEY') ;
+        $apiURL = 'https://apitest.myfatoorah.com';
+        $apiKey = 'rLtt6JWvbUHDDhsZnfpAhpYk4dxYDQkbcPTyGaKp2TYqQgG7FGZ5Th_WD53Oq8Ebz6A53njUoo1w3pjU1D4vs_ZMqFiz_j0urb_BH9Oq9VZoKFoJEDAbRZepGcQanImyYrry7Kt6MnMdgfG5jn4HngWoRdKduNNyP4kzcp3mRv7x00ahkm9LAK7ZRieg7k1PDAnBIOG3EyVSJ5kK4WLMvYr7sCwHbHcu4A5WwelxYK0GMJy37bNAarSJDFQsJ2ZvJjvMDmfWwDVFEVe_5tOomfVNt6bOg9mexbGjMrnHBnKnZR1vQbBtQieDlQepzTZMuQrSuKn-t5XZM7V6fCW7oP-uXGX-sMOajeX65JOf6XVpk29DP6ro8WTAflCDANC193yof8-f5_EYY-3hXhJj7RBXmizDpneEQDSaSz5sFk0sV5qPcARJ9zGG73vuGFyenjPPmtDtXtpx35A-BVcOSBYVIWe9kndG3nclfefjKEuZ3m4jL9Gg1h2JBvmXSMYiZtp9MR5I6pvbvylU_PP5xJFSjVTIz7IQSjcVGO41npnwIxRXNRxFOdIUHn0tjQ-7LwvEcTXyPsHXcMD8WtgBh-wxR8aKX7WPSsT1O8d8reb2aR7K3rkV3K82K_0OgawImEpwSvp9MNKynEAJQS6ZHe_J_l77652xwPNxMRTMASk1ZsJL';
 
         /* ------------------------ Call getPaymentStatus Endpoint ------------------ */
         //Inquiry using paymentId
@@ -1414,26 +1471,28 @@ class CartController extends Controller
         $invoice_status = $invoice_data->original->InvoiceStatus;
 
         $order = Order::where('invoice_id', $invoice_id)->first();
+
         // dd($order);
-        foreach($order-> order_items as $item ){
-             $cat_type=Product::find($item->product_id)->basic_category->type;
-                if($cat_type == 1){
-                    $height = ProdHeight::where("product_id",$item->product_id)->where('height_id',0)->first();
-                }else{
+        foreach ($order->order_items as $item) {
+            // dd();
+            $product = Product::find($item->product_id);
+            // if ($cat_type == 1) {
+            //     $height = ProdHeight::where("product_id", $item->product_id)->where('height_id', 0)->first();
+            // } else {
 
-                    $height = ProdHeight::find($item->product_height_id);
-                }
+            //     $height = ProdHeight::find($item->product_height_id);
+            // }
 
-                    $height->quantity = $height->quantity + $item->quantity;
-                    $height->save();
 
+            $product->quantity = $product->quantity + intVal( $item->quantity);
+            $product->save();
         }
         session()->forget('coupon');
 
 
         Alert::error('Payment Not Completed !', '');
 
-        return redirect()->route('home')->with(['order' => $order]);;
+        return redirect()->route('home');
     }
 
 

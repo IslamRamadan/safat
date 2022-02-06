@@ -1221,3 +1221,7 @@ li.nav-item:hover {
     border-bottom: 2px solid #000;
     border-top: 2px solid #000;
 }
+
+.product-collateral {
+    margin: 0px 40px;
+}

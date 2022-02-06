@@ -293,7 +293,7 @@
 
                 <form class=" product-count float-right d-none">
                     <a rel="nofollow" class="btn btn-default btn-minus" href="#" title="Subtract">&ndash;</a>
-                    <input type="text" disabled="" size="2" autocomplete="off"
+                    <input type="text" disabled="" size="2" readonly autocomplete="off"
                         class="cart_quantity_input form-control grey count" value="1" name="quantity">
                     <a rel="nofollow" class="btn btn-default btn-plus" href="#" title="Add" style="margin: -9px;">+</a>
                 </form>
@@ -312,87 +312,44 @@
         </div>
 
         <!--- end  --->
+        @if (count($product->property)>0)
         <div class="product-collateral dir-rtl text-dir">
             <dl id="collateral-tabs" class="collateral-tabs">
                 <div class="tab-content">
                     <div class="row">
                         <div class="col-sm-6">
-                            <h2>خصائص المنتج</h2>
+                            <h2>@lang('site.prod_prop')</h2>
                             <table class="table table-hover product-attribute-specs-table">
                                 <colgroup>
                                     <col width="25%">
                                     <col>
                                 </colgroup>
                                 <tbody>
+                                    @foreach ( $product->property as $item )
                                     <tr>
-                                        <th class="label text-uppercase">نوع الاكسسوار</th>
-                                        <td class="data">شـــوّاية</td>
+                                        <th class="label text-uppercase">{{$item['prop_name_'.app()->getLocale()]}}</th>
+                                        <td class="data">{!!$item['prop_value_'.app()->getLocale()]!!}</td>
                                     </tr>
-                                    <tr>
-                                        <th class="label text-uppercase">العرض(سم)</th>
-                                        <td class="data">55.88</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="label text-uppercase">الإرتفاع(سم)</th>
-                                        <td class="data">91.44</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="label text-uppercase">قطر الدائرة(سم)</th>
-                                        <td class="data">66.675</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="label text-uppercase">اللون</th>
-                                        <td class="data">أحمر </td>
-                                    </tr>
-                                    <tr>
-                                        <th class="label text-uppercase">اللون التفصيلي</th>
-                                        <td class="data">أحمر</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="label text-uppercase">المواد التفصيلية</th>
-                                        <td class="data">99% فولاذ، 1% بلاستيك</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="label text-uppercase">الطراز</th>
-                                        <td class="data">حديث</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="label text-uppercase">بلد المنشأ</th>
-                                        <td class="data">China</td>
-                                    </tr>
+                                    @endforeach
+
+
                                 </tbody>
                             </table>
                         </div>
-                        <div class="col-sm-6">
-                            <h2>معلومات عامة</h2>
-                            <table class="table table-hover product-attribute-specs-table">
-                                <colgroup>
-                                    <col width="25%">
-                                    <col>
-                                </colgroup>
-                                <tbody>
-                                    <tr>
-                                        <th class="label text-uppercase">رمز المنتج</th>
-                                        <td class="data">60079689</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="label text-uppercase">الموديل</th>
-                                        <td class="data">60079689</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+
                     </div>
                 </div>
             </dl>
         </div>
+        @endif
+
         <div class="container ">
 
             <h3 class="text-center ">@lang('site.related_products')
             </h3>
             <br>
 
-            <div class="row text-dir">
+            <div class="row text-dir dir-rtl">
 
                 <div class="col-12">
                     <ul class="tablinks  row  mr-0 pad-0 text-center justify-content-center">
@@ -691,7 +648,7 @@
 
                             // console.log(result);
 
-                            // location.reload();
+                            location.reload();
 
 
                         },
@@ -760,7 +717,7 @@
                             });
                             // console.log(result);
 
-                            // location.reload();
+                            location.reload();
 
 
                         },

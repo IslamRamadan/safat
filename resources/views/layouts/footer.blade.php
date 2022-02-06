@@ -75,7 +75,9 @@
             <div class="col-lg-4 col-md-6 mb-6 col-sm-6 mb-lg-0">
                 <h5 class="font-weight-bold">@lang('site.contact_us')
                 </h5>
-                <p> <a href="{{ route('policy') }}"> @lang('site.privacy_policy') </a>
+                <p> <a href="{{ route('policy',1) }}"> @lang('site.terms_and_condition') </a>
+                <p> <a href="{{ route('policy',2) }}"> @lang('site.about') </a>
+                <p> <a href="{{ route('policy',4) }}"> @lang('site.delivery') </a>
                 <p> <a href="{{ route('wishlist.view') }}"> @lang('site.mywishlist') </a>
                 <p> <a href="{{ route('checkout') }}"> @lang('site.payment') </a>
                 <p> <a href="{{ route('contact.us') }}"> @lang('site.contact_us') </a>

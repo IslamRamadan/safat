@@ -25,11 +25,11 @@ class Product extends Model
     public function basic_category(){
         return $this->belongsTo('App\BasicCategory' , 'basic_category_id' , 'id');
     }
-    public function size_guide(){
-        return $this->belongsTo('App\SizeGuide' , 'size_guide_id' , 'id');
-    }
-     public function colors(){
-        return $this->hasMany('App\ProdColor' , 'product_id'  , 'id');
+    // public function property(){
+    //     return $this->belongsTo('App\ProProperty' , 'size_guide_id' , 'id');
+    // }
+     public function property(){
+        return $this->hasMany('App\ProdProperty' , 'product_id'  , 'id');
     }
 
 

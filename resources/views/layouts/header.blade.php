@@ -347,8 +347,12 @@
 
                             </li>
                         @endforeach
-                        <li class="nav-item "><a class="nav-link " href="{{ route('policy') }}">
-                                @lang('site.policy')
+                        <li class="nav-item "><a class="nav-link " href="{{ route('policy',1) }}">
+                                @lang('site.terms_and_condition')
+
+                            </a></li>
+                        <li class="nav-item "><a class="nav-link " href="{{ route('policy',2) }}">
+                                @lang('site.about')
 
                             </a></li>
                         <li class="nav-item "><a class="nav-link " href="{{ route('checkout') }}">
@@ -566,7 +570,8 @@
 
                         </div>
                     </div>
-                    <a class="nav-link  border-bottom" href="{{ route('policy') }}">@lang('site.privacy_policy')</a>
+                    <a class="nav-link  border-bottom" href="{{ route('policy',1) }}">@lang('site.terms_and_condition')</a>
+                    <a class="nav-link  border-bottom" href="{{ route('policy',2) }}">@lang('site.about')</a>
                     <a class="nav-link  border-bottom" href="{{ route('checkout') }}"> @lang('site.payment')</a>
                     <a class="nav-link  border-bottom" href="{{ route('contact.us') }}">@lang('site.contact_us')</a>
                     <a class="nav-link  border-bottom" href="{{ route('checkout') }}">@lang('site.checkout')</a>

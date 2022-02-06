@@ -21,8 +21,8 @@
             max-width: none !important;
             top: 15% !important;
         }
-        
-        
+
+
     </style>
     <script>
         error = false
@@ -193,6 +193,26 @@
                     {{ $order->created_at }}
                 </p>
             </div>
+            <div class="col-4">
+                <h6 style="font-weight: bold">
+                    @lang('site.invoice_id')
+
+                </h6>
+
+                <p class="text text-primary">
+                    {{ $order->invoice_id }}
+                </p>
+            </div>
+            <div class="col-8">
+                <h6 style="font-weight: bold">
+                    @lang('site.invoice_link')
+
+                </h6>
+
+                <a class="text text-primary" href="{{ $order->invoice_link }}">
+                    {{ $order->invoice_link }}
+                </a>
+            </div>
             <div class="col-12">
                 <h6 style="font-weight: bold">
 
@@ -214,20 +234,16 @@
     </div>
     <div class="card-body px-0 pt-0 pb-2">
         <div class="table-responsive p-0">
-            <table class="table align-items-center justify-content-center mb-0 data-table  text-secondary text-xs ">
+            <table  id="example" class="table align-items-center justify-content-center mb-0 data-table  text-secondary text-xs ">
                 <thead>
                     <tr>
                         <th width="5%">No</th>
                         <th width="5%">Id</th>
                         <th width="10%">@lang('site.product_name')</th>
                         <th width="10%">@lang('site.cat_name')</th>
-                        <th width="10%">@lang('site.height')</th>
-                        <th width="10%">@lang('site.size')</th>
-                        <th width="10%">@lang('site.color')</th>
                         <th width="10%">@lang('site.quantity')</th>
                         <th width="10%">@lang('site.item_price')</th>
                         <th width="40%">@lang('site.img')</th>
-                         <th width="20%">@lang('site.action')</th> 
                     </tr>
                 </thead>
                 <tbody>
@@ -235,37 +251,8 @@
             </table>
         </div>
     </div>
-    
-    <div id="myModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
 
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <table class="table align-items-center justify-content-center mb-0 data-table2  text-secondary text-xs ">
-                <thead>
-                    <tr>
-                        <th >@lang('site.height_order')</th>
-                       
-                        <th >@lang('site.the_front')</th>
-                        <th >@lang('site.size')</th>
-                        <th >@lang('site.veil_size')</th>
-                        
-                        <th >@lang('site.note_order')</th>
-                    </tr>
-                </thead>
-                <tbody id="text-model">
-                </tbody>
-            </table>
-      </div>
-     
-    </div>
 
-  </div>
-</div>
     </div>
 
 
@@ -295,19 +282,6 @@
                         data: 'category',
                         name: 'category'
                     },
-                    {
-                        data: 'height',
-                        name: 'height'
-                    },
-                    {
-                        data: 'size',
-                        name: 'size'
-                    },
-                    
-                    {
-                        data: 'color',
-                        name: 'color'
-                    },
 
                     {
                         data: 'quantity',
@@ -324,13 +298,13 @@
                             return "<img src=\"" + data +
                                 "\"   border=\"0\"  class=\"img-rounded\" align=\"center\"  height=\"50\"/>";
                         }
-                    },  {data: 'action', name: 'action', orderable: false, searchable: false},
+                    }
                 ]
             });
-            
-            
-            
-           
+
+
+
+
 
         //   get_customSize/{id}
 

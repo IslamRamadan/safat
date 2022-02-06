@@ -53,7 +53,7 @@ Route::group(
     });
     Route::get('/payment','front\homeController@payment')->name('payment');
     Route::get('/new','front\homeController@new')->name('new');
-    Route::get('/policy','front\homeController@policy')->name('policy');
+    Route::get('/page/{id}','front\homeController@policy')->name('policy');
     Route::get('/product/{id}','front\homeController@product')->name('product');
 //    Route::get('/index','front\homeController@home')->name('index');
 

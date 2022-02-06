@@ -167,7 +167,7 @@
                                                                     onclick="changeProduct(-1 ,{{ $cart_parent['product_id'] }})">&ndash;</a>
                                                                 <input type="number"
                                                                     style="width: 40px; border: 0;border-radius: 10px ; text-align:center"
-                                                                    class="count"
+                                                                    class="count" readonly
                                                                     value="{{ $cart_parent['quantity'] }}"
                                                                     name="quantity">
                                                                 <a rel="nofollow" class="btn btn-default btn-plus" href="#"
