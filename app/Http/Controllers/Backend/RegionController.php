@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Backend;
 
 use App\City;
+use App\Region;
 use App\Country;
 use App\Http\Controllers\Controller;
-use App\Region;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
 
-class CityController extends Controller
+class RegionController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -24,21 +24,22 @@ class CityController extends Controller
 
 
     public function create(){
-        $countries = Country::all();
-        return view('dashboard.cities.create' , compact('countries') );
+        // dd('oo');
+        $cities = City::all();
+        return view('dashboard.regions.create' , compact('cities') );
     }
 
     public function store(Request $request)
     {
+        // $country_id=City::findOrFail($request->city_id)->country_id;
 
-
+        // dd($request->all());
         $messeges = [
 
-            'name_ar.required'=>"اسم المدينه باللغه العربيه مطلوب",
-            'name_en.required'=>"اسم المدينه باللغه الانجليزيه مطلوب",
-            'country_id.required'=>"يرجي اختيار الدوله",
-            'delivery.required'=>"تكلفة الشحن مطلوب",
-            'delivery_period.required'=>"مدة التوصيل مطلوبه",
+            'name_ar.required'=>"اسم المنطقهالمنطقه باللغه العربيه مطلوب",
+            'name_en.required'=>"اسم المنطقهالمنطقه باللغه الانجليزيه مطلوب",
+            'city_id.required'=>"يرجي اختيار المنطقهالمنطقه",
+
 
         ];
 
@@ -49,11 +50,7 @@ class CityController extends Controller
 
             'name_en' => ['required'],
 
-            'country_id' => ['required'],
-
-            'delivery' => ['required'],
-
-            'delivery_period' => ['required'],
+            'city_id' => ['required'],
 
 
 
@@ -62,29 +59,27 @@ class CityController extends Controller
 
         if ($validator->fails()) {
             Alert::error('خطأ', $validator->errors()->first());
-            return back();
+            return back()->withInput();
         }
+        $country_id=City::findOrFail($request->city_id)->country_id;
 
-        $city = City::create([
+        $region = Region::create([
             'name_ar' => $request['name_ar'],
             'name_en' => $request['name_en'],
-            'country_id' => $request['country_id'],
-            'delivery' => $request['delivery'],
-            'delivery_period' => $request['delivery_period'],
-
-
+            'city_id' => $request['city_id'],
+            'country_id' => $country_id,
         ]);
 
-        if ($city){
+        if ($region){
 
             session()->flash('success', "success");
             if(session()->has("success")){
-                Alert::success('نجح', 'تم إضافة مدينه');
+                Alert::success('نجح', 'تم إضافة منطقه');
             }
 
         }
 
-        return redirect()->route('cities.view' , $request['country_id']);
+        return redirect()->route('regions.view' , $country_id);
 
 //        $uId = $request->user_id;
 //        User::updateOrCreate(['id' => $uId],['name' => $request->name, 'email' => $request->email]);
@@ -98,16 +93,14 @@ class CityController extends Controller
 
 
 
-    public function updateCity(Request $request ,$id){
+    public function updateRegion(Request $request ,$id){
 
 
         $messeges = [
 
-            'name_ar.required'=>"اسم المدينه باللغه العربيه مطلوب",
-            'name_en.required'=>"اسم المدينه باللغه الانجليزيه مطلوب",
-            'country_id.required'=>"يرجي اختيار الدوله",
-            'delivery.required'=>"تكلفة الشحن مطلوب",
-            'delivery_period.required'=>"مدة التوصيل مطلوبه",
+            'name_ar.required'=>"اسم المنطقه باللغه العربيه مطلوب",
+            'name_en.required'=>"اسم المنطقه باللغه الانجليزيه مطلوب",
+            'city_id.required'=>"يرجي اختيار المنطقه",
 
 
 
@@ -119,10 +112,8 @@ class CityController extends Controller
 
             'name_en' => ['required'],
 
-            'country_id' => ['required'],
+            'city_id' => ['required'],
 
-            'delivery' => ['required'],
-            'delivery_period' => ['required'],
 
 
 
@@ -134,33 +125,34 @@ class CityController extends Controller
             return back();
         }
 
-        $city = City::find($id);
+        $region = Region::find($id);
 
 
-        if(!$city){
-            Alert::error('خطأ', 'المدينه غير موجوده');
+        if(!$region){
+            Alert::error('خطأ', 'المنطقه غير موجوده');
             return back();
         }
 
+        $country_id=City::findOrFail($request->city_id)->country_id;
 
-        $city = $city->update([
+        $region = $region->update([
             'name_ar' => $request['name_ar'],
             'name_en' => $request['name_en'],
-            'country_id' => $request['country_id'],
-            'delivery' => $request['delivery'],
-            'delivery_period' => $request['delivery_period'],
+            'city_id' => $request['city_id'],
+            'country_id' => $country_id ,
+
 
         ]);
 
 
-        if($city){
+        if($region){
             session()->flash('success', "success");
             if(session()->has("success")){
-                Alert::success('نجح', 'تم تعديل بيانات المدينه');
+                Alert::success('نجح', 'تم تعديل بيانات المنطقه');
             }
         }
 
-        return redirect()->route('cities.view' , $request['country_id']);
+        return redirect()->route('regions.view' , $country_id );
 
 
 //        $uId = $request->user_id;
@@ -199,33 +191,27 @@ class CityController extends Controller
     public function edit($id)
     {
         $where = array('id' => $id);
-        $city = City::where($where)->first();
-        if(!$city){
-            Alert::error('خطأ', 'المدينه غير موجوده بالنظام');
+        $region = Region::where($where)->first();
+        if(!$region){
+            Alert::error('خطأ', 'المنطقه غير موجوده بالنظام');
             return back();
         }
 
-        $countries = Country::all();
+        $cities = City::all();
 
-        return view('dashboard.cities.edit' , compact('city' ,'countries'));
+        return view('dashboard.regions.edit' , compact('region' ,'cities'));
 
     }
     public function destroy($id)
     {
-        $city = City::where('id',$id)->first();
+        $region = Region::where('id',$id)->first();
 
-        if($city){
-            $regions = Region::where('city_id',$city->id)->get();
-            // dd($regions);
-            if($regions){
-                foreach ($regions as $region) {
-                    $region->delete();
-                }
-            }
-            $city->delete();
+        if($region){
+
+            $region->delete();
             session()->flash('success', "success");
             if(session()->has("success")){
-                Alert::success('نجح', ' تم حذف المدينه');
+                Alert::success('نجح', ' تم حذف المنطقه');
             }
 
         }

@@ -91,6 +91,13 @@
                                             id="Orders_city_id">
                                         </select>
                                     </div>
+                                    <div class="form-group col-12">
+                                        <label for="Orders_region_id" class="required font-weight-bold" style="color:red">
+                                            @lang('site.region') <span class="required">*</span></label>
+                                        <select style="height: 45px; " class="form-control" name="region"
+                                            id="Orders_region_id">
+                                        </select>
+                                    </div>
 
 
 
@@ -113,6 +120,13 @@
                                             @lang('site.city') <span class="required">*</span></label>
                                         <select style="height: 45px;   " class="form-control" name="city_id"
                                             id="Orders_city_id">
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <label for="Orders_region_id" class="required font-weight-bold" style="color:red">
+                                            @lang('site.region') <span class="required">*</span></label>
+                                        <select style="height: 45px; " class="form-control" name="region"
+                                            id="Orders_region_id">
                                         </select>
                                     </div>
                                     <div id="test">
@@ -138,12 +152,7 @@
                                 {{-- value="{{old('national_id')}}" --}}
                                 {{-- type="text" maxlength="100"></div> --}}
 
-                                <div class="form-group col-12">
-                                    <label for="Orders_region" class="required font-weight-bold"
-                                        style="color:red">@lang('site.region')<span class="required">*</span></label>
-                                    <input class="form-control" placeholder="" name="region" id="Orders_region"
-                                        value="{{ old('region') }}" type="text" maxlength="255">
-                                </div>
+
                                 <div class="row">
                                 <div class="form-group col-md-3 col-12">
                                     <label for="jadah" class="required font-weight-bold"
@@ -533,6 +542,64 @@
                         } else {
 
                             $('#Orders_city_id').html(result.cities)
+
+
+                            getDelivery();
+
+                        }
+
+                    },
+                    error: function(error) {
+                        Swal.fire({
+                            title: 'لم تكتمل العمليه ',
+                            icon: '?',
+                            confirmButtonColor: '#ec7d23',
+                            position: 'bottom-start',
+                            showCloseButton: true,
+                        })
+                    }
+                });
+
+            }
+            getRegions();
+
+            $('#Orders_city_id').on('change',
+                function() {
+                    getRegions();
+                }
+            )
+
+
+            function getRegions() {
+                var city = $('#Orders_city_id').val() ? $('#Orders_city_id').val() : 1;
+
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                    }
+                });
+
+                $.ajax({
+                    url: "{{ route('get.regions') }}",
+                    method: 'post',
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        city: city
+                    },
+                    success: function(result) {
+                        // console.log(result);
+
+                        if (!result.success) {
+                            Swal.fire({
+                                icon: '?',
+                                confirmButtonColor: '#ec7d23',
+                                position: 'bottom-start',
+                                showCloseButton: true,
+                                title: result.msg,
+                            })
+                        } else {
+
+                            $('#Orders_region_id').html(result.regions)
 
 
                             getDelivery();

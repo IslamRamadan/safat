@@ -4,11 +4,11 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class City extends Model
+class Region extends Model
 {
-    protected $table = 'cities';
+    protected $table = 'regions1';
     protected $fillable = [
-      'name_ar' , 'name_en' , 'delivery' , 'country_id' , 'delivery_period'
+      'name_ar' , 'name_en' , 'city_id' , 'country_id'
     ];
     public function getNameAttribute()
        {
@@ -17,9 +17,7 @@ class City extends Model
     public function country(){
         return $this->belongsTo('App\Country'  , 'country_id' , 'id');
     }
-    public function regions(){
-        return $this->hasMany('App\Region' , 'city_id' , 'id');
-        //has many!!
-
+    public function city(){
+        return $this->belongsTo('App\City'  , 'city_id' , 'id');
     }
 }

@@ -72,7 +72,7 @@
         </div>
 
         <br />
-        <div class="row m-auto">
+        <div class="row m-auto text-dir dir-rtl">
             {{-- <div class="col-lg-12 margin-tb" style="text-align: center"> --}}
             <div class="col-4">
                 <h6 style="font-weight: bold">
@@ -120,11 +120,20 @@
 
             <div class="col-4">
                 <h6 style="font-weight: bold">
-                    @lang('site.region')
+                    @lang('site.city')
                 </h6>
 
                 <p class="text text-primary">
                     {{ $order->city->name_en }} - {{ $order->city->name_ar }}
+                </p>
+            </div>
+            <div class="col-4">
+                <h6 style="font-weight: bold">
+                    @lang('site.region')
+                </h6>
+
+                <p class="text text-primary">
+                    {{ $order->region }}
                 </p>
             </div>
 
@@ -203,7 +212,7 @@
                     {{ $order->invoice_id }}
                 </p>
             </div>
-            <div class="col-8">
+            <div class="col-4">
                 <h6 style="font-weight: bold">
                     @lang('site.invoice_link')
 

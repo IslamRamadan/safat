@@ -24,4 +24,9 @@ public function getNameAttribute()
         //has many!!
 
     }
+    public function regions(){
+        return $this->hasMany('App\Region' , 'country_id' , 'id');
+        //has many!!
+
+    }
 }

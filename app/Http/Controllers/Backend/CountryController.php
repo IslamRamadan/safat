@@ -6,6 +6,7 @@ use App\City;
 use App\Country;
 use App\Currency;
 use App\Http\Controllers\Controller;
+use App\Region;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -41,6 +42,7 @@ class CountryController extends Controller
 
                     $action = '
                         <a class="btn btn-primary"  href="'.route('cities.view' , $row->id).'" id="edit-user" >Cities </a>
+                        <a class="btn btn-info"  href="'.route('regions.view' , $row->id).'" id="edit-user" >Regions </a>
                         <a class="btn btn-success"  href="'.route('countries.edit' , $row->id).'" id="edit-user" >Edit </a>
                         <meta name="csrf-token" content="{{ csrf_token() }}">
                         <a href="'.url('countries/destroy' , $row->id).'" class="btn btn-danger">Delete</a>
@@ -351,6 +353,13 @@ class CountryController extends Controller
                     }
                 }
             }
+            if($country->regions){
+                if($country->regions->count() > 0){
+                    foreach($country->regions as $region){
+                        $region->delete();
+                    }
+                }
+            }
 
             $country->delete();
             session()->flash('success', "success");
@@ -382,8 +391,8 @@ class CountryController extends Controller
                 })
                 ->addColumn('action', function($row){
 
-                    //  <a href="'.url('cities/destroy' , $row->id).'" class="btn btn-danger">Delete</a>
                     $action = '
+                        <a href="'.url('cities/destroy' , $row->id).'" class="btn btn-danger">Delete</a>
                         <a class="btn btn-success"  href="'.route('cities.edit' , $row->id).'" id="edit-user" >Edit </a>
                         <meta name="csrf-token" content="{{ csrf_token() }}">
                       ';
@@ -395,5 +404,40 @@ class CountryController extends Controller
         }
 
         return view('dashboard.countries.view' , compact('country'));
+    }
+    public function regions(Request $request,$country_id){
+        // dd("Hh");
+        $country = Country::find($country_id);
+
+        if(!$country){
+            Alert::error('خطأ','الدوله غير موجوده بالنظام ');
+            return back();
+        }
+
+        if ($request->ajax()) {
+            $data = Region::where('country_id' , $country_id)->latest()->get();
+            return Datatables::of($data)
+                ->addIndexColumn()
+                ->addColumn('country', function ($artist) {
+                    return $artist->country->name_ar;
+                })
+                ->addColumn('city', function ($artist) {
+                    return $artist->city->name_ar;
+                })
+                ->addColumn('action', function($row){
+
+                    $action = '
+                        <a href="'.url('regions/destroy' , $row->id).'" class="btn btn-danger">Delete</a>
+                        <a class="btn btn-success"  href="'.route('regions.edit' , $row->id).'" id="edit-user" >Edit </a>
+                        <meta name="csrf-token" content="{{ csrf_token() }}">
+                      ';
+                    return $action;
+
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        return view('dashboard.regions.view' , compact('country'));
     }
 }

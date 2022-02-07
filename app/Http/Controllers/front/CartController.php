@@ -548,35 +548,6 @@ class CartController extends Controller
     public function getCities(Request $request)
     {
 
-
-        //        if (Auth::check()) {
-        //
-        //            return response()->json([
-        //                'success' => true,
-        //                'cities' => Auth::user()->country_id
-        //            ]);
-        //
-        //            $country = Country::find(Auth::user()->country_id);
-        //
-        //            if (!$country) {
-        //                return response()->json([
-        //                    'success' => false,
-        //                    'msg' => 'Can not find Country  !!'
-        //                ]);
-        //            }
-        //
-        //            $val = '';
-        //
-        //            foreach ($country->cities as $city) {
-        //                $val .= '<option value="' . $city->id . '">' . $city->name_en . ' - ' . $city->name_ar . '</option>';
-        //            }
-        //
-        //            return response()->json([
-        //                'success' => true,
-        //                'cities' => $val
-        //            ]);
-        //
-        //        } else {
         $country_id = $request->country;
 
         if (!$country_id) {
@@ -612,6 +583,51 @@ class CartController extends Controller
         return response()->json([
             'success' => true,
             'cities' => $val,
+            //                'delivery' => $delivery
+        ]);
+        //        }
+
+
+
+    }
+    public function getRegions(Request $request)
+    {
+
+        $city_id = $request->city;
+
+        if (!$city_id) {
+            return response()->json([
+                'success' => false,
+                'msg' => 'Please Choose City  !!'
+            ]);
+        }
+        $city = City::find($city_id);
+        if (!$city) {
+            return response()->json([
+                'success' => false,
+                'msg' => 'Can not find city  !!'
+            ]);
+        }
+
+        $val = '';
+        $delivery = '';
+
+        if (app()->getLocale() == 'en') {
+            foreach ($city->regions as $region) {
+                $val .= '<option value="' . $region->name_ar . '">' . $region->name_en .  '</option>';
+                //                $delivery .= '<p> '.$city->delivery_period .'</p>';
+
+            }
+        } else {
+            foreach ($city->regions as $region) {
+                $val .= '<option value="' . $region->name_ar . '">' .  $region->name_ar . '</option>';
+                //                $delivery .= '<p> '.$city->delivery_period .'</p>';
+
+            }
+        }
+        return response()->json([
+            'success' => true,
+            'regions' => $val,
             //                'delivery' => $delivery
         ]);
         //        }

@@ -94,6 +94,7 @@ Route::group(
     Route::post('/contact_us_user','front\homeController@contactUsStore')->name('contact.us');
     Route::get('/getHeights','front\CartController@getHeights')->name('get.heights');
     Route::post('/getCities','front\CartController@getCities')->name('get.cities');
+    Route::post('/getRegions','front\CartController@getRegions')->name('get.regions');
     Route::post('/getDelivery','front\CartController@getDelivery')->name('get.delivery');
 
     Route::post('/order/store','front\CartController@store')->name('order.store');
@@ -114,6 +115,9 @@ Route::group(
         Route::get('cities/destroy/{id}','Backend\CityController@destroy');
         Route::get('cities/view/{country_id}','Backend\CountryController@cities')->name('cities.view');
         Route::resource('pages','Backend\PagesController');
+        Route::get('regions/destroy/{id}','Backend\RegionController@destroy');
+        Route::get('regions/view/{country_id}','Backend\CountryController@regions')->name('regions.view');
+        Route::resource('pages','Backend\PagesController');
         Route::resource('admins','Backend\AdminController');
         Route::resource('settings','Backend\SettingsController');
         Route::resource('basic_categories','Backend\BasicCategoryController');
@@ -122,6 +126,7 @@ Route::group(
         Route::resource('currencies','Backend\CurrencyController');
         Route::resource('countries','Backend\CountryController');
         Route::resource('cities','Backend\CityController');
+        Route::resource('regions','Backend\RegionController');
         Route::resource('sliders','Backend\sliderController');
         Route::resource('sizes','Backend\SizeController');
         Route::resource('heights','Backend\HeightController');
@@ -162,6 +167,7 @@ Route::group(
         Route::post('custom_admins/update','Backend\AdminController@updateAdmin')->name('admins.update.admin');
         Route::post('custom_countries/update/{id}','Backend\CountryController@updateCountry')->name('countries.update.country');
         Route::post('custom_cities/update/{id}','Backend\CityController@updateCity')->name('cities.update.city');
+        Route::post('custom_regions/update/{id}','Backend\RegionController@updateRegion')->name('regions.update.region');
         Route::post('custom_pages/update/{id}','Backend\PagesController@updatePage')->name('pages.update.page');
         Route::post('custom_basic_categories/update/{id}','Backend\BasicCategoryController@updateBasicCategory')->name('basic_categories.update.basic_category');
         Route::post('custom_sizes_guide/update/{id}','Backend\SizeGuideController@updateSizeGuide')->name('size_guides.update.size_guide');
