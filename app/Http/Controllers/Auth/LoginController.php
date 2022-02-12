@@ -52,7 +52,15 @@ class LoginController extends Controller
             auth()->loginUsingId($user->id);
             return redirect()->route('/');
         }
-        Alert::error('خطأ', "Error");
+        if (Lang::locale() == 'en') {
+
+            Alert::error('Error', "Try Again!");
+        }
+        else{
+                Alert::error('خطأ', "حاول مره أخري");
+
+            }
+
         return back();
     }
 }

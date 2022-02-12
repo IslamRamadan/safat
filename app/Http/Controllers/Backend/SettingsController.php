@@ -8,6 +8,8 @@ use App\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use RealRashid\SweetAlert\Facades\Alert;
+use Lang;
+
 
 class SettingsController extends Controller
 {
@@ -53,11 +55,11 @@ class SettingsController extends Controller
         $settings = Settings::all();
 
         $setting = $settings->first();
-        if(!$setting){
+        if (!$setting) {
             $setting = Settings::create();
         }
 
-        return view('dashboard.settings.show' , compact('setting'));
+        return view('dashboard.settings.show', compact('setting'));
     }
 
     /**
@@ -70,11 +72,11 @@ class SettingsController extends Controller
     {
         $setting = Settings::all()->first();
 
-        if(!$setting){
+        if (!$setting) {
             $setting = Settings::create();
         }
 
-        return view('dashboard.settings.edit' , compact('setting'));
+        return view('dashboard.settings.edit', compact('setting'));
     }
 
     /**
@@ -84,11 +86,11 @@ class SettingsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateSetting(Request $request , $id)
+    public function updateSetting(Request $request, $id)
     {
-        if(Settings::all()->count() > 0){
+        if (Settings::all()->count() > 0) {
             $setting = Settings::all()->first();
-            $setting->update($request->except('logo','footer_logo','ad_image','landing_image_mob','landing_image'));
+            $setting->update($request->except('logo', 'footer_logo', 'ad_image', 'landing_image_mob', 'landing_image'));
 
             if ($request->hasfile('logo')) {
                 // $images .= 'yes';
@@ -102,18 +104,16 @@ class SettingsController extends Controller
                     Storage::disk('public')->makeDirectory($path);
                 }
 
-//            return (storage_path('app/public/'.$cat->image_url));
+                //            return (storage_path('app/public/'.$cat->image_url));
 
-                if($setting->logo != null){
-                    if(file_exists(storage_path('app/public/'.$setting->logo)))
-                    {
-                        unlink(storage_path('app/public/'.$setting->logo));
+                if ($setting->logo != null) {
+                    if (file_exists(storage_path('app/public/' . $setting->logo))) {
+                        unlink(storage_path('app/public/' . $setting->logo));
                     }
                 }
 
                 $setting->logo = $image->storeAs($path, $file_name, 'public');
                 $setting->save();
-
             }
             //logo of footer start
             if ($request->hasfile('footer_logo')) {
@@ -128,18 +128,16 @@ class SettingsController extends Controller
                     Storage::disk('public')->makeDirectory($path);
                 }
 
-//            return (storage_path('app/public/'.$cat->image_url));
+                //            return (storage_path('app/public/'.$cat->image_url));
 
-                if($setting->footer_logo != null){
-                    if(file_exists(storage_path('app/public/'.$setting->footer_logo)))
-                    {
-                        unlink(storage_path('app/public/'.$setting->footer_logo));
+                if ($setting->footer_logo != null) {
+                    if (file_exists(storage_path('app/public/' . $setting->footer_logo))) {
+                        unlink(storage_path('app/public/' . $setting->footer_logo));
                     }
                 }
 
                 $setting->footer_logo = $image->storeAs($path, $file_name, 'public');
                 $setting->save();
-
             }
             //logo of footer end
 
@@ -156,18 +154,16 @@ class SettingsController extends Controller
                     Storage::disk('public')->makeDirectory($path);
                 }
 
-//            return (storage_path('app/public/'.$cat->image_url));
+                //            return (storage_path('app/public/'.$cat->image_url));
 
-                if($setting->ad_image != null){
-                    if(file_exists(storage_path('app/public/'.$setting->ad_image)))
-                    {
-                        unlink(storage_path('app/public/'.$setting->ad_image));
+                if ($setting->ad_image != null) {
+                    if (file_exists(storage_path('app/public/' . $setting->ad_image))) {
+                        unlink(storage_path('app/public/' . $setting->ad_image));
                     }
                 }
 
                 $setting->ad_image = $image->storeAs($path, $file_name, 'public');
                 $setting->save();
-
             }
             //logo of ad img end
 
@@ -183,20 +179,18 @@ class SettingsController extends Controller
                     Storage::disk('public')->makeDirectory($path);
                 }
 
-//            return (storage_path('app/public/'.$cat->image_url));
+                //            return (storage_path('app/public/'.$cat->image_url));
 
-                if($setting->landing_image != null){
-                    if(file_exists(storage_path('app/public/'.$setting->landing_image)))
-                    {
-                        unlink(storage_path('app/public/'.$setting->landing_image));
+                if ($setting->landing_image != null) {
+                    if (file_exists(storage_path('app/public/' . $setting->landing_image))) {
+                        unlink(storage_path('app/public/' . $setting->landing_image));
                     }
                 }
 
                 $setting->landing_image = $image->storeAs($path, $file_name, 'public');
                 $setting->save();
-
             }
-             if ($request->hasfile('landing_image_mob')) {
+            if ($request->hasfile('landing_image_mob')) {
                 // $images .= 'yes';
 
                 $image = $request->file('landing_image_mob');
@@ -208,22 +202,20 @@ class SettingsController extends Controller
                     Storage::disk('public')->makeDirectory($path);
                 }
 
-//            return (storage_path('app/public/'.$cat->image_url));
+                //            return (storage_path('app/public/'.$cat->image_url));
 
-                if($setting->landing_image_mob != null){
-                    if(file_exists(storage_path('app/public/'.$setting->landing_image_mob)))
-                    {
-                        unlink(storage_path('app/public/'.$setting->landing_image_mob));
+                if ($setting->landing_image_mob != null) {
+                    if (file_exists(storage_path('app/public/' . $setting->landing_image_mob))) {
+                        unlink(storage_path('app/public/' . $setting->landing_image_mob));
                     }
                 }
 
                 $setting->landing_image_mob = $image->storeAs($path, $file_name, 'public');
                 $setting->save();
-
             }
         } else {
 
-            $setting = Settings::create($request->except('logo','footer_logo','ad_image','landing_image_mob','landing_image'));
+            $setting = Settings::create($request->except('logo', 'footer_logo', 'ad_image', 'landing_image_mob', 'landing_image'));
 
             if ($request->hasfile('logo')) {
                 // $images .= 'yes';
@@ -237,18 +229,16 @@ class SettingsController extends Controller
                     Storage::disk('public')->makeDirectory($path);
                 }
 
-//            return (storage_path('app/public/'.$cat->image_url));
+                //            return (storage_path('app/public/'.$cat->image_url));
 
-                if($setting->logo != null){
-                    if(file_exists(storage_path('app/public/'.$setting->logo)))
-                    {
-                        unlink(storage_path('app/public/'.$setting->logo));
+                if ($setting->logo != null) {
+                    if (file_exists(storage_path('app/public/' . $setting->logo))) {
+                        unlink(storage_path('app/public/' . $setting->logo));
                     }
                 }
 
                 $setting->logo = $image->storeAs($path, $file_name, 'public');
                 $setting->save();
-
             }
 
 
@@ -264,18 +254,16 @@ class SettingsController extends Controller
                     Storage::disk('public')->makeDirectory($path);
                 }
 
-//            return (storage_path('app/public/'.$cat->image_url));
+                //            return (storage_path('app/public/'.$cat->image_url));
 
-                if($setting->ad_image != null){
-                    if(file_exists(storage_path('app/public/'.$setting->ad_image)))
-                    {
-                        unlink(storage_path('app/public/'.$setting->ad_image));
+                if ($setting->ad_image != null) {
+                    if (file_exists(storage_path('app/public/' . $setting->ad_image))) {
+                        unlink(storage_path('app/public/' . $setting->ad_image));
                     }
                 }
 
                 $setting->ad_image = $image->storeAs($path, $file_name, 'public');
                 $setting->save();
-
             }
 
 
@@ -291,18 +279,16 @@ class SettingsController extends Controller
                     Storage::disk('public')->makeDirectory($path);
                 }
 
-//            return (storage_path('app/public/'.$cat->image_url));
+                //            return (storage_path('app/public/'.$cat->image_url));
 
-                if($setting->footer_logo != null){
-                    if(file_exists(storage_path('app/public/'.$setting->footer_logo)))
-                    {
-                        unlink(storage_path('app/public/'.$setting->footer_logo));
+                if ($setting->footer_logo != null) {
+                    if (file_exists(storage_path('app/public/' . $setting->footer_logo))) {
+                        unlink(storage_path('app/public/' . $setting->footer_logo));
                     }
                 }
 
                 $setting->footer_logo = $image->storeAs($path, $file_name, 'public');
                 $setting->save();
-
             }
             if ($request->hasfile('landing_image')) {
                 // $images .= 'yes';
@@ -316,20 +302,18 @@ class SettingsController extends Controller
                     Storage::disk('public')->makeDirectory($path);
                 }
 
-//            return (storage_path('app/public/'.$cat->image_url));
+                //            return (storage_path('app/public/'.$cat->image_url));
 
-                if($setting->landing_image != null){
-                    if(file_exists(storage_path('app/public/'.$setting->landing_image)))
-                    {
-                        unlink(storage_path('app/public/'.$setting->landing_image));
+                if ($setting->landing_image != null) {
+                    if (file_exists(storage_path('app/public/' . $setting->landing_image))) {
+                        unlink(storage_path('app/public/' . $setting->landing_image));
                     }
                 }
 
                 $setting->landing_image = $image->storeAs($path, $file_name, 'public');
                 $setting->save();
-
             }
-             if ($request->hasfile('landing_image_mob')) {
+            if ($request->hasfile('landing_image_mob')) {
                 // $images .= 'yes';
 
                 $image = $request->file('landing_image_mob');
@@ -341,21 +325,17 @@ class SettingsController extends Controller
                     Storage::disk('public')->makeDirectory($path);
                 }
 
-//            return (storage_path('app/public/'.$cat->image_url));
+                //            return (storage_path('app/public/'.$cat->image_url));
 
-                if($setting->landing_image_mob != null){
-                    if(file_exists(storage_path('app/public/'.$setting->landing_image_mob)))
-                    {
-                        unlink(storage_path('app/public/'.$setting->landing_image_mob));
+                if ($setting->landing_image_mob != null) {
+                    if (file_exists(storage_path('app/public/' . $setting->landing_image_mob))) {
+                        unlink(storage_path('app/public/' . $setting->landing_image_mob));
                     }
                 }
 
                 $setting->landing_image_mob = $image->storeAs($path, $file_name, 'public');
                 $setting->save();
-
             }
-
-
         }
 
 
@@ -363,13 +343,18 @@ class SettingsController extends Controller
 
             session()->flash('success', "success");
             if (session()->has("success")) {
-                Alert::success('نجح', 'تم تعديل الاعدادات');
-            }
 
+
+                if (Lang::locale() == 'en') {
+
+                    Alert::success('success', ' Settings edited successfully');
+                } else {
+                    Alert::success('نجح', 'تم تعديل الاعدادات');
+                }
+            }
         }
 
-        return redirect()->route('settings.show' ,1);
-
+        return redirect()->route('settings.show', 1);
     }
 
     /**

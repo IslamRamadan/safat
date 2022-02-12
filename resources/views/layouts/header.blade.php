@@ -259,13 +259,16 @@
                             <i class="fas fa-search sml-fa" style="font-size: 25px;"></i></a>
                         <div class=" ul2  bg-w  text-left "
                             style="padding: 10px;width: 200px;background: transparent !important;box-shadow: none;border: none;">
+                            <form action="{{route('search')}}" method="get">
+
                             <div class="input-group mb-3">
-                                <input type="text" class="form-control" placeholder="search ">
+                                <input type="text" class="form-control" name="search" placeholder="search ">
                                 <div class="input-group-append">
-                                    <button class="input-group-text bg-main"> <i
+                                    <button class="input-group-text bg-main" type="submit"> <i
                                             class="fas fa-search sml-fa"></i></button>
                                 </div>
                             </div>
+                            </form>
 
                         </div>
 

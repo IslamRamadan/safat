@@ -21,6 +21,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
 use Yajra\DataTables\Facades\DataTables;
+use Lang;
+
 
 class ProductController extends Controller
 {
@@ -122,12 +124,20 @@ class ProductController extends Controller
 
 
         if ($validator->fails()) {
-            Alert::error('error', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back()->withInput();
         }
         if (!$request->hasfile('img')) {
 
-            Alert::success('error ', 'لم تقم بتحميل اي صورة');
+
+
+            if (Lang::locale() == 'en') {
+
+                Alert::error('error ', 'You should upload product images');
+            } else {
+                Alert::error('خطأ', 'يجب تحميل صور للمنتج');
+            }
+
             return back();
         }
 
@@ -172,8 +182,13 @@ class ProductController extends Controller
         if ($request->has('img')) {
             $imgs = $request->img;
             if (count($imgs) > 10) {
+                if (Lang::locale() == 'en') {
 
-                Alert::success('error ', 'الحد الاقصي للتحميل في المرة الواحدة 10 صور');
+                    Alert::error('error ', 'You can upload 10 images at most');
+                } else {
+                    Alert::error('خطأ', 'الحد الاقصي للتحميل في المرة الواحدة 10 صور');
+                }
+
                 return back();
             }
             $error = 0;
@@ -253,7 +268,11 @@ class ProductController extends Controller
         }
 
         if (session()->has("success")) {
-            Alert::success('Success ', 'Success Message');
+            if (Lang::locale() == 'en') {
+                Alert::success('success', ' Product added successfully');
+            } else {
+                Alert::success('نجح', 'تمت إضافة المنتج بنجاح ');
+            }
         }
 
         return redirect()->route('products.index');
@@ -316,7 +335,11 @@ class ProductController extends Controller
             $product->delete();
             session()->flash('success', "success");
             if (session()->has("success")) {
-                Alert::success('نجح', ' تم حذف المنتج');
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', ' category Deleted successfully');
+                } else {
+                    Alert::success('نجح', 'تم حذف المنتج بنجاح ');
+                }
             }
         }
 
@@ -341,7 +364,7 @@ class ProductController extends Controller
         // $colors = Color::all();
 
         $product = Product::findOrFail($id);
-        $prod_property=ProdProperty::where('product_id',$id)->get();
+        $prod_property = ProdProperty::where('product_id', $id)->get();
         // dd($prod_property->toArray());
         ////        $products=Product::all();
         // $size_products = ProdSize::where('product_id', $id)->pluck('size_id')->all();
@@ -355,11 +378,11 @@ class ProductController extends Controller
         //     $height_products = ProdHeight::where('product_id', $id)->where('size_id', $size_product)
         //         ->get();
         //     array_push($height_products_array, $height_products);
-            //                    dd($height_products_array);
+        //                    dd($height_products_array);
 
-            //            $height_products_size = ProdHeight::where('product_id', $id)->
-            //            where('size_id', $size_product)
-            //                ->pluck('size_id')->all();
+        //            $height_products_size = ProdHeight::where('product_id', $id)->
+        //            where('size_id', $size_product)
+        //                ->pluck('size_id')->all();
 
 
         // }
@@ -422,14 +445,14 @@ class ProductController extends Controller
 
 
         if ($validator->fails()) {
-            Alert::error('error', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back();
         }
 
         $product = Product::findOrFail($id);
 
         if (!$product) {
-            Alert::error('error', 'هذا المنتج غير مسجل بالنظام');
+            Alert::error('', 'هذا المنتج غير مسجل بالنظام');
             return back();
         }
 
@@ -796,7 +819,13 @@ class ProductController extends Controller
         //        dd($vv);
         session()->flash('success', "success");
         if (session()->has("success")) {
-            Alert::success('Success ', 'Success Message');
+
+            if (Lang::locale() == 'en') {
+
+                Alert::success('success', ' Product edited successfully');
+            } else {
+                Alert::success('نجح', 'تم تعديل المنتج بنجاح');
+            }
         }
 
         return redirect()->route('products.index', $id);
@@ -860,7 +889,12 @@ class ProductController extends Controller
             $product->delete();
             session()->flash('success', "success");
             if (session()->has("success")) {
-                Alert::success('نجح', ' تم حذف المنتج');
+
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', 'Product deleted successfully');
+                } else {
+                    Alert::success('نجح', 'تم حذف المنتج بنجاح');
+                }
             }
         }
 

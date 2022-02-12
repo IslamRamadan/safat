@@ -4,49 +4,7 @@
 
 @endsection
 @section('content')
-    <!-----start carousel --->
-    {{-- <div id="carouselExampleIndicators" class="carousel slide relative" data-ride="carousel">
-        <ol class="carousel-indicators">
-            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-            <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-            <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-        </ol>
-        <div class="carousel-inner">
-            <div class="carousel-item active ">
-                <img class=" w-100 h " src="{{ asset('front/img/11.jpeg') }}" alt="1 slide">
-                <div class="abs w-100">
-                    <p class="c-w mr-0">it has finally started</p>
-                    <h1 class=""> Sara Almutairi</h1>
-                    <button class=" btn btn-danger">shop now <i class="far fa-heart"></i> </button>
-                </div>
-            </div>
-            <div class="carousel-item  ">
-                <img class=" w-100 h " src="{{ asset('front/img/5.jpeg') }}" alt="1 slide">
-                <div class="abs w-100">
-                    <p class="c-w mr-0">it has finally started</p>
-                    <h1 class=""> Sara Almutairi</h1>
-                    <button class=" btn btn-danger">shop now <i class="far fa-heart"></i> </button>
-                </div>
-            </div>
-            <div class="carousel-item  ">
-                <img class=" w-100 h " src="{{ asset('front/img/8.jpeg') }}" alt="1 slide">
-                <div class="abs w-100">
-                    <p class="c-w mr-0">it has finally started</p>
-                    <h1 class=""> Sara Almutairi</h1>
-                    <button class=" btn btn-danger">shop now <i class="far fa-heart"></i> </button>
-                </div>
-            </div>
 
-        </div>
-        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon " aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
-        </a>
-        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
-        </a>
-    </div> --}}
     <!-----start  --->
     <div class="container ">
         <div class="row dir-rtl text-dir">
@@ -54,7 +12,7 @@
                 <h2 style="margin-top: 20px">
                     {{-- @if (app()->getLocale() == 'en')
                         {{ $new_arrivals->name_en }} --}}
-                    @lang('site.offer')
+                    @lang('site.search_res') <span style="color: rgb(32, 137, 223)">{{$search}}</span>
                     {{-- @else
                         {{ $new_arrivals->name_ar }}
                     @endif --}}
@@ -64,9 +22,9 @@
                         <li class="nav-item "><a class="nav-link c-light" href="{{ route('/') }}">
 
                                 @if (app()->getLocale() == 'en')
-                                    HOME / @lang('site.offer')
+                                    HOME / @lang('site.search_res') <span>{{$search}}</span>
                                 @else
-                                    الرئيسيه / @lang('site.offer')
+                                    الرئيسيه / @lang('site.search_res')<span>{{$search}}</span>
                                 @endif
                             </a></li>
 
@@ -82,17 +40,18 @@
     </div>
 
     <div class="container">
-        <div class="row dir-rtl">
+        @if ($new_arrivals->count() > 0)
+        <div class="row dir-rtl ">
 
 
 
             <div class="row text-center">
-                @if ($new_arrivals->count() > 0)
+
                     @foreach ($new_arrivals as $p)
                         @if ($p)
                             @if ($p->appearance == 1)
 
-                                <div class="col-6 col-md-4 col-lg-3">
+                                <div class="col-6 col-md-6 col-lg-4">
                                     <div class=" product relative text-dir mb-3">
 
                                         {{-- <div class="  heart ">
@@ -188,9 +147,14 @@
                     @endforeach
 
                 @else
-                    <h5 style="text-align: center;margin: auto">
+                <div class="row dir-rtl justify-content-center m-4 ">
+
+
+
+                    <div class="row text-center">
+                    <h1 style="text-align: center;margin: auto">
                         @lang('site.no_data')
-                    </h5>
+                    </h1>
                 @endif
 
             </div>
@@ -200,61 +164,6 @@
         </div>
     </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script>
-        $(document).on('click', '.addToWishList', function(e) {
 
-            e.preventDefault();
-            @guest()
-                // $('.not-loggedin-modal').css('display','block');
-                // console.log('You are guest'
-
-                {{-- {{\RealRashid\SweetAlert\Facades\Alert::error('error', 'Please Login first!')}} --}}
-                Swal.fire({
-                icon: '?',
-                title:'Login first!',
-                confirmButtonColor: '#d76797',
-                position:'bottom-start',
-                showCloseButton: true,
-                })
-            @endguest
-            @auth
-                $.ajax({
-                type: 'get',
-                url: "{{ route('wishlist.store') }}",
-                data: {
-                'productId': $(this).attr('data-product-id'),
-                },
-                success: function (data) {
-                if (data.message) {
-                Swal.fire({
-                position: 'center',
-                icon: 'success',
-                title: 'Added successfully!',
-                showConfirmButton: false,
-                timer: 1500
-                })
-                {{-- {{\RealRashid\SweetAlert\Facades\Alert::error('ok', 'ok!')}} --}}
-
-                } else {
-                // alert('This product already in you wishlist');
-                Swal.fire({
-                position: 'center',
-                icon: 'info',
-                title: 'This product already in you wishlist',
-                showConfirmButton: false,
-                timer: 1500
-                })
-
-                {{-- {{\RealRashid\SweetAlert\Facades\Alert::error('no', 'this product added already!')}} --}}
-
-                }
-                }
-                });
-            @endauth
-
-
-        });
-    </script>
 
 @endsection

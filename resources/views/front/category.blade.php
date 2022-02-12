@@ -307,7 +307,7 @@
             <div class="col-lg-3 col-md-4 d-md-block d-none ">
                 @if ($type == 1)
                     <a style="font-size: 20px;display: flex;
-                            justify-content: space-between;align-items: center;flex-direction:row-reverse"
+                                            justify-content: space-between;align-items: center;flex-direction:row-reverse"
                         data-toggle="collapse" href="#collapseExample" aria-expanded="false"
                         aria-controls="collapseExample">
 
@@ -550,14 +550,21 @@
 
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
             <script>
+                var lang = $('html').attr('lang');
                 $(document).on('click', '.addToWishList', function(e) {
 
                     e.preventDefault();
                     @guest()
-                        // $('.not-loggedin-modal').css('display','block');
-                        // console.log('You are guest'
-
-                        {{-- {{\RealRashid\SweetAlert\Facades\Alert::error('error', 'Please Login first!')}} --}}
+                        if (lang=="ar") {
+                        Swal.fire({
+                        icon: '?',
+                        title:'يجب تسجيل الدخول أولا',
+                        confirmButtonColor: '#ec7d23',
+                        position:'bottom-start',
+                        showCloseButton: true,
+                        })
+                        }
+                        else{
                         Swal.fire({
                         icon: '?',
                         title:'Login first!',
@@ -565,6 +572,9 @@
                         position:'bottom-start',
                         showCloseButton: true,
                         })
+                        }
+
+
                     @endguest
                     @auth
                         $.ajax({
@@ -575,6 +585,17 @@
                         },
                         success: function (data) {
                         if (data.message) {
+
+                        if (lang=="ar") {
+                        Swal.fire({
+                        position: 'center',
+                        icon: 'success',
+                        title: 'تمت الاضافه بنجاح!',
+                        showConfirmButton: false,
+                        timer: 1500
+                        })
+                        }
+                        else{
                         Swal.fire({
                         position: 'center',
                         icon: 'success',
@@ -582,19 +603,35 @@
                         showConfirmButton: false,
                         timer: 1500
                         })
-                        {{-- {{\RealRashid\SweetAlert\Facades\Alert::error('ok', 'ok!')}} --}}
+
+                        }
+
+
+
 
                         } else {
                         // alert('This product already in you wishlist');
+                        if (lang=="ar") {
                         Swal.fire({
                         position: 'center',
                         icon: 'info',
-                        title: 'This product already in you wishlist',
+                        title: 'هذا المنتج بالفعل في قائمة المفضلة',
+                        showConfirmButton: false,
+                        timer: 1500
+                        })
+                        }
+                        else{ Swal.fire({
+                        position: 'center',
+                        icon: 'info',
+                        title: 'This product is already in your wishlist',
                         showConfirmButton: false,
                         timer: 1500
                         })
 
-                        {{-- {{\RealRashid\SweetAlert\Facades\Alert::error('no', 'this product added already!')}} --}}
+                        }
+
+
+
 
                         }
                         }

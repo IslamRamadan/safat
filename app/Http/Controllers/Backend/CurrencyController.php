@@ -29,12 +29,12 @@ class CurrencyController extends Controller
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     $action = '
-                        <a class="btn btn-success"  href="'.route('currencies.edit' , $row->id).'" >Edit </a>
+                        <a class="btn btn-success"  href="' . route('currencies.edit', $row->id) . '" >Edit </a>
                         <meta name="csrf-token" content="{{ csrf_token() }}">
-                         <a  href="'.route('currencies.destroy' , $row->id).'" class="btn btn-danger">Delete</a>
+                         <a  href="' . route('currencies.destroy', $row->id) . '" class="btn btn-danger">Delete</a>
                                           ';
 
-//
+                    //
                     return $action;
                 })
                 ->rawColumns(['action'])
@@ -52,7 +52,6 @@ class CurrencyController extends Controller
     public function create()
     {
         return view('dashboard.currencies.create');
-
     }
 
 
@@ -66,9 +65,9 @@ class CurrencyController extends Controller
     {
         $messeges = [
 
-            'name.required'=>"اسم العمله مطلوب",
-            'rate.required'=>"النسبه مطلوبه",
-            'code.required'=>"كود العمله مطلوب",
+            'name.required' => "اسم العمله مطلوب",
+            'rate.required' => "النسبه مطلوبه",
+            'code.required' => "كود العمله مطلوب",
             'code.unique' => "يرجي تغيير كود العمله لانه مستخدم بالفعل لعمله اخري"
 
         ];
@@ -77,14 +76,14 @@ class CurrencyController extends Controller
 
             'name' => 'required',
             'rate' => 'required',
-            'code' => ['required' , 'unique:currencies,code'],
+            'code' => ['required', 'unique:currencies,code'],
 
         ], $messeges);
 
 
 
         if ($validator->fails()) {
-            Alert::error('خطأ', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back();
         }
 
@@ -95,15 +94,19 @@ class CurrencyController extends Controller
             'code' => $request['code'],
         ]);
 
-        if ($currency){
+        if ($currency) {
 
             session()->flash('success', "success");
-            if(session()->has("success")){
-                Alert::success('نجح', 'تمت إضافة العمله');
+            if (session()->has("success")) {
+
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', ' Currency added successfully');
+                } else {
+                    Alert::success('نجح', 'تمت إضافة العملة بنجاح ');
+                }
             }
 
             return redirect()->route('currencies.index');
-
         }
     }
 
@@ -115,29 +118,32 @@ class CurrencyController extends Controller
      */
     public function show($id)
     {
-        $currency = Currency::where('id',$id)->first();
+        $currency = Currency::where('id', $id)->first();
 
-        if($currency){
+        if ($currency) {
             $currency->delete();
             session()->flash('success', "success");
-            if(session()->has("success")){
-                Alert::success('نجح', 'تم حذف العمله');
+            if (session()->has("success")) {
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', 'Currency deleted successfully');
+                } else {
+                    Alert::success('نجح', 'تم حذف العملة بنجاح');
+                }
             }
-
         }
 
-//        return Response::json($user);
+        //        return Response::json($user);
         return redirect()->route('currencies.index');
-
     }
 
-    public function updateCurrency(Request $request){
+    public function updateCurrency(Request $request)
+    {
 
         $messeges = [
 
-            'name.required'=>"اسم العمله مطلوب",
-            'rate.required'=>"النسبه مطلوبه",
-            'code.required'=>"كود العمله مطلوب",
+            'name.required' => "اسم العمله مطلوب",
+            'rate.required' => "النسبه مطلوبه",
+            'code.required' => "كود العمله مطلوب",
             'code.unique' => "يرجي تغيير كود العمله لانه مستخدم بالفعل لعمله اخري"
 
         ];
@@ -146,30 +152,37 @@ class CurrencyController extends Controller
 
             'name' => 'required',
             'rate' => 'required',
-            'code' => ['required' ,'unique:currencies,code,' .$request['id']],
+            'code' => ['required', 'unique:currencies,code,' . $request['id']],
 
         ], $messeges);
 
 
 
         if ($validator->fails()) {
-            Alert::error('خطأ', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back();
         }
 
-        $currency= Currency::findOrFail($request['id']);
+        $currency = Currency::findOrFail($request['id']);
 
-        $currency= $currency->update([
+        $currency = $currency->update([
             'name' => $request['name'],
             'rate' => $request['rate'],
             'code' => $request['code'],
 
         ]);
 
-        if($currency){
+        if ($currency) {
             session()->flash('success', "success");
-            if(session()->has("success")){
-                Alert::success('نجح', 'تم تعديل بيانات العمله');
+            if (session()->has("success")) {
+
+
+                if (Lang::locale() == 'en') {
+
+                    Alert::success('success', ' Currency edited successfully');
+                } else {
+                    Alert::success('نجح', 'تم تعديل العملة بنجاح');
+                }
             }
         }
 
@@ -177,13 +190,13 @@ class CurrencyController extends Controller
 
 
 
-//        $uId = $request->user_id;
-//        User::updateOrCreate(['id' => $uId],['name' => $request->name, 'email' => $request->email]);
-//        if(empty($request->user_id))
-//            $msg = 'User created successfully.';
-//        else
-//            $msg = 'User data is updated successfully';
-//        return redirect()->route('users.index')->with('success',$msg);
+        //        $uId = $request->user_id;
+        //        User::updateOrCreate(['id' => $uId],['name' => $request->name, 'email' => $request->email]);
+        //        if(empty($request->user_id))
+        //            $msg = 'User created successfully.';
+        //        else
+        //            $msg = 'User data is updated successfully';
+        //        return redirect()->route('users.index')->with('success',$msg);
 
 
     }
@@ -200,13 +213,12 @@ class CurrencyController extends Controller
     {
         $where = array('id' => $id);
         $currency = Currency::where($where)->first();
-        if(!$currency){
+        if (!$currency) {
             Alert::error('خطأ', 'العمله غير موجوده بالنظام');
             return back();
         }
 
-        return view('dashboard.currencies.edit' , compact('currency'));
-
+        return view('dashboard.currencies.edit', compact('currency'));
     }
 
     /**
@@ -229,19 +241,22 @@ class CurrencyController extends Controller
      */
     public function destroy($id)
     {
-        $currency = Currency::where('id',$id)->first();
+        $currency = Currency::where('id', $id)->first();
 
-        if($currency){
+        if ($currency) {
             $currency->delete();
             session()->flash('success', "success");
-            if(session()->has("success")){
-                Alert::success('نجح', 'تم حذف العمله');
-            }
+            if (session()->has("success")) {
 
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', 'Currency deleted successfully');
+                } else {
+                    Alert::success('نجح', 'تم حذف العمله بنجاح');
+                }
+            }
         }
 
-//        return Response::json($user);
+        //        return Response::json($user);
         return redirect()->route('currencies.index');
     }
-
 }

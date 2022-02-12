@@ -61,7 +61,7 @@ class CityController extends Controller
 
 
         if ($validator->fails()) {
-            Alert::error('خطأ', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back();
         }
 
@@ -79,8 +79,15 @@ class CityController extends Controller
 
             session()->flash('success', "success");
             if(session()->has("success")){
-                Alert::success('نجح', 'تم إضافة مدينه');
-            }
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', ' City added successfully');
+
+                }
+                else{
+                        Alert::success('نجح', 'تمت إضافة المدينه ');
+
+                    }
+                         }
 
         }
 
@@ -130,7 +137,7 @@ class CityController extends Controller
 
 
         if ($validator->fails()) {
-            Alert::error('خطأ', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back();
         }
 
@@ -156,8 +163,16 @@ class CityController extends Controller
         if($city){
             session()->flash('success', "success");
             if(session()->has("success")){
-                Alert::success('نجح', 'تم تعديل بيانات المدينه');
-            }
+
+                if (Lang::locale() == 'en') {
+
+                    Alert::success('success', ' City edited successfully');
+                }
+                else{
+                    Alert::success('نجح', 'تم تعديل بيانات المدينه');
+
+                }
+                        }
         }
 
         return redirect()->route('cities.view' , $request['country_id']);
@@ -225,8 +240,17 @@ class CityController extends Controller
             $city->delete();
             session()->flash('success', "success");
             if(session()->has("success")){
-                Alert::success('نجح', ' تم حذف المدينه');
-            }
+
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', 'City deleted successfully');
+
+                }
+                else{
+                        Alert::success('نجح', 'تم حذف المدينه');
+
+                    }
+
+                }
 
         }
 

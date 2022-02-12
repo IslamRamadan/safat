@@ -392,6 +392,8 @@
 @section('script')
 
     <script>
+            var lang = $('html').attr('lang');
+
         function changeProduct(operation, productId, productHeightId,color) {
 
             //TODO :: TOAST RUNNING
@@ -422,41 +424,49 @@
 
                     console.log(result.success);
                     if (!result.success) {
+
                         Swal.fire({
                             icon: 'error',
                             title: result.msg,
+                        showCloseButton: true,
+
                             confirmButtonText: 'Ok',
                             confirmButtonColor: 'red',
                         })
                     }
 
                     window.location.reload();
+                    // setTimeout(function() {
+                    //             location.reload();
+                    //         }, 2000);
+
 
                     //TODO :: CHECK RESULT
                 },
                 error: function(error) {
-                    Swal.fire({
+                    if (lang=="ar") {
+                        Swal.fire({
                         title: 'لم تكتمل العمليه ',
                         icon: '?',
                         confirmButtonColor: '#ec7d23',
                         position: 'bottom-start',
                         showCloseButton: true,
                     })
+            }
+            else{
+                Swal.fire({
+                        title: 'Procces not completed. ',
+                        icon: '?',
+                        confirmButtonColor: '#ec7d23',
+                        position: 'bottom-start',
+                        showCloseButton: true,
+                    })
+
+            }
+
                 }
             });
         }
-        $(document).ready(function() {
-            // $('#subtract').on('click' , function () {
-            //     alert('subtract')
-            // })
-            //
-            // // name="quantity"
-            // $('#add').on('click' , function () {
-            //     alert('add')
-            // })
-
-
-        })
-    </script>
+           </script>
 
 @endsection

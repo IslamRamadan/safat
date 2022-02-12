@@ -12,6 +12,15 @@
         }
 
         @media (min-width: 0px) and (max-width: 570px) {
+            .modal1 {
+                top: 50px !important;
+                padding-top: 85px
+            }
+
+            .close1 {
+                top: 35px !important;
+            }
+
             .h-img {
                 height: 60vh;
             }
@@ -19,6 +28,128 @@
             .carousel {
                 margin-top: 0 !important;
             }
+        }
+
+        @media (min-width: 768px) and (max-width: 989px) {
+            .modal-content1 {
+                max-width: 500px;
+            }
+
+            .modal1 {
+                padding-top: 0 !important;
+            }
+        }
+
+        .column1 {
+            float: left;
+            width: 25%;
+        }
+
+        /* The Modal (background) */
+        .modal1 {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            /* padding-top: 100px; */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: black;
+        }
+
+        /* Modal Content */
+        .modal-content1 {
+            position: relative;
+            background-color: #fefefe;
+            margin: auto;
+            padding: 0;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        /* The Close Button */
+        .close1 {
+            color: white;
+            position: absolute;
+            top: 10px;
+            right: 25px;
+            font-size: 35px;
+            font-weight: bold;
+        }
+
+        .close1:hover,
+        .close1:focus {
+            color: #999;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .mySlides1 {
+            display: none;
+        }
+
+        .cursor1 {
+            cursor: pointer;
+        }
+
+        /* Next & previous buttons */
+        .prev1,
+        .next1 {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            padding: 16px;
+            margin-top: -50px;
+            color: rgb(32, 137, 223);
+            font-weight: bold;
+            font-size: 20px;
+            transition: 0.6s ease;
+            border-radius: 0 3px 3px 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Position the "next button" to the right */
+        .next1 {
+            right: 0;
+            border-radius: 3px 0 0 3px;
+        }
+
+        /* On hover, add a black background color with a little bit see-through */
+        .prev1:hover,
+        .next1:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        /* Number text (1/3 etc) */
+        .numbertext1 {
+            color: #f2f2f2;
+            font-size: 12px;
+            padding: 8px 12px;
+            position: absolute;
+            top: 0;
+        }
+
+
+
+        .demo1 {
+            opacity: 0.6;
+        }
+
+        .active,
+        .demo:hover {
+            opacity: 1;
+        }
+
+        img.hover-shadow {
+            transition: 0.3s;
+        }
+
+        .hover-shadow:hover {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         }
 
     </style>
@@ -38,29 +169,20 @@
                 <div id="carouselExampleIndicators" class="carousel slide carousel1 " data-ride="carousel">
                     <div class="carousel-inner prod">
                         <div class="carousel-item active">
-                            {{-- <div class="  zoom "><a href="" data-toggle="modal" data-target="#zoom"><i
-                                        class="fas fa-expand-alt"></i></a></div> --}}
 
-                            <img data-enlargeable src="{{ asset('/storage/' . $product->img) }}"
-                                class="d-block w-100 h-img" alt="..." data-toggle="modal" data-target="#staticBackdrop">
+
+                            <img src="{{ asset('/storage/' . $product->img) }}" class="d-block w-100 h-img"
+                                style="cursor: zoom-in" alt="..." onclick="openModal();currentSlide(0)">
                         </div>
-                        {{-- <div class="carousel-item"> --}}
-                        {{-- <img src="{{asset('/storage/'.$product->height_img)}}" class="d-block w-100 h-img" alt="..." data-toggle="modal" data-target="#staticBackdrop"> --}}
-                        {{-- <div class="  zoom "><a href=""  data-toggle="modal" data-target="#zoom2"><i class="fas fa-expand-alt"></i></a></div> --}}
 
-                        {{-- </div> --}}
 
                         @if ($product->images->count() > 0)
                             @foreach ($product->images as $img)
                                 <div class="carousel-item">
-                                    <img data-enlargeable src="{{ asset($img->img) }}" class="d-block w-100 h-img"
-                                        alt="..." data-toggle="modal" data-target="#staticBackdrop">
-                                    {{-- <div class="  zoom "><a href="" data-toggle="modal" data-target="#zoom3"><i
-                                                class="fas fa-expand-alt"></i></a></div> --}}
+                                    <img src="{{ asset($img->img) }}" class="d-block w-100 h-img" style="cursor: zoom-in"
+                                        alt="..." onclick="openModal();currentSlide({{ $img->id }})">
 
                                 </div>
-
-
                             @endforeach
                         @endif
 
@@ -97,7 +219,6 @@
                                 class="">
                                 <img src="{{ asset($img->img) }}" class="img">
                             </li><br>
-
                         @endforeach
                     @endif
                 </ol>
@@ -173,7 +294,6 @@
                         {{ $product->title_ar }}
                     @else
                         {{ $product->title_en }}
-
                     @endif
 
 
@@ -201,7 +321,6 @@
                                 {{ App\Country::find(Cookie::get('name'))->currency->code }}
                             @else
                                 {{ App\Country::find(Cookie::get('name'))->currency->code_ar }}
-
                             @endif
 
                         @else
@@ -215,7 +334,6 @@
                             {{ Auth::user()->country->currency->code }}
                         @else
                             {{ Auth::user()->country->currency->code_ar }}
-
                         @endif @endguest
                     </h6>
 
@@ -262,12 +380,12 @@
 
                 </div> --}}
 
-                {{-- <br>
+                    {{-- <br>
                 <h6 style="font-weight:600 " class="textarea-dir" >@lang('site.note')</h6>
 
                 <textarea  class="w-100  " rows="5"></textarea> --}}
 
-                {{-- @if ($product->colors->count() > 0)
+                    {{-- @if ($product->colors->count() > 0)
                     @if (Lang::locale() == 'ar')
                         <br>
                         <br>
@@ -291,56 +409,66 @@
                     <br><br>
                 @endif --}}
 
-                <form class=" product-count float-right d-none">
-                    <a rel="nofollow" class="btn btn-default btn-minus" href="#" title="Subtract">&ndash;</a>
-                    <input type="text" disabled="" size="2" readonly autocomplete="off"
-                        class="cart_quantity_input form-control grey count" value="1" name="quantity">
-                    <a rel="nofollow" class="btn btn-default btn-plus" href="#" title="Add" style="margin: -9px;">+</a>
-                </form>
+                    <form class=" product-count float-right d-none">
+                        <a rel="nofollow" class="btn btn-default btn-minus" href="#" title="Subtract">&ndash;</a>
+                        <input type="text" disabled="" size="2" readonly autocomplete="off"
+                            class="cart_quantity_input form-control grey count" value="1" name="quantity">
+                        <a rel="nofollow" class="btn btn-default btn-plus" href="#" title="Add" style="margin: -9px;">+</a>
+                    </form>
 
-                 <a id="add_cart" class="btn bg-main " style="width: 100%;background: #000000 !important;margin-top:10px"
-                    is_order="{{ $product->is_order }}">@lang('site.add_to_cart')</a>
-                <a class="btn bg-main addToWishList" data-product-id="{{ $product->id }}"
-                    style="margin:10px 0px;width: 100%;background: rgb(32, 137, 223) !important;">@lang('site.add_to_wishlist')</a>
+                    <a id="add_cart" class="btn bg-main " style="width: 100%;background: #000000 !important;margin-top:10px"
+                        is_order="{{ $product->is_order }}">@lang('site.add_to_cart')</a>
+                    <div class="row">
+                        <a class="btn bg-main addToWishList" data-product-id="{{ $product->id }}"
+                            style="margin:10px 0px;width: 70%;background: rgb(32, 137, 223)  !important;">@lang('site.add_to_wishlist')</a>
+                        <span id="bn-click"
+                            style="cursor: pointer;margin:10px;padding: 8px;width: 20%;background: #67ced7 !important;color: #fff;border-radius: 5%;">@lang('site.share')
+                            <i class="fas fa-share"></i></span>
+                    </div>
+                    <a class="btn bg-main " style="width: 100%;background: #000000 !important;margin-top:10px" target="_blank"
+                        href="https://wa.me/{{ $my_setting->whatsapp }}/?text=https://safat.openshoop.com/ar/product/{{ $product->id }}">@lang('site.connect')</a>
+                    <a class="btn bg-main " style="width: 100%;background: rgb(32, 137, 223) !important;margin-top:10px"
+                        onclick="copyToClipboard({{ $product->id }})">@lang('site.copy_link')</a>
+
+                </div>
 
 
             </div>
 
-
-        </div>
-
         </div>
 
         <!--- end  --->
-        @if (count($product->property)>0)
-        <div class="product-collateral dir-rtl text-dir">
-            <dl id="collateral-tabs" class="collateral-tabs">
-                <div class="tab-content">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <h2>@lang('site.prod_prop')</h2>
-                            <table class="table table-hover product-attribute-specs-table">
-                                <colgroup>
-                                    <col width="25%">
-                                    <col>
-                                </colgroup>
-                                <tbody>
-                                    @foreach ( $product->property as $item )
-                                    <tr>
-                                        <th class="label text-uppercase">{{$item['prop_name_'.app()->getLocale()]}}</th>
-                                        <td class="data">{!!$item['prop_value_'.app()->getLocale()]!!}</td>
-                                    </tr>
-                                    @endforeach
+        @if (count($product->property) > 0)
+            <div class="product-collateral dir-rtl text-dir">
+                <dl id="collateral-tabs" class="collateral-tabs">
+                    <div class="tab-content">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <h2>@lang('site.prod_prop')</h2>
+                                <table class="table table-hover product-attribute-specs-table">
+                                    <colgroup>
+                                        <col width="25%">
+                                        <col>
+                                    </colgroup>
+                                    <tbody>
+                                        @foreach ($product->property as $item)
+                                            <tr>
+                                                <th class="label text-uppercase">
+                                                    {{ $item['prop_name_' . app()->getLocale()] }}
+                                                </th>
+                                                <td class="data">{!! $item['prop_value_' . app()->getLocale()] !!}</td>
+                                            </tr>
+                                        @endforeach
 
 
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
+                            </div>
+
                         </div>
-
                     </div>
-                </div>
-            </dl>
-        </div>
+                </dl>
+            </div>
         @endif
 
         <div class="container ">
@@ -403,7 +531,6 @@
                                                                     @else
 
                                                                         {{ $p->title_en }}
-
                                                                     @endif
 
 
@@ -440,7 +567,6 @@
                                                                         {{ Auth::user()->country->currency->code }}
                                                                     @else
                                                                         {{ Auth::user()->country->currency->code_ar }}
-
                                                                     @endif
                                                                 @endauth
                                                                 @guest()
@@ -450,7 +576,6 @@
                                                                             {{ App\Country::find(Cookie::get('name'))->currency->code }}
                                                                         @else
                                                                             {{ App\Country::find(Cookie::get('name'))->currency->code_ar }}
-
                                                                         @endif
                                                                     @else
                                                                         {{ $p->price }}
@@ -499,9 +624,145 @@
         </div> --}}
         <!--- end  --->
 
+
+
+
+        {{-- New modal --}}
+        <div id="myModal1" class="modal1">
+            <span class="close1 cursor1" onclick="closeModal()">&times;</span>
+            <div class="modal-content1">
+
+                <div class="mySlides1">
+                    {{-- <div class="numbertext1">1 / 4</div> --}}
+                    <img src="{{ asset('/storage/' . $product->img) }}" style="width:100%">
+                </div>
+                @if ($product->images->count() > 0)
+                    @foreach ($product->images as $img)
+                        <div class="mySlides1">
+                            {{-- <div class="numbertext1">2 / 4</div> --}}
+                            <img src="{{ asset($img->img) }}" style="width:100%">
+                        </div>
+                    @endforeach
+                @endif
+
+
+
+                <a class="prev1" onclick="plusSlides(-1)">&#10094;</a>
+                <a class="next1" onclick="plusSlides(1)">&#10095;</a>
+
+
+
+
+                <div class="column1">
+                    <img class="demo1 cursor1" src="{{ asset('/storage/' . $product->img) }}" style="width:100%"
+                        onclick="currentSlide(0)">
+                </div>
+                @if ($product->images->count() > 0)
+                    @foreach ($product->images as $img)
+                        <div class="column1">
+                            <img class="demo1 cursor1" src="{{ asset($img->img) }}" style="width:100%"
+                                onclick="currentSlide({{ $img->id }})" alt="Snow">
+                        </div>
+                    @endforeach
+                @endif
+
+            </div>
+        </div>
+
+        {{-- New modal End --}}
+
+
+
     @endsection
     @section('script')
         <script>
+            var lang = $('html').attr('lang');
+            console.log(lang);
+
+            function copyToClipboard(element) {
+                var $temp = $("<input>");
+                var $link = "https://safat.openshoop.com/"
+                var $id = "{{ $product->id }}"
+                $("body").append($temp);
+                $temp.val($link + $id).select();
+                // console.log($link+$id);
+                document.execCommand("copy");
+                $temp.remove();
+                if (lang == "ar") {
+                    Swal.fire({
+                        icon: '?',
+                        title: 'تم نسخ رابط المنتج بنجاح',
+                        confirmButtonColor: '#000',
+                        position: 'bottom-start',
+                        showCloseButton: true,
+                    })
+                } else {
+                    Swal.fire({
+                        icon: '?',
+                        title: 'Product link copied successfully',
+                        confirmButtonColor: '#000',
+                        position: 'bottom-start',
+                        showCloseButton: true,
+                    })
+                }
+
+            }
+
+
+            let shareData = {
+                url: window.location.href,
+            }
+
+            document.querySelector('#bn-click').addEventListener('click', () => {
+                navigator.share(shareData);
+            });
+
+            function openModal() {
+                document.getElementById("myModal1").style.display = "block";
+            }
+
+            function closeModal() {
+                document.getElementById("myModal1").style.display = "none";
+            }
+
+            var slideIndex = 1;
+            showSlides(slideIndex);
+
+            function plusSlides(n) {
+                showSlides(slideIndex += n);
+            }
+
+            function currentSlide(n) {
+                console.log(n);
+                showSlides(slideIndex = n + 1);
+            }
+
+            function showSlides(n) {
+                var i;
+                var slides = document.getElementsByClassName("mySlides1");
+                var dots = document.getElementsByClassName("demo1");
+                var captionText = document.getElementById("caption1");
+                if (n > slides.length) {
+                    slideIndex = 1
+                }
+                if (n < 1) {
+                    slideIndex = slides.length
+                }
+                for (i = 0; i < slides.length; i++) {
+                    slides[i].style.display = "none";
+                }
+                for (i = 0; i < dots.length; i++) {
+                    dots[i].className = dots[i].className.replace(" active1", "");
+                }
+                slides[slideIndex - 1].style.display = "block";
+                dots[slideIndex - 1].className += " active1";
+                captionText.innerHTML = dots[slideIndex - 1].alt;
+            }
+        </script>
+
+        <script>
+            var lang = $('html').attr('lang');
+
             $(document).ready(function() {
                 $('#heights').hide();
                 let sizeVal;
@@ -520,7 +781,8 @@
                 });
                 //TODO :: GET #S ->CONTENT
                 $('#add_cart').on('click', function() {
-
+                    console.log(lang);
+                    console.log("ok");
 
                     //GET PRODUCT ID
                     //GET QUANTITY
@@ -562,17 +824,17 @@
 
 
 
-                        // if ((size == 0) || (height == 0)) {
-                        //     Swal.fire({
-                        //         icon: '?',
-                        //         title: 'يرجي تحديد الخيارات ',
-                        //         confirmButtonColor: '#000',
-                        //         position: 'bottom-start',
-                        //         showCloseButton: true,
-                        //     })
-                        // } else {
-                            addToCart(product, quantity, height, size, color);
-                        // }
+                    // if ((size == 0) || (height == 0)) {
+                    //     Swal.fire({
+                    //         icon: '?',
+                    //         title: 'يرجي تحديد الخيارات ',
+                    //         confirmButtonColor: '#000',
+                    //         position: 'bottom-start',
+                    //         showCloseButton: true,
+                    //     })
+                    // } else {
+                    addToCart(product, quantity, height, size, color);
+                    // }
                     // } else {
                     //     //  console.log(order_size );
 
@@ -613,49 +875,51 @@
                         success: function(result) {
                             //CHECK SIZE VALUES
                             //CHECK HEIGHTS VALUE
-                            if (result.success==false) {
+                            if (result.success == false) {
                                 Swal.fire({
-                                toast: true,
-                                icon: 'warning',
-                                title: result.message,
-                                animation: false,
-                                position: 'bottom-start',
-                                showConfirmButton: false,
-                                timer: 3000,
-                                timerProgressBar: true,
-                                didOpen: (toast) => {
-                                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
-                                }
-                            });
-                            }
-                            else{
+                                    toast: true,
+                                    icon: 'warning',
+                                    title: result.message,
+                                    animation: false,
+                                    position: 'bottom-start',
+                                    showConfirmButton: false,
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                    didOpen: (toast) => {
+                                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                    }
+                                });
+                            } else {
                                 Swal.fire({
-                                toast: true,
-                                icon: 'success',
-                                title: result.message,
-                                animation: false,
-                                position: 'bottom-start',
-                                showConfirmButton: false,
-                                timer: 3000,
-                                timerProgressBar: true,
-                                didOpen: (toast) => {
-                                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
-                                }
-                            });
+                                    toast: true,
+                                    icon: 'success',
+                                    title: result.message,
+                                    animation: false,
+                                    position: 'bottom-start',
+                                    showConfirmButton: false,
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                    didOpen: (toast) => {
+                                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                    }
+                                });
                             }
 
                             // console.log(result);
 
-                            location.reload();
-
+                            // location.reload();
+                            setTimeout(function() {
+                                location.reload();
+                            }, 2000);
 
                         },
                         error: function(error) {
 
 
                             console.log(error);
+
                             Swal.fire({
                                 title: 'لم تكتمل العمليه ',
                                 icon: '?',
@@ -717,7 +981,10 @@
                             });
                             // console.log(result);
 
-                            location.reload();
+                            // location.reload();
+                            setTimeout(function() {
+                                location.reload();
+                            }, 3000);
 
 
                         },
@@ -772,13 +1039,13 @@
             })
 
             $(document).on('click', '.addToWishList', function(e) {
-
+                var lang = $('html').attr('lang');
+                // console.log(lang);
                 e.preventDefault();
                 @guest()
                     // $('.not-loggedin-modal').css('display','block');
                     // console.log('You are guest'
 
-                    {{-- {{\RealRashid\SweetAlert\Facades\Alert::error('error', 'Please Login first!')}} --}}
                     Swal.fire({
                     icon: '?',
                     title:'Login first!',
@@ -796,6 +1063,18 @@
                     },
                     success:function (data) {
                     if (data.message){
+                    if (lang=="ar") {
+                    Swal.fire({
+                    icon: '?',
+                    title: 'تم اضافه المنتج الى المفضلة بنجاح!',
+                    confirmButtonColor: '#000',
+                    position:'bottom-start',
+                    showCloseButton: true,
+                    showConfirmButton: false,
+                    timer: 1500
+                    })
+
+                    } else {
                     Swal.fire({
                     icon: '?',
                     title: 'Added successfully!',
@@ -805,6 +1084,8 @@
                     showConfirmButton: false,
                     timer: 1500
                     })
+                    }
+
                     $(".heart").click(function() {
                     $(this).toggleClass("heart-hover");
 
@@ -813,8 +1094,10 @@
                     }
                     else {
                     // alert('This product already in you wishlist');
+
+                    if (lang=="ar") {
                     Swal.fire({
-                    title: 'This product already in you wishlist',
+                    title: 'هذا المنتج بالفعل موجود في المفضلة',
                     icon: '?',
                     confirmButtonColor: '#000',
                     position:'bottom-start',
@@ -822,6 +1105,20 @@
                     showConfirmButton: false,
                     timer: 1500
                     });
+
+                    } else {
+                    Swal.fire({
+                    title: 'This product already in your wishlist',
+                    icon: '?',
+                    confirmButtonColor: '#000',
+                    position:'bottom-start',
+                    showCloseButton: true,
+                    showConfirmButton: false,
+                    timer: 1500
+                    });
+
+                    }
+
                     $(".heart").click(function() {
                     $(this).toggleClass("heart-hover");
 

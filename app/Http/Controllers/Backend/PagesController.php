@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
 use Yajra\DataTables\Facades\DataTables;
+use Lang;
+
 
 class PagesController extends Controller
 {
@@ -19,14 +21,13 @@ class PagesController extends Controller
             $data = Pages::latest()->get();
             return Datatables::of($data)
                 ->addIndexColumn()
-                ->addColumn('action', function($row){
+                ->addColumn('action', function ($row) {
 
                     $action = '
-                        <a class="btn btn-success"  href="'.route('pages.edit' , $row->id).'" >Edit </a>
-                        <a class="btn btn-primary"  href="'.route('pages.show' , $row->id).'" >View </a>
+                        <a class="btn btn-success"  href="' . route('pages.edit', $row->id) . '" >Edit </a>
+                        <a class="btn btn-primary"  href="' . route('pages.show', $row->id) . '" >View </a>
                       ';
                     return $action;
-
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -67,12 +68,12 @@ class PagesController extends Controller
         $page = Pages::findOrFail($id);
 
 
-        if(!$page){
+        if (!$page) {
             Alert::error('خطأ', 'الصفحه غير موجوده بالنظام');
             return back();
         }
 
-        return  view('dashboard.pages.show' , compact('page'));
+        return  view('dashboard.pages.show', compact('page'));
     }
 
     /**
@@ -86,12 +87,12 @@ class PagesController extends Controller
         $page = Pages::findOrFail($id);
 
 
-        if(!$page){
+        if (!$page) {
             Alert::error('خطأ', 'الصفحه غير موجوده بالنظام');
             return back();
         }
 
-        return  view('dashboard.pages.edit' , compact('page'));
+        return  view('dashboard.pages.edit', compact('page'));
     }
 
     /**
@@ -107,11 +108,11 @@ class PagesController extends Controller
 
         $messeges = [
 
-            'page_title_ar.required'=>"عنوان الصفحه باللغه العربيه مطلوب",
-            'page_title_en.required'=>"عنوان الصفحه باللغه الانجليزيه مطلوب",
+            'page_title_ar.required' => "عنوان الصفحه باللغه العربيه مطلوب",
+            'page_title_en.required' => "عنوان الصفحه باللغه الانجليزيه مطلوب",
 
-            'page_details_ar.required'=>"تفاصيل الصفحه باللغه العربيه مطلوب",
-            'page_details_en.required'=>"تفاصيل الصفحه باللغه الانجليزيه مطلوب",
+            'page_details_ar.required' => "تفاصيل الصفحه باللغه العربيه مطلوب",
+            'page_details_en.required' => "تفاصيل الصفحه باللغه الانجليزيه مطلوب",
 
 
         ];
@@ -130,15 +131,15 @@ class PagesController extends Controller
 
 
         if ($validator->fails()) {
-            Alert::error('خطأ', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back();
         }
 
         $page = Pages::find($id);
 
 
-        if(!$page){
-            Alert::error('خطأ', 'الصفحه غير موجوده');
+        if (!$page) {
+            Alert::error('', 'الصفحه غير موجوده');
             return back();
         }
 
@@ -151,15 +152,21 @@ class PagesController extends Controller
         ]);
 
 
-        if($page){
+        if ($page) {
             session()->flash('success', "success");
-            if(session()->has("success")){
-                Alert::success('نجح', 'تم تعديل بيانات الصفحه');
+            if (session()->has("success")) {
+
+
+                if (Lang::locale() == 'en') {
+
+                    Alert::success('success', ' Page information edited successfully');
+                } else {
+                    Alert::success('نجح', 'تم تعديل بيانات الصفحه بنجاح');
+                }
             }
         }
 
-        return redirect()->route('pages.show' , $id);
-
+        return redirect()->route('pages.show', $id);
     }
 
     /**

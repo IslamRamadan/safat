@@ -24,17 +24,16 @@ class NewsController extends Controller
             return Datatables::of($data)
                 ->addIndexColumn()
 
-                ->addColumn('action', function($row){
+                ->addColumn('action', function ($row) {
 
                     $action = '
-                        <a class="btn btn-success"  href="'.route('news.edit' , $row->id).'" id="edit-user" >Edit </a>
+                        <a class="btn btn-success"  href="' . route('news.edit', $row->id) . '" id="edit-user" >Edit </a>
                         <meta name="csrf-token" content="{{ csrf_token() }}">
-                        <a href="'.url('news/destroy' , $row->id).'" class="btn btn-danger">Delete</a>
+                        <a href="' . url('news/destroy', $row->id) . '" class="btn btn-danger">Delete</a>
                         ';
-//
+                    //
 
                     return $action;
-
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -49,10 +48,11 @@ class NewsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(){
+    public function create()
+    {
         $news = News::all();
 
-        return view('dashboard.news.create' , compact('news'));
+        return view('dashboard.news.create', compact('news'));
     }
 
     /**
@@ -67,8 +67,8 @@ class NewsController extends Controller
 
         $messeges = [
 
-            'content_ar.required'=>"الخبر باللغه العربيه مطلوب",
-            'content_en.required'=>"الخبر باللغه الانجليزيه مطلوب",
+            'content_ar.required' => "الخبر باللغه العربيه مطلوب",
+            'content_en.required' => "الخبر باللغه الانجليزيه مطلوب",
 
         ];
 
@@ -81,7 +81,7 @@ class NewsController extends Controller
         ], $messeges);
 
         if ($validator->fails()) {
-            Alert::error('خطأ', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back()->withInput();;
         }
 
@@ -92,36 +92,39 @@ class NewsController extends Controller
 
 
 
-            $news = News::create([
-                'content_ar' => $request['content_ar'],
-                'content_en' => $request['content_en'],
-                'appearance' => $request['appearance']?:0,
+        $news = News::create([
+            'content_ar' => $request['content_ar'],
+            'content_en' => $request['content_en'],
+            'appearance' => $request['appearance'] ?: 0,
 
-            ]);
-
-
+        ]);
 
 
-        if ($news){
+
+
+        if ($news) {
 
             session()->flash('success', "success");
-            if(session()->has("success")){
-                Alert::success('نجح', 'تمت إضافة دوله');
+            if (session()->has("success")) {
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', ' News added successfully');
+                } else {
+                    Alert::success('نجح', 'تمت إضافة الخبر بنجاح ');
+                }
             }
-
         }
 
         return redirect()->route('news.index');
-
     }
 
-    public function updateNews(Request $request ,$id){
+    public function updateNews(Request $request, $id)
+    {
 
 
         $messeges = [
 
-            'content_ar.required'=>"الخبر باللغه العربيه مطلوب",
-            'content_en.required'=>"الخبر باللغه الانجليزيه مطلوب",
+            'content_ar.required' => "الخبر باللغه العربيه مطلوب",
+            'content_en.required' => "الخبر باللغه الانجليزيه مطلوب",
 
         ];
 
@@ -137,37 +140,42 @@ class NewsController extends Controller
 
 
         if ($validator->fails()) {
-            Alert::error('خطأ', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back();
         }
 
         $news = News::find($id);
 
-        if(!$news){
+        if (!$news) {
             Alert::error('خطأ', 'الخبر غير موجود');
             return back();
         }
 
 
-            $news = $news->update([
-                'content_ar' => $request['content_ar'],
-                'content_en' => $request['content_en'],
-                'appearance' => $request['appearance']?:0,
-            ]);
+        $news = $news->update([
+            'content_ar' => $request['content_ar'],
+            'content_en' => $request['content_en'],
+            'appearance' => $request['appearance'] ?: 0,
+        ]);
 
 
 
 
 
-        if($news){
+        if ($news) {
             session()->flash('success', "success");
-            if(session()->has("success")){
-                Alert::success('نجح', 'تم تعديل بيانات الخبر');
+            if (session()->has("success")) {
+
+                if (Lang::locale() == 'en') {
+
+                    Alert::success('success', ' News edited successfully');
+                } else {
+                    Alert::success('نجح', 'تم تعديل الخبر بنجاح');
+                }
             }
         }
 
         return redirect()->route('news.index');
-
     }
 
 
@@ -194,13 +202,12 @@ class NewsController extends Controller
     {
         $where = array('id' => $id);
         $news = News::where($where)->first();
-        if(!$news){
+        if (!$news) {
             Alert::error('خطأ', 'الدوله غير موجوده بالنظام');
             return back();
         }
 
-        return view('dashboard.news.edit' , compact('news' ));
-
+        return view('dashboard.news.edit', compact('news'));
     }
 
     /**
@@ -224,21 +231,22 @@ class NewsController extends Controller
     public function destroy($id)
     {
         // dd('dd');
-        $news = News::where('id',$id)->first();
+        $news = News::where('id', $id)->first();
 
-        if($news){
+        if ($news) {
 
             $news->delete();
             session()->flash('success', "success");
-            if(session()->has("success")){
-                Alert::success('نجح', ' تم حذف الخبر');
+            if (session()->has("success")) {
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', 'News deleted successfully');
+                } else {
+                    Alert::success('نجح', 'تم حذف الخبر بنجاح');
+                }
             }
-
         }
 
-//        return Response::json($user);
+        //        return Response::json($user);
         return redirect()->route('news.index');
     }
-
-
 }

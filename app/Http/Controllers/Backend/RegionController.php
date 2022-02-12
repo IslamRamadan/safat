@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
+use Lang;
 
 class RegionController extends Controller
 {
@@ -23,10 +24,11 @@ class RegionController extends Controller
     }
 
 
-    public function create(){
+    public function create()
+    {
         // dd('oo');
         $cities = City::all();
-        return view('dashboard.regions.create' , compact('cities') );
+        return view('dashboard.regions.create', compact('cities'));
     }
 
     public function store(Request $request)
@@ -36,9 +38,9 @@ class RegionController extends Controller
         // dd($request->all());
         $messeges = [
 
-            'name_ar.required'=>"اسم المنطقهالمنطقه باللغه العربيه مطلوب",
-            'name_en.required'=>"اسم المنطقهالمنطقه باللغه الانجليزيه مطلوب",
-            'city_id.required'=>"يرجي اختيار المنطقهالمنطقه",
+            'name_ar.required' => "اسم المنطقهالمنطقه باللغه العربيه مطلوب",
+            'name_en.required' => "اسم المنطقهالمنطقه باللغه الانجليزيه مطلوب",
+            'city_id.required' => "يرجي اختيار المنطقهالمنطقه",
 
 
         ];
@@ -58,10 +60,10 @@ class RegionController extends Controller
 
 
         if ($validator->fails()) {
-            Alert::error('خطأ', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back()->withInput();
         }
-        $country_id=City::findOrFail($request->city_id)->country_id;
+        $country_id = City::findOrFail($request->city_id)->country_id;
 
         $region = Region::create([
             'name_ar' => $request['name_ar'],
@@ -70,37 +72,41 @@ class RegionController extends Controller
             'country_id' => $country_id,
         ]);
 
-        if ($region){
+        if ($region) {
 
             session()->flash('success', "success");
-            if(session()->has("success")){
-                Alert::success('نجح', 'تم إضافة منطقه');
+            if (session()->has("success")) {
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', ' Region added successfully');
+                } else {
+                    Alert::success('نجح', 'تمت إضافة المنطقة بنجاح ');
+                }
             }
-
         }
 
-        return redirect()->route('regions.view' , $country_id);
+        return redirect()->route('regions.view', $country_id);
 
-//        $uId = $request->user_id;
-//        User::updateOrCreate(['id' => $uId],['name' => $request->name, 'email' => $request->email]);
-//        if(empty($request->user_id))
-//            $msg = 'User created successfully.';
-//        else
-//            $msg = 'User data is updated successfully';
-//        return redirect()->route('users.index')->with('success',$msg);
+        //        $uId = $request->user_id;
+        //        User::updateOrCreate(['id' => $uId],['name' => $request->name, 'email' => $request->email]);
+        //        if(empty($request->user_id))
+        //            $msg = 'User created successfully.';
+        //        else
+        //            $msg = 'User data is updated successfully';
+        //        return redirect()->route('users.index')->with('success',$msg);
     }
 
 
 
 
-    public function updateRegion(Request $request ,$id){
+    public function updateRegion(Request $request, $id)
+    {
 
 
         $messeges = [
 
-            'name_ar.required'=>"اسم المنطقه باللغه العربيه مطلوب",
-            'name_en.required'=>"اسم المنطقه باللغه الانجليزيه مطلوب",
-            'city_id.required'=>"يرجي اختيار المنطقه",
+            'name_ar.required' => "اسم المنطقه باللغه العربيه مطلوب",
+            'name_en.required' => "اسم المنطقه باللغه الانجليزيه مطلوب",
+            'city_id.required' => "يرجي اختيار المنطقه",
 
 
 
@@ -121,47 +127,53 @@ class RegionController extends Controller
 
 
         if ($validator->fails()) {
-            Alert::error('خطأ', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back();
         }
 
         $region = Region::find($id);
 
 
-        if(!$region){
-            Alert::error('خطأ', 'المنطقه غير موجوده');
+        if (!$region) {
+            Alert::error('', 'المنطقه غير موجوده');
             return back();
         }
 
-        $country_id=City::findOrFail($request->city_id)->country_id;
+        $country_id = City::findOrFail($request->city_id)->country_id;
 
         $region = $region->update([
             'name_ar' => $request['name_ar'],
             'name_en' => $request['name_en'],
             'city_id' => $request['city_id'],
-            'country_id' => $country_id ,
+            'country_id' => $country_id,
 
 
         ]);
 
 
-        if($region){
+        if ($region) {
             session()->flash('success', "success");
-            if(session()->has("success")){
-                Alert::success('نجح', 'تم تعديل بيانات المنطقه');
+            if (session()->has("success")) {
+
+                if (Lang::locale() == 'en') {
+
+                    Alert::success('success', ' Region edited successfully');
+                } else {
+                    Alert::success('نجح', 'تم تعديل المنطقه بنجاح');
+                }
             }
         }
 
-        return redirect()->route('regions.view' , $country_id );
+        return redirect()->route('regions.view', $country_id);
 
 
-//        $uId = $request->user_id;
-//        User::updateOrCreate(['id' => $uId],['name' => $request->name, 'email' => $request->email]);
-//        if(empty($request->user_id))
-//            $msg = 'User created successfully.';
-//        else
-//            $msg = 'User data is updated successfully';
-//        return redirect()->route('users.index')->with('success',$msg);
+        //        $uId = $request->user_id;
+        //        User::updateOrCreate(['id' => $uId],['name' => $request->name, 'email' => $request->email]);
+        //        if(empty($request->user_id))
+        //            $msg = 'User created successfully.';
+        //        else
+        //            $msg = 'User data is updated successfully';
+        //        return redirect()->route('users.index')->with('success',$msg);
 
 
     }
@@ -173,13 +185,13 @@ class RegionController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-//    public function show($id)
-//    {
-//        $where = array('id' => $id);
-//        $user = User::where($where)->first();
-//        return Response::json($user);
-////return view('users.show',compact('user'));
-//    }
+    //    public function show($id)
+    //    {
+    //        $where = array('id' => $id);
+    //        $user = User::where($where)->first();
+    //        return Response::json($user);
+    ////return view('users.show',compact('user'));
+    //    }
 
     /**
      * Show the form for editing the specified resource.
@@ -192,32 +204,33 @@ class RegionController extends Controller
     {
         $where = array('id' => $id);
         $region = Region::where($where)->first();
-        if(!$region){
+        if (!$region) {
             Alert::error('خطأ', 'المنطقه غير موجوده بالنظام');
             return back();
         }
 
         $cities = City::all();
 
-        return view('dashboard.regions.edit' , compact('region' ,'cities'));
-
+        return view('dashboard.regions.edit', compact('region', 'cities'));
     }
     public function destroy($id)
     {
-        $region = Region::where('id',$id)->first();
+        $region = Region::where('id', $id)->first();
 
-        if($region){
+        if ($region) {
 
             $region->delete();
             session()->flash('success', "success");
-            if(session()->has("success")){
-                Alert::success('نجح', ' تم حذف المنطقه');
+            if (session()->has("success")) {
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', 'Region deleted successfully');
+                } else {
+                    Alert::success('نجح', 'تم حذف المنطقة بنجاح');
+                }
             }
-
         }
 
-//        return Response::json($user);
+        //        return Response::json($user);
         return back();
     }
-
 }

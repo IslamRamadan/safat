@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Mail;
 use RealRashid\SweetAlert\Facades\Alert;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Session;
+use Lang;
+
 use App\City;
 use Carbon\Carbon;
 
@@ -21,45 +23,43 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
-        $order = Order::where('status','!=',0)->latest()->get();
-        $number=$order->count();
-        $total_price=$order->sum('total_price');
-        $today=$order->where('created_at','>=',  Carbon::today())->count();
-        $today_price=$order->where('created_at','>=',  Carbon::today())->sum('total_price');
+        $order = Order::where('status', '!=', 0)->latest()->get();
+        $number = $order->count();
+        $total_price = $order->sum('total_price');
+        $today = $order->where('created_at', '>=',  Carbon::today())->count();
+        $today_price = $order->where('created_at', '>=',  Carbon::today())->sum('total_price');
 
         if ($request->ajax()) {
             $filter = Session::get('filter');
-          if($filter != null ){
-            $data = Order::where('status','!=',0);
+            if ($filter != null) {
+                $data = Order::where('status', '!=', 0);
 
-            if($filter['from']!= null){
-              $data->whereDate('created_at','>=',$filter['from']);
+                if ($filter['from'] != null) {
+                    $data->whereDate('created_at', '>=', $filter['from']);
+                }
+
+                if ($filter['to'] != null) {
+                    $data->whereDate('created_at', '<=', $filter['to']);
+                }
+                if ($filter['city_id'] != null) {
+                    $data->where('city_id', '=', $filter['city_id']);
+                }
+                $data = $data->latest()->get();
+            } else {
+                $data = Order::where('status', '!=', 0)->latest()->get();
             }
-
-            if($filter['to']!= null){
-              $data->whereDate('created_at','<=',$filter['to']);
-
-            }
-            if($filter['city_id']!= null){
-              $data->where('city_id','=',$filter['city_id']);
-            }
-            $data=$data->latest()->get();
-          }else{
-            $data = Order::where('status','!=',0)->latest()->get();
-
-          }
             // $data = Order::where('status','!=',0)->latest()->get();
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('status', function ($artist) {
-                    if($artist->status == 0){
+                    if ($artist->status == 0) {
 
                         return 'لم يتم الدفع بعد';
                     }
-                    if($artist->status == 1){
+                    if ($artist->status == 1) {
                         return 'جاري الشحن';
                     }
-                    if($artist->status == 2){
+                    if ($artist->status == 2) {
                         return 'تم الأستلام';
                     }
                 })->addColumn('city_name', function ($artist) {
@@ -69,98 +69,94 @@ class OrderController extends Controller
                     // dd($artist->order_items->product_id);
                     foreach ($artist->order_items as $item) {
                         # code...
-                    // dd($item->product->img);
-                    return asset('/storage/' . $item->product->img);
-
+                        // dd($item->product->img);
+                        return asset('/storage/' . $item->product->img);
                     }
                     // return $artist->product_id;
                 })
-                ->addColumn('action', function($row){
-//                    <a class="btn btn-success"  href="'.route('countries.edit' , $row->id).'" id="edit-user" >Edit </a>
+                ->addColumn('action', function ($row) {
+                    //                    <a class="btn btn-success"  href="'.route('countries.edit' , $row->id).'" id="edit-user" >Edit </a>
                     $action = '
                         <a class="btn btn-primary"
                          style="margin:5px"
-                         href="'.route('order.items.view' , $row->id).'" id="edit-user" >Order Items </a>
+                         href="' . route('order.items.view', $row->id) . '" id="edit-user" >Order Items </a>
 
                      ';
 
-                    if($row->status == 1){
-                    $action .='         <a class="btn btn-success"
+                    if ($row->status == 1) {
+                        $action .= '         <a class="btn btn-success"
                       style="margin:5px"
-                    href="'.route('orders.received' , $row->id).'" id="edit-user" >Switch to Recevied </a>';
+                    href="' . route('orders.received', $row->id) . '" id="edit-user" >Switch to Recevied </a>';
                     }
-                    if($row->status == 2){
-                    $action .='         <a class="btn btn-dark"
+                    if ($row->status == 2) {
+                        $action .= '         <a class="btn btn-dark"
                       style="margin:5px"
                      id="edit-user" >Recevied Done </a>';
                     }
 
-                    $action .='
+                    $action .= '
                         <meta name="csrf-token" content="{{ csrf_token() }}">';
-//                        <a href="'.url('countries/destroy' , $row->id).'" class="btn btn-danger">Delete</a>
+                    //                        <a href="'.url('countries/destroy' , $row->id).'" class="btn btn-danger">Delete</a>
 
                     return $action;
-
                 })
                 ->rawColumns(['action'])
                 ->make(true);
-        }elseif($request->has('filter')){
-          $filter=[
-            'from'=>$request->from,
-            'to'=>$request->to,
-            'city_id'=>$request->city_id
-          ];
-          Session::put('filter', $filter);
-          $cities = City::get();
-          // dd(  $filter);
-          return view('dashboard.orders.index',compact('cities','today_price','today','total_price','number'));
-
+        } elseif ($request->has('filter')) {
+            $filter = [
+                'from' => $request->from,
+                'to' => $request->to,
+                'city_id' => $request->city_id
+            ];
+            Session::put('filter', $filter);
+            $cities = City::get();
+            // dd(  $filter);
+            return view('dashboard.orders.index', compact('cities', 'today_price', 'today', 'total_price', 'number'));
         }
-          $cities = City::get();
+        $cities = City::get();
         Session::forget('filter');
-        return view('dashboard.orders.index',compact('cities','today_price','today','total_price','number'));
+        return view('dashboard.orders.index', compact('cities', 'today_price', 'today', 'total_price', 'number'));
     }
     public function not_paid(Request $request)
     {
         // dd('ok');
         // dd($data);
         if ($request->ajax()) {
-            $data = Order::where('status',0)->latest()->get();
+            $data = Order::where('status', 0)->latest()->get();
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('status', function ($artist) {
-                    if($artist->status == 0){
+                    if ($artist->status == 0) {
 
                         return 'غير مدفوع';
                     }
-                    if($artist->status == 1){
+                    if ($artist->status == 1) {
                         return 'تم الدفع';
                     }
-                    if($artist->status == 2){
+                    if ($artist->status == 2) {
                         return 'تم الأستلام';
                     }
                 })
-                ->addColumn('action', function($row){
-//                    <a class="btn btn-success"  href="'.route('countries.edit' , $row->id).'" id="edit-user" >Edit </a>
+                ->addColumn('action', function ($row) {
+                    //                    <a class="btn btn-success"  href="'.route('countries.edit' , $row->id).'" id="edit-user" >Edit </a>
                     $action = '
                         <a class="btn btn-primary"
                          style="margin:5px"
-                         href="'.route('order.items.view' , $row->id).'" id="edit-user" >Order Items </a>
+                         href="' . route('order.items.view', $row->id) . '" id="edit-user" >Order Items </a>
 
                      ';
 
-                    if($row->status == 1){
-                    $action .='         <a class="btn btn-success"
+                    if ($row->status == 1) {
+                        $action .= '         <a class="btn btn-success"
                       style="margin:5px"
-                    href="'.route('orders.received' , $row->id).'" id="edit-user" >Recevied </a>';
+                    href="' . route('orders.received', $row->id) . '" id="edit-user" >Recevied </a>';
                     }
 
-                    $action .='
+                    $action .= '
                         <meta name="csrf-token" content="{{ csrf_token() }}">';
-//                        <a href="'.url('countries/destroy' , $row->id).'" class="btn btn-danger">Delete</a>
+                    //                        <a href="'.url('countries/destroy' , $row->id).'" class="btn btn-danger">Delete</a>
 
                     return $action;
-
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -169,12 +165,13 @@ class OrderController extends Controller
         return view('dashboard.orders.not_paid');
     }
 
-    public function receive($order_id){
+    public function receive($order_id)
+    {
 
         $order = Order::find($order_id);
 
-        if(!$order){
-            Alert::error('Order Not Found' , '');
+        if (!$order) {
+            Alert::error('Order Not Found', '');
 
             return back();
         }
@@ -192,105 +189,99 @@ class OrderController extends Controller
         // });
 
 
-        Alert::success('Order updated Successfully !' , '');
 
+
+        if (Lang::locale() == 'en') {
+
+            Alert::success('success', ' Order status edited successfully');
+        } else {
+            Alert::success('نجح', 'تم تعديل حاله الطلب بنجاح');
+        }
         return back();
     }
 
 
-    public function items( Request $request,$order_id){
+    public function items(Request $request, $order_id)
+    {
 
         $order = Order::find($order_id);
 
 
-        if(!$order){
-            Alert::error('خطأ','الطلب غير موجود بالنظام ');
+        if (!$order) {
+            Alert::error('خطأ', 'الطلب غير موجود بالنظام ');
             return back();
         }
 
         if ($request->ajax()) {
-            $data = OrderItem::where('order_id' , $order_id)->latest()->get();
+            $data = OrderItem::where('order_id', $order_id)->latest()->get();
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('product', function ($artist) {
-                    if(isset($artist->product)){
+                    if (isset($artist->product)) {
 
-                        return $artist->product->title_en?:'' . ' - ' . $artist->product->title_ar?:'' ;
-                    }
-                    else{
+                        return $artist->product->title_en ?: '' . ' - ' . $artist->product->title_ar ?: '';
+                    } else {
 
-                    return "-";
+                        return "-";
                     }
                 })
                 ->addColumn('category', function ($artist) {
-                    if(isset($artist->product->basic_category)){
+                    if (isset($artist->product->basic_category)) {
 
                         $val = '';
-                        $val .= '( '.$artist->product->basic_category->name_en?:"" . ' - ' .$artist->product->basic_category->name_ar?:"" .' ) /';
-                        $val .= ' ( '.$artist->product->category->name_en?:"" . ' - ' .$artist->product->category->name_ar?:"" .' ) ';
+                        $val .= '( ' . $artist->product->basic_category->name_en ?: "" . ' - ' . $artist->product->basic_category->name_ar ?: "" . ' ) /';
+                        $val .= ' ( ' . $artist->product->category->name_en ?: "" . ' - ' . $artist->product->category->name_ar ?: "" . ' ) ';
                         return $val;
-                                        }
-                    else{
+                    } else {
 
-                    return "-";
+                        return "-";
                     }
-
-
-
                 })
                 ->addColumn('image', function ($artist) {
-                    if(isset($artist->product)){
+                    if (isset($artist->product)) {
 
                         $url = asset('/storage/' . $artist->product->img);
                         return $url;
-                                        }
-                    else{
+                    } else {
 
-                    return "-";
+                        return "-";
                     }
-
                 })
                 ->addColumn('price', function ($artist) {
-                    if(isset($artist->product)){
+                    if (isset($artist->product)) {
 
-                        return $artist->product->price?:"";
-                    }
-                    else{
+                        return $artist->product->price ?: "";
+                    } else {
 
-                    return "-";
+                        return "-";
                     }
                 })
 
 
                 ->addColumn('color', function ($artist) {
-                    if(isset($artist->colors->color->name_ar)){
+                    if (isset($artist->colors->color->name_ar)) {
 
-                        return $artist->colors->color->name_ar?:"";
+                        return $artist->colors->color->name_ar ?: "";
+                    } else {
+
+                        return "-";
                     }
-                    else{
-
-                    return "-";
-                    }
-
                 })->addColumn('action', function ($artist) {
-                    if($artist->product_height_id == 0){
+                    if ($artist->product_height_id == 0) {
 
-                        return   '<button class="btn btn-success " onclick="button_model_view('. $artist->id.');" data-toggle="modal" data-target="#myModal"
+                        return   '<button class="btn btn-success " onclick="button_model_view(' . $artist->id . ');" data-toggle="modal" data-target="#myModal"
                       style="margin:5px"
                     >Size details</button>';
-                    }
-                    else{
+                    } else {
 
-                    return "-";
+                        return "-";
                     }
-
                 })
-//                ->rawColumns(['action'])
+                //                ->rawColumns(['action'])
                 ->make(true);
-
         }
 
-        return view('dashboard.orders.view' , compact('order'));
+        return view('dashboard.orders.view', compact('order'));
     }
 
     /**
@@ -300,16 +291,16 @@ class OrderController extends Controller
      */
     public function get_customSize(Request $request)
     {
-       $items= CustomSize::where('order_item_id',$request->id)->get();
+        $items = CustomSize::where('order_item_id', $request->id)->get();
 
-       $val='';
+        $val = '';
 
-       foreach($items as $k=> $item){
-           $val .= '<tr> <td>'.$item->height.'</td><td>'.__("site.the_front".$item->the_front).'</td><td>'. $item->order_size .'</td><td>'. __("site.veil_size".$item->veil_size) .'</td>';
+        foreach ($items as $k => $item) {
+            $val .= '<tr> <td>' . $item->height . '</td><td>' . __("site.the_front" . $item->the_front) . '</td><td>' . $item->order_size . '</td><td>' . __("site.veil_size" . $item->veil_size) . '</td>';
 
-           $val .= '<td>'. $item->note .'</td> </tr>';
-       }
-       return $val;
+            $val .= '<td>' . $item->note . '</td> </tr>';
+        }
+        return $val;
     }
 
     /**

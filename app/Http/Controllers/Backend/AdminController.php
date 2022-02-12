@@ -76,7 +76,7 @@ class AdminController extends Controller
 
 
         if ($validator->fails()) {
-            Alert::error('خطأ', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back();
         }
 
@@ -97,7 +97,15 @@ class AdminController extends Controller
 
             session()->flash('success', "success");
             if(session()->has("success")){
-                Alert::success('نجح', 'تمت إضافة مدير');
+                if (Lang::locale() == 'en') {
+
+                    Alert::success('success', 'Admin added successfully');
+                }
+                    else{
+
+                        Alert::success('نجح', 'تمت إضافة مدير');
+                    }
+
             }
 
         }
@@ -145,7 +153,7 @@ class AdminController extends Controller
 
 
         if ($validator->fails()) {
-            Alert::error('خطأ', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back();
         }
 
@@ -167,7 +175,15 @@ class AdminController extends Controller
 
             session()->flash('success', "success");
             if(session()->has("success")){
-                Alert::success('نجح', 'تم تعديل بيانات المدير');
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', 'Admin edited successfully');
+
+                }
+                else{
+                        Alert::success('نجح', 'تم تعديل بيانات المدير');
+
+                    }
+
             }
         }
 
@@ -213,7 +229,15 @@ class AdminController extends Controller
         $where = array('id' => $id);
         $user = User::where($where)->first();
         if(!$user){
-            Alert::error('خطأ', 'المدير غير موجود بالنظام');
+            if (Lang::locale() == 'en') {
+                Alert::error('error', 'Admin Not found');
+
+            }
+            else{
+                    Alert::error('خطأ', 'المدير غير موجود بالنظام');
+
+                }
+
             return back();
         }
 
@@ -236,7 +260,15 @@ class AdminController extends Controller
             $user->delete();
             session()->flash('success', "success");
             if(session()->has("success")){
-                Alert::success('نجح', 'تم حذف مدير');
+                if (Lang::locale() == 'en') {
+
+                    Alert::success('success', 'Admin deleted successfully');
+                }
+                else{
+                        Alert::success('نجح', 'تم حذف مدير');
+
+                    }
+
             }
         }
 

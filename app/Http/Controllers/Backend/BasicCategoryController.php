@@ -81,7 +81,7 @@ $action.=' <a href="' . url('basic_categories/destroy', $row->id) . '" class="bt
 
 
         if ($validator->fails()) {
-            Alert::error('خطأ', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back()->withInput();;
         }
 
@@ -122,7 +122,15 @@ $action.=' <a href="' . url('basic_categories/destroy', $row->id) . '" class="bt
             ]);
 
         } else {
-            Alert::error('خطأ', 'برجاء اختيار صورة القسم');
+            if (Lang::locale() == 'en') {
+                Alert::error('error', 'Please choose category photo');
+
+            }
+            else{
+                    Alert::error('خطأ', 'برجاء اختيار صورة القسم');
+
+                }
+
             return back()->withInput();;
         }
 
@@ -130,7 +138,15 @@ $action.=' <a href="' . url('basic_categories/destroy', $row->id) . '" class="bt
 
             session()->flash('success', "success");
             if (session()->has("success")) {
-                Alert::success('نجح', 'تمت إضافة قسم رئيسي');
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', 'Basic category added successfully');
+
+                }
+                else{
+                        Alert::success('نجح', 'تمت إضافة قسم رئيسي');
+
+                    }
+
             }
 
         }
@@ -169,7 +185,7 @@ $action.=' <a href="' . url('basic_categories/destroy', $row->id) . '" class="bt
 
 
         if ($validator->fails()) {
-            Alert::error('خطأ', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back();
         }
 
@@ -218,7 +234,14 @@ $action.=' <a href="' . url('basic_categories/destroy', $row->id) . '" class="bt
 
             session()->flash('success', "success");
             if (session()->has("success")) {
-                Alert::success('نجح', 'تم تعديل القسم');
+                if (Lang::locale() == 'en') {
+
+                    Alert::success('success', 'Basic category edited successfully');
+                }
+                else{
+                    Alert::success('نجح', 'تم تعديل القسم');
+
+                }
             }
 
         }
@@ -299,7 +322,13 @@ $action.=' <a href="' . url('basic_categories/destroy', $row->id) . '" class="bt
 
             session()->flash('success', "success");
             if (session()->has("success")) {
-                Alert::success('نجح', 'تم حذف القسم');
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', 'Basic category deleted successfully');
+                }
+                else{
+                    Alert::success('نجح', 'تم حذف القسم');
+
+                }
             }
         }
         return redirect()->route('basic_categories.index');

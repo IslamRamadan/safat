@@ -38,19 +38,18 @@ class CountryController extends Controller
                 ->addColumn('currency_code', function ($artist) {
                     return $artist->currency->code;
                 })
-                ->addColumn('action', function($row){
+                ->addColumn('action', function ($row) {
 
                     $action = '
-                        <a class="btn btn-primary"  href="'.route('cities.view' , $row->id).'" id="edit-user" >Cities </a>
-                        <a class="btn btn-info"  href="'.route('regions.view' , $row->id).'" id="edit-user" >Regions </a>
-                        <a class="btn btn-success"  href="'.route('countries.edit' , $row->id).'" id="edit-user" >Edit </a>
+                        <a class="btn btn-primary"  href="' . route('cities.view', $row->id) . '" id="edit-user" >Cities </a>
+                        <a class="btn btn-info"  href="' . route('regions.view', $row->id) . '" id="edit-user" >Regions </a>
+                        <a class="btn btn-success"  href="' . route('countries.edit', $row->id) . '" id="edit-user" >Edit </a>
                         <meta name="csrf-token" content="{{ csrf_token() }}">
-                        <a href="'.url('countries/destroy' , $row->id).'" class="btn btn-danger">Delete</a>
+                        <a href="' . url('countries/destroy', $row->id) . '" class="btn btn-danger">Delete</a>
                         ';
-//
+                    //
 
                     return $action;
-
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -59,10 +58,11 @@ class CountryController extends Controller
         return view('dashboard.countries.index');
     }
 
-    public function create(){
+    public function create()
+    {
         $currencies = Currency::all();
 
-        return view('dashboard.countries.create' , compact('currencies'));
+        return view('dashboard.countries.create', compact('currencies'));
     }
 
     public function store(Request $request)
@@ -71,15 +71,15 @@ class CountryController extends Controller
 
         $messeges = [
 
-            'name_ar.required'=>"اسم الدوله باللغه العربيه مطلوب",
-            'name_en.required'=>"اسم الدوله باللغه الانجليزيه مطلوب",
-            'code.required'=>"رمز الدوله مطلوب",
-            'country_code.required'=>"إختصار الدوله مطلوب",
-            'currency_id.required'=>"يرجي اختيار عملة الدوله",
-            'currency_id.unique'=>"العمله المختاره مستخدمه من قبل دوله اخري",
-            'image_url.required'=>"صورة علم الدوله مطلوبة",
-            'image_url.mimes'=>" يجب ان تكون الصورة jpg او jpeg او png  ",
-            'image_url.max'=>" الحد الاقصي للصورة 4 ميجا ",
+            'name_ar.required' => "اسم الدوله باللغه العربيه مطلوب",
+            'name_en.required' => "اسم الدوله باللغه الانجليزيه مطلوب",
+            'code.required' => "رمز الدوله مطلوب",
+            'country_code.required' => "إختصار الدوله مطلوب",
+            'currency_id.required' => "يرجي اختيار عملة الدوله",
+            'currency_id.unique' => "العمله المختاره مستخدمه من قبل دوله اخري",
+            'image_url.required' => "صورة علم الدوله مطلوبة",
+            'image_url.mimes' => " يجب ان تكون الصورة jpg او jpeg او png  ",
+            'image_url.max' => " الحد الاقصي للصورة 4 ميجا ",
         ];
 
         $validator =  Validator::make($request->all(), [
@@ -92,7 +92,7 @@ class CountryController extends Controller
 
             'country_code' => ['required'],
 
-            'currency_id' => ['required' , 'unique:countries,currency_id'],
+            'currency_id' => ['required', 'unique:countries,currency_id'],
 
             'image_url' =>  'required|mimes:jpg,jpeg,png|max:4100',
 
@@ -101,7 +101,7 @@ class CountryController extends Controller
         ], $messeges);
 
         if ($validator->fails()) {
-            Alert::error('خطأ', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back();
         }
 
@@ -120,11 +120,11 @@ class CountryController extends Controller
             if (!Storage::exists($path)) {
                 Storage::disk('public')->makeDirectory($path);
             }
-//
-//            if(file_exists(storage_path('app/public/'.$path.$file_name)))
-//            {
-//                unlink(storage_path('app/public/'.$path.$file_name));
-//            }
+            //
+            //            if(file_exists(storage_path('app/public/'.$path.$file_name)))
+            //            {
+            //                unlink(storage_path('app/public/'.$path.$file_name));
+            //            }
 
 
 
@@ -136,71 +136,78 @@ class CountryController extends Controller
                 'currency_id' => $request['currency_id'],
                 'image_url' => $image->storeAs($path, $file_name, 'public'),
             ]);
-
         } else {
-            Alert::error('خطأ', 'برجاء اختيار صورة القسم');
+            if (Lang::locale() == 'en') {
+                Alert::error('error', 'Please choose Country photo');
+            } else {
+                Alert::error('خطأ', 'برجاء اختيار صورة الدوله');
+            }
             return back();
         }
-//        if ($request->hasfile('image_url')) {
-//            // $images .= 'yes';
-//
-//            $image = $request->file('image_url');
-//            $original_name = strtolower(trim($image->getClientOriginalName()));
-//            $file_name = time() . rand(100, 999) . $original_name;
-//            $path = 'uploads/countries/images/';
-//
-//            if (!Storage::exists($path)) {
-//                Storage::disk('public')->makeDirectory($path);
-//            }
-//
-//
-//        } else {
-//            Alert::error('خطأ', 'برجاء اختيار صورة علم الدوله');
-//            return back();
-//        }
+        //        if ($request->hasfile('image_url')) {
+        //            // $images .= 'yes';
+        //
+        //            $image = $request->file('image_url');
+        //            $original_name = strtolower(trim($image->getClientOriginalName()));
+        //            $file_name = time() . rand(100, 999) . $original_name;
+        //            $path = 'uploads/countries/images/';
+        //
+        //            if (!Storage::exists($path)) {
+        //                Storage::disk('public')->makeDirectory($path);
+        //            }
+        //
+        //
+        //        } else {
+        //            Alert::error('خطأ', 'برجاء اختيار صورة علم الدوله');
+        //            return back();
+        //        }
 
-//
-//        $country = Country::create([
-//            'name_ar' => $request['name_ar'],
-//            'name_en' => $request['name_en'],
-//            'code' => $request['code'],
-//            'country_code' => $request['country_code'],
-//            'delivery' => $request['delivery'],
-//            'currency_id' => $request['currency_id'],
-//        ]);
+        //
+        //        $country = Country::create([
+        //            'name_ar' => $request['name_ar'],
+        //            'name_en' => $request['name_en'],
+        //            'code' => $request['code'],
+        //            'country_code' => $request['country_code'],
+        //            'delivery' => $request['delivery'],
+        //            'currency_id' => $request['currency_id'],
+        //        ]);
 
-        if ($country){
+        if ($country) {
 
             session()->flash('success', "success");
-            if(session()->has("success")){
-                Alert::success('نجح', 'تمت إضافة دوله');
+            if (session()->has("success")) {
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', ' Country added successfully');
+                } else {
+                    Alert::success('نجح', 'تمت إضافة الدوله بنجاح ');
+                }
             }
-
         }
 
         return redirect()->route('countries.index');
 
-//        $uId = $request->user_id;
-//        User::updateOrCreate(['id' => $uId],['name' => $request->name, 'email' => $request->email]);
-//        if(empty($request->user_id))
-//            $msg = 'User created successfully.';
-//        else
-//            $msg = 'User data is updated successfully';
-//        return redirect()->route('users.index')->with('success',$msg);
+        //        $uId = $request->user_id;
+        //        User::updateOrCreate(['id' => $uId],['name' => $request->name, 'email' => $request->email]);
+        //        if(empty($request->user_id))
+        //            $msg = 'User created successfully.';
+        //        else
+        //            $msg = 'User data is updated successfully';
+        //        return redirect()->route('users.index')->with('success',$msg);
     }
 
 
-    public function updateCountry(Request $request ,$id){
+    public function updateCountry(Request $request, $id)
+    {
 
 
         $messeges = [
 
-            'name_ar.required'=>"اسم الدوله باللغه العربيه مطلوب",
-            'name_en.required'=>"اسم الدوله باللغه الانجليزيه مطلوب",
-            'code.required'=>"رمز الدوله مطلوب",
-            'country_code.required'=>"إختصار الدوله مطلوب",
-            'currency_id.required'=>"يرجي اختيار عملة الدوله",
-            'currency_id.unique'=>"العمله المختاره مستخدمه من قبل دوله اخري",
+            'name_ar.required' => "اسم الدوله باللغه العربيه مطلوب",
+            'name_en.required' => "اسم الدوله باللغه الانجليزيه مطلوب",
+            'code.required' => "رمز الدوله مطلوب",
+            'country_code.required' => "إختصار الدوله مطلوب",
+            'currency_id.required' => "يرجي اختيار عملة الدوله",
+            'currency_id.unique' => "العمله المختاره مستخدمه من قبل دوله اخري",
 
         ];
 
@@ -210,24 +217,24 @@ class CountryController extends Controller
 
             'name_en' => ['required'],
 
-            'code' => ['required' ],
+            'code' => ['required'],
 
             'country_code' => ['required'],
 
-            'currency_id' => ['required' , 'unique:countries,currency_id,' .$id],
+            'currency_id' => ['required', 'unique:countries,currency_id,' . $id],
 
         ], $messeges);
 
 
 
         if ($validator->fails()) {
-            Alert::error('خطأ', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back();
         }
 
         $country = Country::find($id);
 
-        if(!$country){
+        if (!$country) {
             Alert::error('خطأ', 'الدوله غير موجوده');
             return back();
         }
@@ -244,11 +251,10 @@ class CountryController extends Controller
                 Storage::disk('public')->makeDirectory($path);
             }
 
-//            return (storage_path('app/public/'.$cat->image_url));
+            //            return (storage_path('app/public/'.$cat->image_url));
 
-            if(file_exists(storage_path('app/public/'.$country->image_url)))
-            {
-                unlink(storage_path('app/public/'.$country->image_url));
+            if (file_exists(storage_path('app/public/' . $country->image_url))) {
+                unlink(storage_path('app/public/' . $country->image_url));
             }
 
 
@@ -260,8 +266,6 @@ class CountryController extends Controller
                 'currency_id' => $request['currency_id'],
                 'image_url' => $image->storeAs($path, $file_name, 'public'),
             ]);
-
-
         } else {
 
             $country = $country->update([
@@ -270,17 +274,21 @@ class CountryController extends Controller
                 'code' => (int)$request['code'],
                 'country_code' => $request['country_code'],
                 'currency_id' => $request['currency_id'],
-//                'image_url' => $image->storeAs($path, $file_name, 'public'),
+                //                'image_url' => $image->storeAs($path, $file_name, 'public'),
             ]);
-
         }
 
 
 
-        if($country){
+        if ($country) {
             session()->flash('success', "success");
-            if(session()->has("success")){
-                Alert::success('نجح', 'تم تعديل بيانات الدوله');
+            if (session()->has("success")) {
+                if (Lang::locale() == 'en') {
+
+                    Alert::success('success', ' Country edited successfully');
+                } else {
+                    Alert::success('نجح', 'تم تعديل الدوله بنجاح');
+                }
             }
         }
 
@@ -288,13 +296,13 @@ class CountryController extends Controller
 
 
 
-//        $uId = $request->user_id;
-//        User::updateOrCreate(['id' => $uId],['name' => $request->name, 'email' => $request->email]);
-//        if(empty($request->user_id))
-//            $msg = 'User created successfully.';
-//        else
-//            $msg = 'User data is updated successfully';
-//        return redirect()->route('users.index')->with('success',$msg);
+        //        $uId = $request->user_id;
+        //        User::updateOrCreate(['id' => $uId],['name' => $request->name, 'email' => $request->email]);
+        //        if(empty($request->user_id))
+        //            $msg = 'User created successfully.';
+        //        else
+        //            $msg = 'User data is updated successfully';
+        //        return redirect()->route('users.index')->with('success',$msg);
 
 
     }
@@ -306,13 +314,13 @@ class CountryController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-//    public function show($id)
-//    {
-//        $where = array('id' => $id);
-//        $user = User::where($where)->first();
-//        return Response::json($user);
-////return view('users.show',compact('user'));
-//    }
+    //    public function show($id)
+    //    {
+    //        $where = array('id' => $id);
+    //        $user = User::where($where)->first();
+    //        return Response::json($user);
+    ////return view('users.show',compact('user'));
+    //    }
 
     /**
      * Show the form for editing the specified resource.
@@ -325,37 +333,35 @@ class CountryController extends Controller
     {
         $where = array('id' => $id);
         $country = Country::where($where)->first();
-        if(!$country){
+        if (!$country) {
             Alert::error('خطأ', 'الدوله غير موجوده بالنظام');
             return back();
         }
 
         $currencies = Currency::all();
-        return view('dashboard.countries.edit' , compact('country' ,'currencies'));
-
+        return view('dashboard.countries.edit', compact('country', 'currencies'));
     }
 
     public function destroy($id)
     {
-        $country = Country::where('id',$id)->first();
+        $country = Country::where('id', $id)->first();
 
-        if($country){
-            if(file_exists(storage_path('app/public/'.$country->image_url)))
-            {
-                unlink(storage_path('app/public/'.$country->image_url));
+        if ($country) {
+            if (file_exists(storage_path('app/public/' . $country->image_url))) {
+                unlink(storage_path('app/public/' . $country->image_url));
             }
 
 
-            if($country->cities){
-                if($country->cities->count() > 0){
-                    foreach($country->cities as $city){
+            if ($country->cities) {
+                if ($country->cities->count() > 0) {
+                    foreach ($country->cities as $city) {
                         $city->delete();
                     }
                 }
             }
-            if($country->regions){
-                if($country->regions->count() > 0){
-                    foreach($country->regions as $region){
+            if ($country->regions) {
+                if ($country->regions->count() > 0) {
+                    foreach ($country->regions as $region) {
                         $region->delete();
                     }
                 }
@@ -363,59 +369,63 @@ class CountryController extends Controller
 
             $country->delete();
             session()->flash('success', "success");
-            if(session()->has("success")){
-                Alert::success('نجح', ' تم حذف الدوله والمدن');
+            if (session()->has("success")) {
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', 'Country and its cities and regions deleted successfully');
+                } else {
+                    Alert::success('نجح', 'تم حذف البلد و المدن و المناطق الحاصه بها بنجاح');
+                }
             }
-
         }
 
-//        return Response::json($user);
+        //        return Response::json($user);
         return redirect()->route('countries.index');
     }
 
 
-    public function cities(Request $request,$country_id){
+    public function cities(Request $request, $country_id)
+    {
         $country = Country::find($country_id);
 
-        if(!$country){
-            Alert::error('خطأ','الدوله غير موجوده بالنظام ');
+        if (!$country) {
+            Alert::error('خطأ', 'الدوله غير موجوده بالنظام ');
             return back();
         }
 
         if ($request->ajax()) {
-            $data = City::where('country_id' , $country_id)->latest()->get();
+            $data = City::where('country_id', $country_id)->latest()->get();
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('country', function ($artist) {
                     return $artist->country->name_ar;
                 })
-                ->addColumn('action', function($row){
+                ->addColumn('action', function ($row) {
 
                     $action = '
-                        <a href="'.url('cities/destroy' , $row->id).'" class="btn btn-danger">Delete</a>
-                        <a class="btn btn-success"  href="'.route('cities.edit' , $row->id).'" id="edit-user" >Edit </a>
+                        <a href="' . url('cities/destroy', $row->id) . '" class="btn btn-danger">Delete</a>
+                        <a class="btn btn-success"  href="' . route('cities.edit', $row->id) . '" id="edit-user" >Edit </a>
                         <meta name="csrf-token" content="{{ csrf_token() }}">
                       ';
                     return $action;
-
                 })
                 ->rawColumns(['action'])
                 ->make(true);
         }
 
-        return view('dashboard.countries.view' , compact('country'));
+        return view('dashboard.countries.view', compact('country'));
     }
-    public function regions(Request $request,$country_id){
+    public function regions(Request $request, $country_id)
+    {
         // dd("Hh");
         $country = Country::find($country_id);
 
-        if(!$country){
-            Alert::error('خطأ','الدوله غير موجوده بالنظام ');
+        if (!$country) {
+            Alert::error('خطأ', 'الدوله غير موجوده بالنظام ');
             return back();
         }
 
         if ($request->ajax()) {
-            $data = Region::where('country_id' , $country_id)->latest()->get();
+            $data = Region::where('country_id', $country_id)->latest()->get();
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('country', function ($artist) {
@@ -424,20 +434,19 @@ class CountryController extends Controller
                 ->addColumn('city', function ($artist) {
                     return $artist->city->name_ar;
                 })
-                ->addColumn('action', function($row){
+                ->addColumn('action', function ($row) {
 
                     $action = '
-                        <a href="'.url('regions/destroy' , $row->id).'" class="btn btn-danger">Delete</a>
-                        <a class="btn btn-success"  href="'.route('regions.edit' , $row->id).'" id="edit-user" >Edit </a>
+                        <a href="' . url('regions/destroy', $row->id) . '" class="btn btn-danger">Delete</a>
+                        <a class="btn btn-success"  href="' . route('regions.edit', $row->id) . '" id="edit-user" >Edit </a>
                         <meta name="csrf-token" content="{{ csrf_token() }}">
                       ';
                     return $action;
-
                 })
                 ->rawColumns(['action'])
                 ->make(true);
         }
 
-        return view('dashboard.regions.view' , compact('country'));
+        return view('dashboard.regions.view', compact('country'));
     }
 }

@@ -34,10 +34,10 @@ class CategoryController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $action = '
-                        <a class="btn btn-success"  href="'.route('categories.edit' , $row->id).'" >Edit </a>
+                        <a class="btn btn-success"  href="' . route('categories.edit', $row->id) . '" >Edit </a>
                         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-                       <a  href="'.route('categories.destroy' , $row->id).'" class="btn btn-danger">Delete</a>';
+                       <a  href="' . route('categories.destroy', $row->id) . '" class="btn btn-danger">Delete</a>';
                     return $action;
                 })
                 ->rawColumns(['action'])
@@ -54,10 +54,9 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        $basic_categories= BasicCategory::all();
+        $basic_categories = BasicCategory::all();
 
-        return view('dashboard.categories.create' , compact('basic_categories'));
-
+        return view('dashboard.categories.create', compact('basic_categories'));
     }
 
     /**
@@ -70,9 +69,9 @@ class CategoryController extends Controller
     {
         $messeges = [
 
-            'name_ar.required'=>"اسم القسم باللغه العربيه مطلوب",
-            'name_en.required'=>"اسم القسم باللغه الانجليزيه مطلوب",
-            'basic_category_id.required'=>"يرجي اختيار القسم الرئيسي",
+            'name_ar.required' => "اسم القسم باللغه العربيه مطلوب",
+            'name_en.required' => "اسم القسم باللغه الانجليزيه مطلوب",
+            'basic_category_id.required' => "يرجي اختيار القسم الرئيسي",
 
         ];
 
@@ -88,7 +87,7 @@ class CategoryController extends Controller
 
 
         if ($validator->fails()) {
-            Alert::error('خطأ', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back()->withInput();;
         }
 
@@ -99,17 +98,19 @@ class CategoryController extends Controller
             'basic_category_id' => $request['basic_category_id'],
         ]);
 
-        if ($category){
+        if ($category) {
 
             session()->flash('success', "success");
-            if(session()->has("success")){
-                Alert::success('نجح', 'تمت إضافة قسم بنجاح');
+            if (session()->has("success")) {
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', ' category added successfully');
+                } else {
+                    Alert::success('نجح', 'تمت إضافة قسم ');
+                }
             }
-
         }
 
         return redirect()->route('categories.index');
-
     }
 
     /**
@@ -120,19 +121,22 @@ class CategoryController extends Controller
      */
     public function show($id)
     {
-        $category = Category::where('id',$id)->first();
+        $category = Category::where('id', $id)->first();
 
 
-        if($category){
+        if ($category) {
             $category->delete();
             session()->flash('success', "success");
-            if(session()->has("success")){
-                Alert::success('نجح', 'تم حذف القسم');
+            if (session()->has("success")) {
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', 'Category deleted successfully');
+                } else {
+                    Alert::success('نجح', 'تم حذف القسم ');
+                }
             }
-
         }
 
-//        return Response::json($user);
+        //        return Response::json($user);
         return redirect()->route('categories.index');
     }
 
@@ -146,14 +150,13 @@ class CategoryController extends Controller
     {
         $where = array('id' => $id);
         $category = Category::where($where)->first();
-        if(!$category){
-            Alert::error('خطأ', 'القسم غير موجوده بالنظام');
+        if (!$category) {
+            Alert::error('خطأ', 'القسم غير موجود بالنظام');
             return back();
         }
 
         $basic_categories = BasicCategory::all();
-        return view('dashboard.categories.edit' , compact('category' ,'basic_categories'));
-
+        return view('dashboard.categories.edit', compact('category', 'basic_categories'));
     }
 
     /**
@@ -163,14 +166,15 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function updateCategory(Request $request ,$id){
+    public function updateCategory(Request $request, $id)
+    {
 
 
         $messeges = [
 
-            'name_ar.required'=>"اسم القسم باللغه العربيه مطلوب",
-            'name_en.required'=>"اسم القسم باللغه الانجليزيه مطلوب",
-            'basic_category_id.required'=>"يرجي اختيار القسم الرئيسي",
+            'name_ar.required' => "اسم القسم باللغه العربيه مطلوب",
+            'name_en.required' => "اسم القسم باللغه الانجليزيه مطلوب",
+            'basic_category_id.required' => "يرجي اختيار القسم الرئيسي",
 
         ];
 
@@ -186,7 +190,7 @@ class CategoryController extends Controller
 
 
         if ($validator->fails()) {
-            Alert::error('خطأ', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back();
         }
 
@@ -194,7 +198,7 @@ class CategoryController extends Controller
         $category = Category::find($id);
 
 
-        if(!$category){
+        if (!$category) {
             Alert::error('خطأ', 'القسم غير موجود');
             return back();
         }
@@ -209,10 +213,14 @@ class CategoryController extends Controller
         ]);
 
 
-        if($country){
+        if ($country) {
             session()->flash('success', "success");
-            if(session()->has("success")){
-                Alert::success('نجح', 'تم تعديل بيانات القسم');
+            if (session()->has("success")) {
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', 'Category edlted successfully');
+                } else {
+                    Alert::success('نجح', 'تم تعديل القسم ');
+                }
             }
         }
 
@@ -220,13 +228,13 @@ class CategoryController extends Controller
 
 
 
-//        $uId = $request->user_id;
-//        User::updateOrCreate(['id' => $uId],['name' => $request->name, 'email' => $request->email]);
-//        if(empty($request->user_id))
-//            $msg = 'User created successfully.';
-//        else
-//            $msg = 'User data is updated successfully';
-//        return redirect()->route('users.index')->with('success',$msg);
+        //        $uId = $request->user_id;
+        //        User::updateOrCreate(['id' => $uId],['name' => $request->name, 'email' => $request->email]);
+        //        if(empty($request->user_id))
+        //            $msg = 'User created successfully.';
+        //        else
+        //            $msg = 'User data is updated successfully';
+        //        return redirect()->route('users.index')->with('success',$msg);
 
 
     }
@@ -240,30 +248,32 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        $category = Category::where('id',$id)->first();
-        $products=Product::where('category_id',$id)->get();
+        $category = Category::where('id', $id)->first();
+        $products = Product::where('category_id', $id)->get();
 
-        if($products){
-            foreach($products as $prod){
-                if(file_exists(storage_path('app/public/'.$prod->img)))
-                {
-                    unlink(storage_path('app/public/'.$prod->img));
+        if ($products) {
+            foreach ($products as $prod) {
+                if (file_exists(storage_path('app/public/' . $prod->img))) {
+                    unlink(storage_path('app/public/' . $prod->img));
                 }
-                    $prod->delete();
+                $prod->delete();
             }
         }
 
-        if($category){
+        if ($category) {
             $category->delete();
             session()->flash('success', "success");
-            if(session()->has("success")){
-                Alert::success('نجح', 'تم حذف القسم');
-            }
+            if (session()->has("success")) {
 
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', 'Category deleted successfully');
+                } else {
+                    Alert::success('نجح', 'تم حذف القسم');
+                }
+            }
         }
 
-//        return Response::json($user);
+        //        return Response::json($user);
         return redirect()->route('categories.index');
     }
-
 }

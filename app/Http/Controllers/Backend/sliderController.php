@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
 use Yajra\DataTables\Facades\DataTables;
+use Lang;
+
 
 
 class sliderController extends Controller
@@ -20,15 +22,15 @@ class sliderController extends Controller
             $data =  Slider::latest()->get();
             return Datatables::of($data)
                 ->addColumn('image', function ($artist) {
-                    $url = asset( '/storage/'. $artist->img);
+                    $url = asset('/storage/' . $artist->img);
                     return $url;
                 })
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     $action = '
-                        <a class="btn btn-success"  href="'.route('sliders.edit' , $row->id).'" >Edit </a>
+                        <a class="btn btn-success"  href="' . route('sliders.edit', $row->id) . '" >Edit </a>
                         <meta name="csrf-token" content="{{ csrf_token() }}">
-                        <a  href="'.route('sliders.destroy' , $row->id).'" class="btn btn-danger">Delete</a>
+                        <a  href="' . route('sliders.destroy', $row->id) . '" class="btn btn-danger">Delete</a>
 
                         ';
                     return $action;
@@ -47,14 +49,14 @@ class sliderController extends Controller
 
     public function store(Request $request)
     {
-//        dd($request->all());
+        //        dd($request->all());
 
         $messeges = [
 
 
-            'photo.required'=>"صورة البانر مطلوبة",
-            'photo.mimes'=>" يجب ان تكون الصورة jpg او jpeg او png  ",
-            'photo.max'=>" الحد الاقصي للصورة 4 ميجا ",
+            'photo.required' => "صورة البانر مطلوبة",
+            'photo.mimes' => " يجب ان تكون الصورة jpg او jpeg او png  ",
+            'photo.max' => " الحد الاقصي للصورة 4 ميجا ",
             // "name_en.required"=>"اسم البانر بالانجليزيه مطلوب",
             // "name_ar.required"=>"اسم البانر بالعربيه مطلوب",
             // "description_en.required"=>"وصف البانر بالانجليزيه مطلوب",
@@ -66,7 +68,7 @@ class sliderController extends Controller
 
         $validator =  Validator::make($request->all(), [
 
-            'photo'=>'required|mimes:jpg,jpeg,png|max:4100',
+            'photo' => 'required|mimes:jpg,jpeg,png|max:4100',
             // "name_en"=>  " required",
             // "name_ar"=>  " required",
             // "description_ar"=>  " required",
@@ -77,20 +79,20 @@ class sliderController extends Controller
 
 
         if ($validator->fails()) {
-            Alert::error('error', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back();
         }
 
-//        $img =  $request->photo ;
-//        //add new name for img
-//        $new_name_img = time().uniqid().".".$img->getClientOriginalExtension();
-//
-//        //move img to folder
-//        $move = $img->move(public_path("upload/sliders"), $new_name_img);
-//
-//
-//        $new = "upload/sliders/".$new_name_img ;
-//        $request->merge(['img' => $new]);
+        //        $img =  $request->photo ;
+        //        //add new name for img
+        //        $new_name_img = time().uniqid().".".$img->getClientOriginalExtension();
+        //
+        //        //move img to folder
+        //        $move = $img->move(public_path("upload/sliders"), $new_name_img);
+        //
+        //
+        //        $new = "upload/sliders/".$new_name_img ;
+        //        $request->merge(['img' => $new]);
 
         $category = null;
         if ($request->hasfile('photo')) {
@@ -105,26 +107,30 @@ class sliderController extends Controller
                 Storage::disk('public')->makeDirectory($path);
             }
             $img = \Image::make($image);
-            $img->save(public_path('storage/'.$path.$file_name),30);
-//
-//            if(file_exists(storage_path('app/public/'.$path.$file_name)))
-//            {
-//                unlink(storage_path('app/public/'.$path.$file_name));
-//            }
+            $img->save(public_path('storage/' . $path . $file_name), 30);
+            //
+            //            if(file_exists(storage_path('app/public/'.$path.$file_name)))
+            //            {
+            //                unlink(storage_path('app/public/'.$path.$file_name));
+            //            }
 
 
-            $category= Slider::create(
+            $category = Slider::create(
                 [
                     'description_ar' => $request['description_ar'],
                     'description_en' => $request['description_en'],
                     'name_ar' => $request['name_ar'],
                     'name_en' => $request['name_en'],
-                    'img' => $path.$file_name
+                    'img' => $path . $file_name
                 ]
             );
-
         } else {
-            Alert::error('خطأ', 'برجاء اختيار صورة ');
+            if (Lang::locale() == 'en') {
+
+                Alert::error('Error', 'Please upload an image');
+            } else {
+                Alert::error('خطأ', 'برجاء تحميل صورة ');
+            }
             return back();
         }
 
@@ -133,33 +139,35 @@ class sliderController extends Controller
 
             session()->flash('success', "success");
             if (session()->has("success")) {
-                Alert::success('نجح', 'تمت إضافة بانر ');
-            }
+                if (Lang::locale() == 'en') {
 
+                    Alert::success('success', 'Banner added successfully');
+                } else {
+                    Alert::success('نجح', 'تمت إضافة بانر ');
+                }
+            }
         }
 
         return redirect()->route('sliders.index');
-
-
     }
 
     public function edit($id)
     {
-        $category=Slider::findOrFail($id);
-        return view('/dashboard/sliders/edit',["category"=>$category]);
+        $category = Slider::findOrFail($id);
+        return view('/dashboard/sliders/edit', ["category" => $category]);
     }
 
     public function updateSlider(Request $request, $id)
     {
-//        dd("ok");
+        //        dd("ok");
 
 
         $messeges = [
 
 
-            'photo.required'=>"صورة البانر مطلوبة",
-            'photo.mimes'=>" يجب ان تكون الصورة jpg او jpeg او png  ",
-            'photo.max'=>" الحد الاقصي للصورة 4 ميجا ",
+            'photo.required' => "صورة البانر مطلوبة",
+            'photo.mimes' => " يجب ان تكون الصورة jpg او jpeg او png  ",
+            'photo.max' => " الحد الاقصي للصورة 4 ميجا ",
             // "name_en.required"=>"اسم البانر بالانجليزيه مطلوب",
             // "name_ar.required"=>"اسم البانر بالعربيه مطلوب",
             // "description_en.required"=>"وصف البانر بالانجليزيه مطلوب",
@@ -171,7 +179,7 @@ class sliderController extends Controller
 
         $validator =  Validator::make($request->all(), [
 
-            'photo'=>'mimes:jpg,jpeg,png|max:4100',
+            'photo' => 'mimes:jpg,jpeg,png|max:4100',
             // "name_en"=>  " required",
             // "name_ar"=>  " required",
             // "description_ar"=>  " required",
@@ -180,7 +188,7 @@ class sliderController extends Controller
         ], $messeges);
 
         if ($validator->fails()) {
-            Alert::error('error', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back();
         }
 
@@ -199,14 +207,13 @@ class sliderController extends Controller
                 Storage::disk('public')->makeDirectory($path);
             }
 
-//            return (storage_path('app/public/'.$cat->image_url));
+            //            return (storage_path('app/public/'.$cat->image_url));
 
-            if(file_exists(storage_path('app/public/'.$cat->img)))
-            {
-                unlink(storage_path('app/public/'.$cat->img));
+            if (file_exists(storage_path('app/public/' . $cat->img))) {
+                unlink(storage_path('app/public/' . $cat->img));
             }
             $img = \Image::make($image);
-            $img->save(public_path('storage/'.$path.$file_name),30);
+            $img->save(public_path('storage/' . $path . $file_name), 30);
 
 
             $cat = $cat->update([
@@ -214,9 +221,8 @@ class sliderController extends Controller
                 'name_en' => $request['name_en'],
                 'description_ar' => $request['description_ar'],
                 'description_en' => $request['description_ar'],
-                'img' => $path.$file_name
+                'img' => $path . $file_name
             ]);
-
         } else {
 
 
@@ -225,7 +231,7 @@ class sliderController extends Controller
                 'name_en' => $request['name_en'],
                 'description_ar' => $request['description_ar'],
                 'description_en' => $request['description_ar'],
-//                'img' => $image->storeAs($path, $file_name, 'public')
+                //                'img' => $image->storeAs($path, $file_name, 'public')
             ]);
         }
 
@@ -234,63 +240,71 @@ class sliderController extends Controller
 
             session()->flash('success', "success");
             if (session()->has("success")) {
-                Alert::success('نجح', 'تم تعديل البانر');
+
+                if (Lang::locale() == 'en') {
+
+                    Alert::success('success', ' Banner edited successfully');
+                } else {
+                    Alert::success('نجح', 'تم تعديل البانر');
+                }
             }
-
         }
-            return redirect()->route('sliders.index');
-
+        return redirect()->route('sliders.index');
     }
 
 
-    public function destroy( $id)
+    public function destroy($id)
     {
 
-        $category= Slider::findOrFail($id);
+        $category = Slider::findOrFail($id);
 
 
-        if($category){
+        if ($category) {
 
-            if(file_exists(storage_path('app/public/'.$category->img)))
-            {
-                unlink(storage_path('app/public/'.$category->img));
+            if (file_exists(storage_path('app/public/' . $category->img))) {
+                unlink(storage_path('app/public/' . $category->img));
             }
 
             $category->delete();
             session()->flash('success', "success");
             if (session()->has("success")) {
-                Alert::success('نجح', 'تم حذف البانر');
+
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', 'Banner deleted successfully');
+                } else {
+                    Alert::success('نجح', 'تم حذف البانر');
+                }
             }
         }
 
 
         return redirect()->route('sliders.index');
-
     }
-    public function show( $id)
+    public function show($id)
     {
 
 
-        $category= Slider::findOrFail($id);
+        $category = Slider::findOrFail($id);
 
 
-        if($category){
+        if ($category) {
 
-            if(file_exists(storage_path('app/public/'.$category->img)))
-            {
-                unlink(storage_path('app/public/'.$category->img));
+            if (file_exists(storage_path('app/public/' . $category->img))) {
+                unlink(storage_path('app/public/' . $category->img));
             }
 
             $category->delete();
             session()->flash('success', "success");
             if (session()->has("success")) {
-                Alert::success('نجح', 'تم حذف البانر');
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', 'Banner deleted successfully');
+                } else {
+                    Alert::success('نجح', 'تم حذف البانر');
+                }
             }
         }
 
 
         return redirect()->route('sliders.index');
-
     }
-
 }

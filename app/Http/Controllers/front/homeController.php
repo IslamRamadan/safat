@@ -23,6 +23,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
+use Lang;
+
 
 //use Session;
 
@@ -91,6 +93,19 @@ class homeController extends Controller
         return view('front.new',compact('new_arrivals'));
     }
 
+    public function search(Request $request)
+    {
+        $search = $request->search;
+        $new_arrivals=Product::select('id','title_en','title_ar','description_en','description_ar','new','price','img','appearance')
+        ->where('title_ar', 'like', '%' . $search . '%')
+        ->orWhere('title_en', 'like', '%' . $search . '%')
+        ->where('appearance',1)
+        ->get();
+        // dd($request->search,$new_arrivals);
+        return view('front.offer',compact('new_arrivals','search'));
+    }
+
+
     public function contactUs()
     {
         return view('front.contact_us');
@@ -117,7 +132,7 @@ class homeController extends Controller
 
 
         if ($validator->fails()) {
-            Alert::error('خطأ', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back();
         }
 
@@ -134,7 +149,15 @@ class homeController extends Controller
 
             session()->flash('success', "success");
             if (session()->has("success")) {
-                Alert::success('نجح', 'تم الأرسال');
+                if (Lang::locale() == 'en') {
+
+                    Alert::success('success', 'Message sent successfully');
+                }
+                    else{
+
+                        Alert::success('نجح', 'تم ارسال الرساله بنجاح');
+                    }
+
             }
 
         }
@@ -160,7 +183,15 @@ class homeController extends Controller
         }
 
         if (!$category) {
-            Alert::error('خطأ', 'هذا القسم غير متوفر حاليا');
+            if (Lang::locale() == 'en') {
+
+                Alert::error('error', 'This category unavailable now');
+            }
+            else{
+                Alert::error('خطأ', 'هذا القسم غير متوفر حاليا');
+
+                }
+
             return back();
         }
         return view('front.category', compact('category', 'type','last_views','sliders'));
@@ -168,7 +199,22 @@ class homeController extends Controller
 
     public function checkout()
     {
-        return view('front.checkout');
+        // dd();
+        if (!empty( Session::get('cart'))) {
+            return view('front.checkout');
+        }
+        else{
+            if (Lang::locale() == 'en') {
+                Alert::error('error', 'Cart is empty');
+
+            }
+            else{
+                    Alert::error('خطأ', 'السله فارغه');
+
+                }
+
+            return back();
+        }
     }
 
     public function myaccount()
@@ -245,7 +291,7 @@ class homeController extends Controller
 
 
         if ($validator->fails()) {
-            Alert::error('خطأ', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back();
         }
 
@@ -263,7 +309,15 @@ class homeController extends Controller
         if ($user) {
             session()->flash('success', "success");
             if (session()->has("success")) {
-                Alert::success('نجح', 'تم تحديث البيانات');
+                if (Lang::locale() == 'en') {
+
+                    Alert::success('success', 'Information updated successfully');
+                }
+                else{
+                        Alert::success('نجح', 'تم تحديث البيانات');
+
+                    }
+
             }
         }
 

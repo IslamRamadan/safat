@@ -158,11 +158,12 @@ class CartController extends Controller
         // $product['color']=$color;
 
         if (isset($cart[$product['product_id']])) :
-            if ($product['quantity']+$cart[$product['product_id']]['quantity'] > $current_product->quantity) {
+            if ($product['quantity'] + $cart[$product['product_id']]['quantity'] > $current_product->quantity) {
                 return response()->json(
                     [
                         'success' => false,
-                        'message' => 'الكميه الموجوده حاليا لهذا المقاس اقل من الكميه المطلوبه.',
+                        // 'message' => 'الكميه الموجوده حاليا لهذا المقاس اقل من الكميه المطلوبه.',
+                        'message' => \Lang::get('site.quantity_less'),
                     ]
                 );
             }
@@ -172,7 +173,9 @@ class CartController extends Controller
                 return response()->json(
                     [
                         'success' => false,
-                        'message' => 'الكميه الموجوده حاليا لهذا المقاس اقل من الكميه المطلوبه.',
+                        // 'message' => 'الكميه الموجوده حاليا لهذا المنتج اقل من الكميه المطلوبه.',
+                        'message' => \Lang::get('site.quantity_less'),
+
                     ]
                 );
             }
@@ -237,7 +240,9 @@ class CartController extends Controller
             [
                 'success' => true,
                 'cart_items' => count(Session::get('cart')),
-                'message' => 'تمت الاضافه الي السله',
+                // 'message' => 'تمت الاضافه الي السله',
+                'message' => \Lang::get('site.added_succ'),
+
                 'cart_data' => Session::get('cart'),
                 'cart_details' => Session::get('cart_details'),
 
@@ -429,7 +434,7 @@ class CartController extends Controller
             if ($product->quantity < ($quantity + 1)) {
                 return  response()->json([
                     'success' => false,
-                    'msg' => 'Quantity Requested not Available of this item !'
+                    'msg' => \Lang::get('site.quantity_less')
                 ]);
             }
             // }
@@ -491,59 +496,59 @@ class CartController extends Controller
 
 
 
-    public function removeFromShoppingCart($product_id, $product_height_id)
-    {
+    // public function removeFromShoppingCart($product_id, $product_height_id)
+    // {
 
-        //        dd($request);
-
-
-        //GET ITEM AND IF THE QUANTITY EQUALS OR MORE CALL REMOVE CART
-        $cart = Session::get('cart');
+    //     //        dd($request);
 
 
-        //        foreach ($cart as $cart_item){
-        //            if($cart_item == $cart[$product_id]){
-        //                foreach ($cart_item as $key => $value)
-        //            }
-        //        }
-        $item = $cart[$product_id][$product_height_id];
+    //     //GET ITEM AND IF THE QUANTITY EQUALS OR MORE CALL REMOVE CART
+    //     $cart = Session::get('cart');
+
+
+    //     //        foreach ($cart as $cart_item){
+    //     //            if($cart_item == $cart[$product_id]){
+    //     //                foreach ($cart_item as $key => $value)
+    //     //            }
+    //     //        }
+    //     $item = $cart[$product_id][$product_height_id];
 
 
 
-        $quantity = $item['quantity'];
+    //     $quantity = $item['quantity'];
 
-        $product = Product::find($product_id);
+    //     $product = Product::find($product_id);
 
-        $price = $product->price;
+    //     $price = $product->price;
 
-        $total_price = $quantity * $price;
-        //        array_splice($cart , $item);
-        unset($cart[$product_id][$product_height_id]);
+    //     $total_price = $quantity * $price;
+    //     //        array_splice($cart , $item);
+    //     unset($cart[$product_id][$product_height_id]);
 
-        if (count($cart[$product_id]) < 1) {
-            unset($cart[$product_id]);
-        }
+    //     if (count($cart[$product_id]) < 1) {
+    //         unset($cart[$product_id]);
+    //     }
 
-        Session::put('cart', $cart);
+    //     Session::put('cart', $cart);
 
-        $cart_details = Session::get('cart_details');
+    //     $cart_details = Session::get('cart_details');
 
-        $cart_details_quantity = $cart_details['totalQty'];
-        $cart_details_price = $cart_details['totalPrice'];
+    //     $cart_details_quantity = $cart_details['totalQty'];
+    //     $cart_details_price = $cart_details['totalPrice'];
 
-        $cart_details['totalQty'] = $cart_details_quantity - $quantity;
-        $cart_details['totalPrice'] = $cart_details_price - $total_price;
+    //     $cart_details['totalQty'] = $cart_details_quantity - $quantity;
+    //     $cart_details['totalPrice'] = $cart_details_price - $total_price;
 
-        Session::put('cart_details', $cart_details);
-
-
-        // GET TOTAL PRICE
+    //     Session::put('cart_details', $cart_details);
 
 
-        toast('Removed Successfully !!');
+    //     // GET TOTAL PRICE
 
-        return redirect()->back();
-    }
+
+    //     toast('Removed Successfully !!');
+
+    //     return redirect()->back();
+    // }
 
     public function getCities(Request $request)
     {
@@ -880,19 +885,47 @@ class CartController extends Controller
 
         $variation = str_replace("+", "", $request['phone']);
         $variation2 = str_replace("-", "", $variation);
-        $address = "جادة ".$request->jadah." شارع " . $request->street . " مبني رقم " . $request->building . " طابق رقم ".$request->floor." شقه رقم " .$request->flat;
+        $address = "جادة " . $request->jadah . " شارع " . $request->street . " مبني رقم " . $request->building . " طابق رقم " . $request->floor . " شقه رقم " . $request->flat;
 
         $request->merge([
             'total_price' => $cart_details['totalPrice'] + $city->delivery - Session::get('coupon')['discount'],
             'total_quantity' => $cart_details['totalQty'],
             'phone' => $variation2,
-            'address1'=>$address
+            'address1' => $address
         ]);
         //MAKE ORDER TABLE
 
         //ADD TO TABLE
+        $cart = Session::get('cart');
+
+        foreach ($cart as $cart_item) {
+
+            $product = Product::find($cart_item['product_id']);
+            if ($product->quantity < $cart_item['quantity']) {
+                if (Lang::locale() == 'en') {
+                    $msg = ' Product ';
+                    $msg .= Product::find($cart_item['product_id'])->title_en;
+                    $msg .=  ' quantity is smaller than your ordered quantity ';
+                    $msg .=  '    Please choose another product ';
+                } else {
+                    $msg = ' المنتج ';
+                    $msg .= Product::find($cart_item['product_id'])->title_ar;
+                    $msg .=  ' لا يتوفر منه العدد المطلوب';
+                    $msg .=  '    يرجي اختيار منتجات اخري';
+                }
+                Alert::error($msg, '');
+                unset($cart[$product->id]);
+                $cart_details['totalQty'] = $cart_details['totalQty'] - $cart_item['quantity'];
+                $cart_details['totalPrice'] = $cart_details['totalPrice'] - ($cart_item['quantity'] * $product->price);
+                Session::put('cart', $cart);
+                Session::put('cart_details', $cart_details);
 
 
+
+                return view('front.cart');
+
+            }
+        }
 
 
         $order = Order::create($request->except('_token'));
@@ -900,7 +933,12 @@ class CartController extends Controller
         //    dd($order);
 
         if (!$order) {
-            Alert::error('Order Not Completed an error occur ', '');
+            if (Lang::locale() == 'en') {
+
+                Alert::error('Order Not Completed an error occur ', '');
+            } else {
+                Alert::error('الطلب لم يكتمل بسبب خطأ ما ', '');
+            }
 
             return back();
         }
@@ -908,7 +946,6 @@ class CartController extends Controller
 
         //CHECK IF QUANTITIES FROM CART IS AVAILABLE AND THEN MAKE PAYMENT
 
-        $cart = Session::get('cart');
 
         //REACH HEIGHT AND ABSTRACT THE QUANTITY
 
@@ -916,145 +953,15 @@ class CartController extends Controller
 
             $product = Product::find($cart_item['product_id']);
             if ($product->quantity >= $cart_item['quantity']) {
-                $product->quantity = $product->quantity - $cart_item['quantity'];
-                $product->save();
+                // $product->quantity = $product->quantity - $cart_item['quantity'];
+                // $product->save();
 
                 $cart_item['order_id']  = $order->id;
                 OrderItem::create($cart_item);
-                $b = BestSeller::where([
-                    'product_id' => $cart_item['product_id']
-                ])->first();
-                if (!$b) {
-                    $be = new BestSeller();
-                    $be->product_id = $cart_item['product_id'];
-                    $be->rate = 1;
-                    $be->save();
-                } else {
-                    $b->rate = $b->rate + 1;
-                    $b->save();
-                }
-                BestSeller::firstOrCreate([
-                    'product_id' => $cart_item['product_id']
-                ])->touch();
-            } else {
 
-                $msg = ' المنتج ';
-                $msg .= Product::find($cart_item['product_id'])->title_en;
-                $msg .=  ' لا يتوفر منه العدد المطلوب في المقاس ';
-                $msg .=  ProdHeight::find($cart_item['product_height_id'])->height->name;
-                $msg .=  ' مع الحجم ';
-                $msg .=  ProdSize::find($cart_item['product_size_id'])->size->name;
-                $msg .=  '    يرجي اختبار مقاسات اخري';
-
-                Alert::error($msg, '');
-                return back();
             }
+
         }
-        // foreach ($cart as $cart_item) {
-        //     foreach ($cart_item as $item) {
-
-        //         if($item['product_height_id'] != 0 ){
-
-
-        //         $height = ProdHeight::find($item['product_height_id']);
-        //         if ($height->quantity >= $item['quantity']) {
-        //             $height->quantity = $height->quantity - $item['quantity'];
-        //             $height->save();
-
-        //             $item['order_id']  = $order->id;
-
-        //             OrderItem::create($item);
-
-        //             $b = BestSeller::where([
-        //                 'product_id' => $item['product_id']
-        //             ])->first();
-
-        //             if (!$b) {
-        //                 $be = new BestSeller();
-        //                 $be->product_id = $item['product_id'];
-        //                 $be->rate = 1;
-        //                 $be->save();
-        //             } else {
-        //                 $b->rate = $b->rate + 1;
-        //                 $b->save();
-        //             }
-
-        //             BestSeller::firstOrCreate([
-        //                 'product_id' => $item['product_id']
-        //             ])->touch();
-        //         } else {
-
-        //             $msg = ' المنتج ';
-        //             $msg .= Product::find($item['product_id'])->title_en;
-        //             $msg .=  ' لا يتوفر منه العدد المطلوب في المقاس ';
-        //             $msg .=  ProdHeight::find($item['product_height_id'])->height->name;
-        //             $msg .=  ' مع الحجم ';
-        //             $msg .=  ProdSize::find($item['product_size_id'])->size->name;
-        //             $msg .=  '    يرجي اختبار مقاسات اخري';
-
-        //             Alert::error($msg, '');
-        //             return back();
-        //         }
-        //         }else{
-
-        //              $item['order_id']  = $order->id;
-
-        //             $order_item=OrderItem::create($item);
-        //             $custm_carts = Session::get('custm_sizes');
-
-        //                 $k=0;
-        //             foreach($custm_carts as $custm_cart){
-        //                 // dd($item);
-        //                 // $i=$item['product_id'].'-'.0.'-'.$item['color_id'];
-
-        //                 if($custm_cart['cart_id']==$item['product_id']."-".'0'."-".$item['color'] ){
-        //                     $k ++;
-
-        //                     if($item['quantity'] >= $k){
-
-        //                         CustomSize::create([
-        //                             'order_item_id'=>$order_item->id,
-        //                             'height'=>$custm_cart['height'],
-        //                             // 'shoulder'=>$custm_cart['shoulder'],
-        //                             // 'chest'=>$custm_cart['chest'],
-        //                             'the_front'=>$custm_cart['the_front'],
-        //                             'veil_size'=>$custm_cart['veil_size']	,
-        //                             'note'=>$custm_cart['note'],
-        //                             // "hole_sleeve" =>$custm_cart['hole_sleeve'],
-        //                             // "sleeve_length" =>$custm_cart['sleeve_length'],
-        //                             'order_size'=>$custm_cart['order_size']
-        //                         ]);
-        //                     }
-        //                 }
-
-        //             }
-
-
-        //             $b = BestSeller::where([
-        //                 'product_id' => $item['product_id']
-        //             ])->first();
-
-        //             if (!$b) {
-        //                 $be = new BestSeller();
-        //                 $be->product_id = $item['product_id'];
-        //                 $be->rate = 1;
-        //                 $be->save();
-        //             } else {
-        //                 $b->rate = $b->rate + 1;
-        //                 $b->save();
-        //             }
-
-        //             BestSeller::firstOrCreate([
-        //                 'product_id' => $item['product_id']
-        //             ])->touch();
-
-
-        //         }
-        //     }
-        // }
-
-        // Session::forget('cart');
-        // Session::forget('cart_details');
 
 
         $data = $this->makePayment(\Illuminate\Support\Facades\Request::merge(['order_id' => $order->id]));
@@ -1069,12 +976,7 @@ class CartController extends Controller
 
             return back();
         }
-        //mail here
-        //        Mail::send('email.donePay',['name' => $request->name,'order_id'=>$order->id,'total_price'=>$request->total_price,'total_quantity'=>$request->total_quantity,'invoice_link'=>$order->invoice_link], function($message) use($request,$order){
-        //            $message->to($request->email)
-        //                ->from('sales@easyshop-qa.com', 'Example')
-        //            ->subject('Pay done');
-        //        });
+
 
 
         return redirect($json['link']);
@@ -1431,46 +1333,52 @@ class CartController extends Controller
 
         if (!$order) {
             //                    dd($request->all());
+            if (Lang::locale() == 'en') {
 
-            Alert::error('Order is not Exist !');
+                Alert::error('Order is not Exist !');
+            } else {
+
+                Alert::error('الطلب غير موجود !');
+            }
+
             return redirect()->route('home');
         }
+
+          $cart = Session::get('cart');
+
+        foreach ($cart as $cart_item) {
+
+            $product = Product::find($cart_item['product_id']);
+            if ($product->quantity >= $cart_item['quantity']) {
+                $product->quantity = $product->quantity - $cart_item['quantity'];
+                $product->save();
+
+            }
+            else{
+                dd('قد تمت نفاذ كمية المنتج برجاء التواصل مع الموقع بهذه المشكلة');
+            }
+
+        }
+
+
+
         session()->forget('coupon');
 
         $order->status = 1;
         $order->save();
-        /*
-             * order with order_id and price is price paid successfully and delivery is happening
-             *
-             *
-             * */
-        // Mail::send('email.donePay', ['name' => $order->name, 'order_id' => $request->paymentId, 'total_price' => $order->total_price, 'total_quantity' => $order->total_quantity, 'invoice_link' => $order->invoice_link], function ($message) use ($order) {
-        //     $message->to($order->email)
-        //         ->from('sales@easyshop-qa.com', 'Sara Merdas')
-        //         ->subject('Pay done');
-        // });
 
-        //        Mail::send('email.donePay',['name' => $request->name,'order_id'=>$order->id,'total_price'=>$request->total_price,'total_quantity'=>$request->total_quantity], function($message) use($request,$order){
-        //            $message->to($request->email)
-        //                ->from('sales@easyshop-qa.com', 'Example')
-        //                ->subject('Pay done');
-        //        });
-        //TODO ::MAIL IS HERE
 
         Session::forget('cart');
         Session::forget('cart_details');
 
-        Alert::success('Payment Completed Successfully !', '');
+        if (Lang::locale() == 'en') {
+            Alert::success('Payment Completed Successfully !', '');
+        } else {
+            Alert::success('لقد تم الطلب بنجاح!', '');
+        }
 
 
         return redirect()->route('home')->with(['order' => $order]);
-        //ORDER 1
-
-
-        //ALERT
-
-
-        //HOME
 
     }
 
@@ -1500,13 +1408,20 @@ class CartController extends Controller
             // }
 
 
-            $product->quantity = $product->quantity + intVal( $item->quantity);
+            $product->quantity = $product->quantity + intVal($item->quantity);
             $product->save();
         }
         session()->forget('coupon');
 
+        if (Lang::locale() == 'en') {
 
-        Alert::error('Payment Not Completed !', '');
+            Alert::error('Payment Not Completed !', '');
+        }
+        else{
+                Alert::error('لم يكتمل الطلب!', '');
+
+            }
+
 
         return redirect()->route('home');
     }
@@ -1518,14 +1433,30 @@ class CartController extends Controller
         $order = Order::find($order_id);
 
         if (!$order) {
-            Alert::error('Order is not Exist', '');
+            if (Lang::locale() == 'en') {
+
+                Alert::error('Order is not Exist', '');
+            }
+                else{
+
+                    Alert::error('الطلب غير موجود', '');
+                }
+
 
             return back();
         }
 
         if ($order->invoice_link && ($order->invoice_link != null)) {
             if ($order->status != 0) {
-                Alert::error('Payment Can not be completed, Maybe you already paid for this', '');
+                if (Lang::locale() == 'en') {
+
+                    Alert::error('Payment Can not be completed, Maybe you already paid for this', '');
+                }
+                else{
+                        Alert::error('الطلب لم يكتمل.ربما لأنك لم تدفع ثمنه', '');
+
+                    }
+
 
                 return back();
             }

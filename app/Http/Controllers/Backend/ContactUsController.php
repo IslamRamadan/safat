@@ -71,7 +71,7 @@ class ContactUsController extends Controller
 
 
         if ($validator->fails()) {
-            Alert::error('خطأ', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back();
         }
 
@@ -88,7 +88,15 @@ class ContactUsController extends Controller
 
             session()->flash('success', "success");
             if(session()->has("success")){
-                Alert::success('نجح', 'تم الأرسال');
+
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', 'Sent successfully');
+
+                }
+                else{
+                    Alert::success('نجح', 'تم الأرسال');
+                    }
+
             }
 
         }

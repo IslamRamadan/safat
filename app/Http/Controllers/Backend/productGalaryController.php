@@ -7,44 +7,50 @@ use App\ProdImg;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use RealRashid\SweetAlert\Facades\Alert;
+use Lang;
+
 
 class productGalaryController extends Controller
 {
-    public function index(Request $request,$id)
+    public function index(Request $request, $id)
     {
-        $posts = ProdImg::where("product_id",$id)->get();
+        $posts = ProdImg::where("product_id", $id)->get();
         // flash('Welcome Aboard!');
 
 
 
-        return view("/dashboard/product_galary/index",["posts"=>  $posts,"id"=>$id ]);
+        return view("/dashboard/product_galary/index", ["posts" =>  $posts, "id" => $id]);
     }
 
-    public function store(Request $request,$id)
+    public function store(Request $request, $id)
     {
-//        dd($request->all());
+        //        dd($request->all());
 
-        if (!$request->hasfile('img')){
+        if (!$request->hasfile('img')) {
 
             Alert::success('error ', 'لم تقم بتحميل اي صورة');
             return back();
         }
 
-        $imgs = $request->img ;
+        $imgs = $request->img;
 
-        if(count($imgs) >10 ){
+        if (count($imgs) > 10) {
 
-            Alert::success('error ', 'الحد الاقصي للتحميل في المرة الواحدة 10 صور');
+            if (Lang::locale() == 'en') {
+
+                Alert::error('error ', 'You can upload 10 images at most');
+            } else {
+                Alert::error('خطأ', 'الحد الاقصي للتحميل في المرة الواحدة 10 صور');
+            }
             return back();
-
         }
 
 
         $messeges = [
 
-            'img.required'=>" الصورة مطلوبة",
-            'img.mimes'=>" يجب ان تكون الصورة jpg او jpeg او png ",
-            'img.max'=>" الحد الاقصي للصورة 4 ميجا ",
+            'img.required' => " الصورة مطلوبة",
+            'img.mimes' => " يجب ان تكون الصورة jpg او jpeg او png ",
+            'img.max' => " الحد الاقصي للصورة 4 ميجا ",
 
 
         ];
@@ -53,88 +59,94 @@ class productGalaryController extends Controller
         $validator =  Validator::make($request->all(), [
 
             'img.*' => 'mimes:jpg,jpeg,png|max:4100',
-            "img"=>"required"
+            "img" => "required"
 
         ], $messeges);
 
 
 
         if ($validator->fails()) {
-            Alert::error('error', $validator->errors()->first());
+            Alert::error('', $validator->errors()->first());
             return back();
         }
 
 
 
-        $error = 0 ;
-        foreach($imgs as $img){
+        $error = 0;
+        foreach ($imgs as $img) {
 
 
 
 
             //add new name for img
-            $new_name_img = time().uniqid().".".$img->getClientOriginalExtension();
+            $new_name_img = time() . uniqid() . "." . $img->getClientOriginalExtension();
 
             //move img to folder
             $img1 = \Image::make($img);
-            $img1->save(public_path('upload/advertising/'.$new_name_img),90);
+            $img1->save(public_path('upload/advertising/' . $new_name_img), 90);
             // $img->move(public_path("upload/advertising"), $new_name_img);
-            $post= ProdImg::create([
-                "img"=>  "upload/advertising/".$new_name_img ,
-                "product_id"=>$id
+            $post = ProdImg::create([
+                "img" =>  "upload/advertising/" . $new_name_img,
+                "product_id" => $id
 
             ]);
-//            dd($post);
+            //            dd($post);
 
-            if(!$post){
-                $error++ ;
+            if (!$post) {
+                $error++;
             }
-
-
-
-
         }
 
-        if ($error == 0){
+        if ($error == 0) {
 
             session()->flash('success', "success");
-            if(session()->has("success")){
-                Alert::success('Success Title', 'Success Message');
+            if (session()->has("success")) {
+                if (Lang::locale() == 'en') {
+                    Alert::success('success', ' Images added successfully');
+                } else {
+                    Alert::success('نجح', 'تمت إضافة الصور بنجاح ');
+                }
             }
 
-            return redirect()->route('product_galaries.index',$id);
+            return redirect()->route('product_galaries.index', $id);
+        } else {
 
-        }else{
-
-            session()->flash('error', "بعض الصور او جميعها لم يتم تحميلها");
-            if(session()->has("error")){
-                Alert::success('error Title', 'error Message');
+            if (Lang::locale() == 'en') {
+                session()->flash('error', "Images not uploaded successfully");
+            } else {
+                session()->flash('خطأ', "بعض الصور او جميعها لم يتم تحميلها");
             }
 
+            if (session()->has("error")) {
+
+                if (Lang::locale() == 'en') {
+                    Alert::success('error Title', 'error Message');
+                } else {
+                    Alert::success('خطأ', 'حدث خطأ ما برجاء المحاولة مره اخري');
+                }
+            }
         }
-
-
-
     }
 
 
 
-    public function destroy( $id)
+    public function destroy($id)
     {
 
-        $post= ProdImg::findOrFail($id);
-        if(file_exists(public_path( $post->img))){
+        $post = ProdImg::findOrFail($id);
+        if (file_exists(public_path($post->img))) {
             unlink(public_path($post->img));
         }
         $post->delete();
         // session()->flash('success', __('site.deleted_successfully'));
         session()->flash('success', "success");
-        if(session()->has("success")){
-            Alert::success('Success Title', 'Success Message');
+        if (session()->has("success")) {
+            if (Lang::locale() == 'en') {
+                Alert::success('success', 'Image deleted successfully');
+            } else {
+                Alert::success('نجح', 'تم حذف الصوره بنجاح');
+            }
         }
-        return redirect()->route('product_galaries.index',$post->product_id);
-
+        return redirect()->route('product_galaries.index', $post->product_id);
     }
-
-
 }
