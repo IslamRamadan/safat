@@ -239,7 +239,7 @@
 
             </div>
 
-            <div class="col-sm-5 ml-auto product-dir">
+            <div class="col-sm-6 ml-auto product-dir">
                 {{-- <nav class="navbar navbar-expand pad-0 " > --}}
                 {{-- <ul class="navbar-nav"> --}}
                 {{-- <li class="nav-item "><a class="nav-link "style="margin-left: -7px" href="{{route('/')}}">HOME  /</a></li> --}}
@@ -420,9 +420,9 @@
                         is_order="{{ $product->is_order }}">@lang('site.add_to_cart')</a>
                     <div class="row">
                         <a class="btn bg-main addToWishList" data-product-id="{{ $product->id }}"
-                            style="margin:10px 0px;width: 70%;background: rgb(32, 137, 223)  !important;">@lang('site.add_to_wishlist')</a>
+                            style="margin:10px 0px;width: 60%;background: rgb(32, 137, 223)  !important;">@lang('site.add_to_wishlist')</a>
                         <span id="bn-click"
-                            style="cursor: pointer;margin:10px;padding: 8px;width: 20%;background: #67ced7 !important;color: #fff;border-radius: 5%;">@lang('site.share')
+                            style="cursor: pointer;margin:10px;padding: 8px;width: 30%;background: #67ced7 !important;color: #fff;border-radius: 5%;">@lang('site.share')
                             <i class="fas fa-share"></i></span>
                     </div>
                     <a class="btn bg-main " style="width: 100%;background: #000000 !important;margin-top:10px" target="_blank"

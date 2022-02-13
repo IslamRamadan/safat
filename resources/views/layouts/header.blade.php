@@ -397,15 +397,16 @@
                 max-height: 91vh;">
                     <div class="border-bottom">
                         <br>
-                        <div class="input-group mb-3">
-                            <input type="text" class="form-control" id="search-word2" name="search_3"
-                                placeholder="search ">
-                            <div class="input-group-append">
-                                <button class="input-group-text bg-main" id="search-submit2"><i
-                                        class="fas fa-search "></i>
-                                </button>
+                        <form action="{{route('search')}}" method="get">
+
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" name="search" placeholder="search ">
+                                <div class="input-group-append">
+                                    <button class="input-group-text bg-main" type="submit"> <i
+                                            class="fas fa-search sml-fa"></i></button>
+                                </div>
                             </div>
-                        </div>
+                            </form>
                         <br>
                     </div>
                     {{-- @guest()

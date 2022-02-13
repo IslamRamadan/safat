@@ -129,6 +129,9 @@
 }
 
 @media (min-width: 0px) and (max-width: 570px) {
+    .c {
+        width: 100% !important;
+    }
     h6.font-small {
         font-size: 12px !important;
     }
