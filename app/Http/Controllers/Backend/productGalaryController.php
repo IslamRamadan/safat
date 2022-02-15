@@ -82,7 +82,9 @@ class productGalaryController extends Controller
             $new_name_img = time() . uniqid() . "." . $img->getClientOriginalExtension();
 
             //move img to folder
-            $img1 = \Image::make($img);
+            $img1 = \Image::make($img)->resize(750, 615);
+        // $img = \Image::make($image);
+
             $img1->save(public_path('upload/advertising/' . $new_name_img), 90);
             // $img->move(public_path("upload/advertising"), $new_name_img);
             $post = ProdImg::create([

@@ -150,7 +150,7 @@ class ProductController extends Controller
         if (!Storage::exists($path)) {
             Storage::disk('public')->makeDirectory($path);
         }
-        $img = \Image::make($image)->resize(526, 790);
+        $img = \Image::make($image)->resize(750, 615);
         $img->save(public_path('storage/' . $path . $file_name), 90);
 
 
@@ -201,7 +201,7 @@ class ProductController extends Controller
                 $new_name_img = time() . uniqid() . "." . $img->getClientOriginalExtension();
 
                 //move img to folder
-                $img1 = \Image::make($img)->resize(526, 790);
+                $img1 = \Image::make($img)->resize(750, 615);
                 $img1->save(public_path('upload/advertising/' . $new_name_img), 90);
                 // $img->move(public_path("upload/advertising"), $new_name_img);
                 $post = ProdImg::create([
@@ -470,9 +470,9 @@ class ProductController extends Controller
             if (file_exists(storage_path('app/public/' . $product->img))) {
                 unlink(storage_path('app/public/' . $product->img));
             }
-            $img = \Image::make($image);
-            // $img = \Image::make($image)->resize(526 , 790);
-            $img->save(public_path('storage/' . $path . $file_name), 80);
+            // $img = \Image::make($image);
+            $img = \Image::make($image)->resize(750 , 615);
+            $img->save(public_path('storage/' . $path . $file_name), 90);
 
 
 
