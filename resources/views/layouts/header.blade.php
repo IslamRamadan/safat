@@ -394,7 +394,7 @@
 
 
                 <div class="sidbar bg-light text-dir dir-rtl" style="overflow: scroll;
-                max-height: 91vh;">
+                height: 96vh; width:250px">
                     <div class="border-bottom">
                         <br>
                         <form action="{{route('search')}}" method="get">
@@ -463,7 +463,35 @@
                         </div>
                     </div>
                 @endguest --}}
+                <div class="nav-link relative ul1">
+                    <a style="display: flex;justify-content: space-between;align-items: center">
+                        @if (app()->getLocale() == 'en')
+                            English <img src="{{ asset('front/img/en.png') }}" width="20"> <i
+                                class="fas fa-chevron-down "></i>
+                        @else
+                            العربية
+                            <img src="{{ asset('front/img/kuwait.png') }}" width="20"> <i
+                                class="fas fa-chevron-down "></i>
+                        @endif
 
+                    </a>
+                    <div class=" ul2  bg-w  text-left ">
+
+                        <div class=" ul2  bg-w  text-left ">
+
+
+                            @foreach (LaravelLocalization::getSupportedLocales() as $localeCode => $properties)
+
+                                <a class="dropdown-item" rel="alternate" hreflang="{{ $localeCode }}"
+                                    href="{{ LaravelLocalization::getLocalizedURL($localeCode, null, [], true) }}">
+                                    {{ $properties['native'] }}
+                                </a>
+
+                            @endforeach
+                        </div>
+
+                    </div>
+                </div>
 
                     @foreach (\App\BasicCategory::all() as $b)
                         <div class="relative ul1">
@@ -506,7 +534,7 @@
                         </div>
                     @endforeach
 
-                    <ul class="navbar nav pad-0  border-bottom" style="justify-content: space-evenly ">
+                    {{-- <ul class="navbar nav pad-0  border-bottom" style="justify-content: space-evenly ">
 
                         @if (\App\Settings::all()->first()->facebook)
                             <li class="nav-item "><a class=" " href="{{ $my_setting->facebook }}"
@@ -542,44 +570,16 @@
                             </li>
                         @endif
 
-                    </ul>
+                    </ul> --}}
 
 
-                    <div class="nav-link relative ul1">
-                        <a style="display: flex;justify-content: space-between;align-items: center">
-                            @if (app()->getLocale() == 'en')
-                                English <img src="{{ asset('front/img/en.png') }}" width="20"> <i
-                                    class="fas fa-chevron-down "></i>
-                            @else
-                                العربية
-                                <img src="{{ asset('front/img/kuwait.png') }}" width="20"> <i
-                                    class="fas fa-chevron-down "></i>
-                            @endif
 
-                        </a>
-                        <div class=" ul2  bg-w  text-left ">
-
-                            <div class=" ul2  bg-w  text-left ">
-
-
-                                @foreach (LaravelLocalization::getSupportedLocales() as $localeCode => $properties)
-
-                                    <a class="dropdown-item" rel="alternate" hreflang="{{ $localeCode }}"
-                                        href="{{ LaravelLocalization::getLocalizedURL($localeCode, null, [], true) }}">
-                                        {{ $properties['native'] }}
-                                    </a>
-
-                                @endforeach
-                            </div>
-
-                        </div>
-                    </div>
                     <a class="nav-link  border-bottom" href="{{ route('policy',1) }}">@lang('site.terms_and_condition')</a>
                     <a class="nav-link  border-bottom" href="{{ route('policy',2) }}">@lang('site.about')</a>
                     <a class="nav-link  border-bottom" href="{{ route('checkout') }}"> @lang('site.payment')</a>
                     <a class="nav-link  border-bottom" href="{{ route('contact.us') }}">@lang('site.contact_us')</a>
-                    <a class="nav-link  border-bottom" href="{{ route('checkout') }}">@lang('site.checkout')</a>
-                    <a class="nav-link  border-bottom" href="{{ route('cart') }}">@lang('site.shopping_cart')</a>
+                    {{-- <a class="nav-link  border-bottom" href="{{ route('checkout') }}">@lang('site.checkout')</a>
+                    <a class="nav-link  border-bottom" href="{{ route('cart') }}">@lang('site.shopping_cart')</a> --}}
                     @guest()
                     <a class="nav-link  border-bottom" href="{{ route('login') }}"> @lang('site.login')</a>
 

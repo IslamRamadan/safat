@@ -277,7 +277,7 @@
             </span>
             <b></b>
         </h2>
-        <br><br>
+        {{-- <br><br> --}}
 
         <div class="row">
 
@@ -342,7 +342,7 @@
 
 
     </div>
-    <br><br>
+    {{-- <br><br> --}}
     </div>
 
 
@@ -497,7 +497,7 @@
             </div>
             @endif
         </div>
-        <br><br>
+        {{-- <br><br> --}}
     </div>
 
 
@@ -513,7 +513,7 @@
         </span>
         <b></b>
     </h2>
-    <br><br>
+    {{-- <br><br> --}}
 <div class="row text-center dir-rtl">
     @if (App\Product::count() > 0)
         @foreach (App\Product::select('id','title_en','title_ar','description_en','description_ar','appearance','price','img')->where('appearance',1)->get() as $p)
